@@ -156,9 +156,23 @@ WidgetManager.prototype.widgetExists = function(widgetId) {
 	return this.widgets[widgetId] != null;
 }
 
+WidgetManager.prototype.doAutoRefreshWidget = function(widgetId) {
+	var widget = WidgetManager.instance.widgets[widgetId];
+	if(widget != null) {
+		var autoRefreshInterval = widget.autoRefreshInterval;
+		if(typeof widget.autoRefreshInterval != null && widget.autoRefreshInterval > 0) {
+			widget.refresh();
+			setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widgetId + '")', autoRefreshInterval);
+		}
+	}
+}
 
-WidgetManager.prototype.deployWidget = function(newWidget, x, y)
-{
+WidgetManager.prototype.autoRefreshWidget = function(widget, autoRefreshInterval) {
+	widget.autoRefreshInterval = autoRefreshInterval;
+	setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widget.id + '")', autoRefreshInterval);
+}
+
+WidgetManager.prototype.deployWidget = function(newWidget, x, y) {
 	return this.deployWidgetInContainer(document.body, newWidget, x, y);
 }
 

@@ -335,7 +335,7 @@ public class DispatcherServlet extends HttpServlet implements RequestDispatcher 
         servletResponse.setContentType("text/html; charset=UTF-8");
 
         PrintStream out = new PrintStream(servletResponse.getOutputStream());
-        out.print(responseValue.toString());
+        out.print(responseValue != null ? responseValue.toString() : "null");
 
         return true;
     }

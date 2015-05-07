@@ -132,6 +132,7 @@ WidgetManager.prototype.unregisterDraggableWidget = function(widget) {
 
 WidgetManager.prototype.registerPopupWidget = function(widget) {
 	widget.isPopup = true;
+	widget.isModal = true;
 	widget.mouseOverTrigger = true;
 	widget.mouseOverPopup = false;
 
@@ -271,7 +272,11 @@ WidgetManager.prototype.activateCurrentWidget = function(widgetId)
 		this.currentWidget = this.widgets[widgetId];
 		if(this.currentWidget != null) {
 			if(this.currentWidget.isDraggable || this.currentWidget.isPopup) {
-				this.currentWidget.element.style.zIndex = WidgetManager.instance.currentZIndex++;
+				if(this.currentWidget.isModal) {
+					this.currentWidget.element.style.zIndex = WidgetManager.instance.currentZIndex++ + 1000;
+				} else {
+					this.currentWidget.element.style.zIndex = WidgetManager.instance.currentZIndex++;
+				}
 				log('widget "' + this.currentWidget.element.id + '" set to z-index ' + this.currentWidget.element.style.zIndex);
 			}
 			this.currentWidget.onFocus();

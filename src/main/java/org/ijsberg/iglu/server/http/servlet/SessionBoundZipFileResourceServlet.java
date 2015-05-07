@@ -53,7 +53,10 @@ public class SessionBoundZipFileResourceServlet  extends BinaryResourceServlet i
 		if(zipFileName == null) {
 			return "currently no resources available".getBytes();
 		}
-		byte[] resource = FileSupport.getBinaryFromJar(path, zipFileName);
+		byte[] resource = null;
+		synchronized (this) { //make sure zip file is opened by one request at a time
+			resource = FileSupport.getBinaryFromJar(path, zipFileName);
+		}
 		return resource;
 	}
 

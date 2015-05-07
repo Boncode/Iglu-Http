@@ -26,6 +26,7 @@ import org.ijsberg.iglu.access.Base64EncodedCredentials;
 import org.ijsberg.iglu.access.Request;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.exception.ResourceException;
+import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
 import org.ijsberg.iglu.util.io.FileData;
@@ -432,34 +433,39 @@ public abstract class ServletSupport extends HttpEncodingSupport
 
 	public static void printException(ServletResponse response, String message, Throwable cause) throws IOException, ServletException
 	{
-		Throwable cause1 = cause;
-		PrintWriter out = response.getWriter();
-		response.setContentType("text/html");
+		try {
+			Throwable cause1 = cause;
+			PrintWriter out = response.getWriter();
+			response.setContentType("text/html");
 
-		out.println("//\"></option></td></tr></script>");
-		out.println("<pre>");
-		out.println(message);
-		out.println(StringSupport.getStackTrace(cause1));
+			out.println("//\"></option></td></tr></script>");
+			out.println("<pre>");
+			out.println(message);
+			out.println(StringSupport.getStackTrace(cause1));
 
 
-//		if (cause1 instanceof ServletException)
-		{
-			while ((cause1 instanceof ServletException) && ((ServletException) cause1).getRootCause() != null)
+	//		if (cause1 instanceof ServletException)
+			{
+				while ((cause1 instanceof ServletException) && ((ServletException) cause1).getRootCause() != null)
+				{
+					out.println();
+					out.println("root cause:");
+					out.println(StringSupport.getStackTrace(cause1));
+					cause1 = ((ServletException) cause1).getRootCause();
+				}
+			}
+			//dump the whole stack of exceptions
+			while ((cause1 = cause1.getCause()) != null)
 			{
 				out.println();
-				out.println("root cause:");
+				out.println("cause:");
 				out.println(StringSupport.getStackTrace(cause1));
-				cause1 = ((ServletException) cause1).getRootCause();
 			}
+			out.println("</pre>");
+		} catch (Exception e) {
+			System.out.println(new LogEntry(Level.CRITICAL, "exception while writing exception to http page", e));
+			System.out.println(new LogEntry(Level.CRITICAL, "original exception: " + message, cause));
 		}
-		//dump the whole stack of exceptions
-		while ((cause1 = cause1.getCause()) != null)
-		{
-			out.println();
-			out.println("cause:");
-			out.println(StringSupport.getStackTrace(cause1));
-		}
-		out.println("</pre>");
 
 	}
 

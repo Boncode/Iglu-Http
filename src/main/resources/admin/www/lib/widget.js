@@ -24,6 +24,8 @@ Widget.prototype.constructWidget = function(settings) {
         throw 'widget ' + this.constructor.name + ' must have an id';
 	}
 	this.source_load_action = 'display';
+	this.autoRefreshInterval = 0;
+
 }
 
 //TODO move to settings Object
@@ -64,6 +66,7 @@ Widget.prototype.getDOMElement = function()
 
 Widget.prototype.onDestroy = function()
 {
+	this.autoRefreshInterval = 0;
 };
 
 
@@ -199,6 +202,8 @@ WidgetContent.prototype.onDestroy = function()
 WidgetContent.prototype.onDeploy = function() {
 	this.refresh();
 };
+
+
 
 
 WidgetContent.prototype.refresh = function() {
