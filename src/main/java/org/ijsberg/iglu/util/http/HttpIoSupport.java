@@ -17,6 +17,26 @@ import java.net.URLConnection;
  * To change this template use File | Settings | File Templates.
  */
 public class HttpIoSupport {
+
+	public static String getDataByHttp(String urlStr, int nrofTries) {
+
+		for(int i = 0; i < nrofTries; i++) {
+			String result = getDataByHttp(urlStr);
+			if(result != null) {
+				System.out.println(new LogEntry("data obtained in trial " + (i + 1)));
+				return result;
+			}
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				//ignore
+			}
+		}
+		return null;
+
+	}
+
+
 	public static String getDataByHttp(String urlStr) {
 
 		StringBuffer result = new StringBuffer();
