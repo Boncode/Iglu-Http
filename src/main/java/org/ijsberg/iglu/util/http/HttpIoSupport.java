@@ -10,11 +10,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Jeroen Meetsma
- * Date: 12/03/15
- * Time: 08:00
- * To change this template use File | Settings | File Templates.
  */
 public class HttpIoSupport {
 
