@@ -12,3 +12,12 @@ target/*
 
 
 *.class
+
+
+target/apidocs/allclasses-frame.html
+
+target/apidocs/allclasses-noframe.html
+
+target/apidocs/constant-values.html
+
+target/apidocs/allclasses-noframe.html
