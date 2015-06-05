@@ -65,6 +65,6 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 	}
 
 
-	public abstract byte[] getResource(String path) throws IOException;
+	public abstract byte[] getResource(String path) throws IOException, ServletException;
 
 }

@@ -21,6 +21,7 @@ package org.ijsberg.iglu.server.http.servlet;
 
 import org.ijsberg.iglu.util.io.FileSupport;
 
+import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
@@ -29,7 +30,10 @@ public class ClassPathResourceServlet extends BinaryResourceServlet {
 
 
 	@Override
-	public byte[] getResource(String path) throws IOException {
-		return FileSupport.getBinaryFromClassLoader(path);
+	public byte[] getResource(String path) throws IOException, ServletException {
+		if(!path.endsWith(".class") && !(path.endsWith(".java"))) {
+			return FileSupport.getBinaryFromClassLoader(path);
+		}
+		throw new ServletException("inaccessible resource: " + path);
 	}
 }

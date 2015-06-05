@@ -21,6 +21,8 @@ package org.ijsberg.iglu.server.http.servlet;
 
 import org.ijsberg.iglu.util.io.FileSupport;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
@@ -29,6 +31,13 @@ public class ZipFileResourceServlet extends BinaryResourceServlet implements Zip
 
     //
 	private String zipFileName = null;
+
+
+	public void init(ServletConfig conf) throws ServletException {
+		super.init(conf);
+		zipFileName = conf.getInitParameter("zip_file_name");
+	}
+
 
 	@Override
 	public void setZipFileName(String zipFileName) {
