@@ -24,12 +24,9 @@ Widget
 |               |
 |               WidgetContent
 FrameWidget
-|_______________ ___________________________________ ___________________________
-|               |               |                   |                           |
-PanelWidget     WindowWidget    LogStreamWidget     SplitPanelWidget            MenuWidget
-                                                    |___________________________
-                                                    |							|
-                                                    HorizontalSplitPanelWidget  VerticalSplitpanelWidget
+|_______________ ___________________________________
+|               |               |                   |
+PanelWidget     WindowWidget    LogStreamWidget     MenuWidget
 */
 /*
  * Keeps track of lots of different kinds of widgets.
@@ -187,31 +184,39 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	}
 
 	var widget = this.widgets[newWidget.getId()];
-	if(widget == null) {
 
-		this.widgets[newWidget.getId()] = newWidget;
-		var element = container;
-
-		if(newWidget.getId() != container.id) {
-			var element = document.getElementById(newWidget.getId());
-			if(element == null) {
-				element = document.createElement('div');
-				//is this necessary?
-				//use prefix 'widget_'
-				element.setAttribute('id', newWidget.getId());
-				container.appendChild(element);
-			}
-		}
-		newWidget.containerElement = container;
-		newWidget.setDOMElement(element);
-		//newWidget.draw();
-    	newWidget.onDeploy();
-		log('widget "' + newWidget.getId() + '" deployed');
-	} else {
+	if(widget != null) {
 		log('widget "' + widget.getId() + '" already exists');
+
+//		this.destroyWidget(widget.id);
 		this.activateCurrentWidget(widget.id);
     	return widget;
+
 	}
+
+
+	this.widgets[newWidget.getId()] = newWidget;
+	var element = container;
+
+	newWidget.hasCreatedElement = false;
+
+	if(newWidget.getId() != container.id) {
+		var element = document.getElementById(newWidget.getId());
+		if(element == null) {
+			element = document.createElement('div');
+			//is this necessary?
+			//use prefix 'widget_'
+			element.setAttribute('id', newWidget.getId());
+			newWidget.hasCreatedElement = true;
+			container.appendChild(element);
+		}
+	}
+	newWidget.containerElement = container;
+	newWidget.setDOMElement(element);
+	//newWidget.draw();
+	newWidget.onDeploy();
+	log('widget "' + newWidget.getId() + '" deployed');
+
 	this.activateCurrentWidget(newWidget.id);
 	return newWidget;
 }
@@ -225,7 +230,7 @@ WidgetManager.prototype.destroyWidget = function(widgetId) {
 		//call widget destructor
 		widget.onDestroy();
 		var element = document.getElementById(widgetId);
-		if(element != null) {
+		if(widget.hasCreatedElement && element != null) {
 			try {
 				widget.containerElement.removeChild(element);
 			} catch(e) {

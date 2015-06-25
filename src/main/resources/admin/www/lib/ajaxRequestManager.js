@@ -196,11 +196,15 @@ function dispatchResponse(requestNr)
 	{
 		this.totalNrofResponses++;
 
-		if(ajaxRequestManager.callbackInputObjects[requestNr] == null) {
-			ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText);
+		if(typeof ajaxRequestManager.callbacks[requestNr] != 'function') {
+			alert('' + ajaxRequestManager.callbacks[requestNr] + ' is not a function');
 		} else {
-		    //calls callback(response, callbackInput[])
-			ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText, ajaxRequestManager.callbackInputObjects[requestNr]);
+			if(ajaxRequestManager.callbackInputObjects[requestNr] == null) {
+				ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText);
+			} else {
+				//calls callback(response, callbackInput[])
+				ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText, ajaxRequestManager.callbackInputObjects[requestNr]);
+			}
 		}
         removeFromRequestQueue(requestNr);
 	}
@@ -266,7 +270,7 @@ function loadPageHtml(contents, callbackInput) {
 	if(panelHeader != null) {
 		panelHeader.innerHTML = callbackInput.title;
 	} else {
-		log('ERROR: cannot find element ' + callbackInput.target + '_header');
+		log('WARNING: cannot find element ' + callbackInput.target + '_header');
 	}
 }
 

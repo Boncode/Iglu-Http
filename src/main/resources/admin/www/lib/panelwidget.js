@@ -80,7 +80,7 @@ PanelWidget.prototype.writeHTML = function() {
 //	alert('' + this.id + ': ' + this.width + '->' + contentFrame.width + '\n' +
 //			'' + this.id + ': ' + this.height + '->' + contentFrame.height);
 
-	this.subWidgets[this.element.id] = contentFrame;
+	this.subWidgets[this.id] = contentFrame;
 
 	//widgetmanager.deployWidgetInContainer(this.element, contentFrame);
 
