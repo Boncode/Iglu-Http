@@ -127,7 +127,7 @@ public abstract class ServletSupport extends HttpEncodingSupport
 		ServletInputStream input = request.getInputStream();
 		//the next variable stores all post data and is useful for debug purposes
 
-//		RTE.log("MULTIPART input:" + Str.absorbInputStream(input));
+//		RTE.log("MULTIPART input:" + Str.writeToOutputStream(input));
 
 //		ByteArrayOutputStream completeCopy = new ByteArrayOutputStream();
 		byte[] line = new byte[BUFFER_SIZE];
