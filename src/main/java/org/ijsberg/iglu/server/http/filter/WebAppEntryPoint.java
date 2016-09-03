@@ -24,10 +24,12 @@ import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
+import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
@@ -60,8 +62,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	public static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
 	private String USER_ID_KEY = "IGLU_USER_ID";
 
-//	protected Realm realm;
-//	protected Application application;
 	protected String filterName;
 
 	private boolean syncUserPrefs;
@@ -77,8 +77,14 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 	private HashMap securityConstraints = new HashMap();
 
+
 	private boolean loggingEnabled;
 	private String exceptionPagesSectionId;
+
+	private boolean loginRequired = false;
+	private String loginPath;
+
+	private String publicContentRegExp;
 
 	private static class ExceptionHandlingSettings
 	{
@@ -167,17 +173,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		((HttpServletResponse) response).addCookie(cookie);
 	}
 
-	/**
-	 * Retrieves session id from cookie
-	 *
-	 * @param request
-	 * @return
-	 */
-/*	public static String getSessionTokenFromCookie(ServletRequest request)
-	{
-		return ServletSupport.getCookieValue(request, SESSION_TOKEN_KEY);
-	}
-*/
     /**
      *
      * @param currentRequest
@@ -190,14 +185,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	}
 
 
-    /**
-     *
-     * @return
-     */
-  /*  public Realm getRealm()
-	{
-		return realm;
-	}*/
 
 	//TODO document init params
 	/**
@@ -206,67 +193,23 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 */
 	public final void init(FilterConfig conf) throws ServletException
 	{
-//		System.out.println(conf.getInitParameter("sync_user_prefs"));
-
 		filterName = conf.getFilterName();
-	/*	Request request = null;
-
-		obtainApplicationReference(conf);
-		//obtain realm from servlet init parameters
-		obtainRealmReference(conf);
-
-		System.out.println(new LogEntry("initializing filter " + filterName + " (acting as entry point)"));
-
-		USER_ID_KEY = "IGLU_" + realm.getId() + "_USER_ID";
-
-		try
-		{
-			//bind request to provide context for the following calls
-//			request = application.bindRequest(this);
-
-			initializeSettings(conf);
-		}
-		finally
-		{
-/ *			if(request != null)
-			{
-				application.releaseRequest();
-			}* /
-		}      */
 
 		String syncUserPrefsStr = conf.getInitParameter("sync_user_prefs");
 		syncUserPrefs = (syncUserPrefsStr != null ? Boolean.valueOf(syncUserPrefsStr) : false);
+
+		String loginRequiredStr = conf.getInitParameter("login_required");
+		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false);
+		loginPath = conf.getInitParameter("login_path");
+
+		System.out.println(new LogEntry("loginRequired:" + loginRequired));
 
 	//	System.out.println("syncUserPrefs=" + syncUserPrefs);
 
 		String userPrefsMaxAgeStr = conf.getInitParameter("user_prefs_max_age");
 		userPrefsMaxAge = userPrefsMaxAgeStr != null ? Integer.valueOf(userPrefsMaxAgeStr) : userPrefsMaxAge;
 
-/*		String loggingEnabledStr = conf.getInitParameter("logging_enabled");
-		loggingEnabled = new GenericValue(loggingEnabledStr).toBoolean(loggingEnabled).booleanValue();
-
-		exceptionPagesSectionId = conf.getInitParameter("exception_pages_section_id");
-		if(exceptionPagesSectionId == null)
-		{
-			exceptionPagesSectionId = realm.getId() + '_' + filterName + "_exception_pages";
-		}
-		initializeExceptionPages();
-		//role based access control settings
-		String securityConstraintsSectionId = conf.getInitParameter("security_constraints_section_id");
-		if(securityConstraintsSectionId == null)
-		{
-			securityConstraintsSectionId = realm.getId() + '_' + filterName + "_security_constraints";
-		}*/
-/*		PropertyBundle constraints = application.getConfigurationSection(securityConstraintsSectionId);
-		if(constraints != null)
-		{
-			Iterator i = constraints.getSubsections().iterator();
-			while(i.hasNext())
-			{
-				PropertyBundle constraint = (PropertyBundle)i.next();
-				securityConstraints.put(constraint.getValue("url_pattern").toString("/*"), constraint.getValue("roles").toList());
-			}
-		} */
+		publicContentRegExp = conf.getInitParameter("public_content_reg_exp");
 	}
 
 /*	private void initializeExceptionPages()
@@ -304,28 +247,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 //	}
 	}*/
 
-/*	private void obtainRealmReference(FilterConfig conf)
-	{
-		String realmId = conf.getInitParameter("realm_id");
-		if (realmId == null)
-		{
-			//obtain realm from context (put there by web server component or context listener)
-			realmId = (String) conf.getServletContext().getAttribute("realm_id");
-		}
-		if (realmId != null)
-		{
-			realm = application.getRealm(realmId);
-		}
-		if (realm == null)
-		{
-			realm = application.getPrimaryDomainRealm();
-		}
-		if (realm == null)
-		{
-			throw new ConfigurationException("realm for filter " + filterName +
-					" (acting as entry point) can not be determined");
-		}
-	}       */
 
 
 	/**
@@ -346,7 +267,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		Request appRequest = null;
 		try
 		{
-//			String sessionToken = ServletSupport.getSessionTokenFromCookie(servletRequest);
 			String sessionToken = ServletSupport.getCookieValue(servletRequest, SESSION_TOKEN_KEY);
 			String userId = ServletSupport.getCookieValue(servletRequest, USER_ID_KEY);
 			if("".equals(sessionToken))
@@ -359,7 +279,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			}
  			if(accessManager != null) {
 				appRequest = accessManager.bindRequest(this);
-//				System.out.println("request bound!! " + appRequest);
 				Session session = appRequest.resolveSession(sessionToken, userId);
 			}
 
@@ -377,6 +296,29 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				if(user != null)
 				{
 					storeSessionDataInCookie(USER_ID_KEY, user.getId(), servletResponse);
+				}
+			}
+
+			if(loginRequired) {
+				User user = appRequest.getUser();
+				System.out.println(new LogEntry("user:" + user));
+				String servletPath = ((HttpServletRequest)servletRequest).getServletPath();
+				System.out.println(new LogEntry("servletPath: " + servletPath));
+				String pathInfo = ((HttpServletRequest) servletRequest).getPathInfo();
+				System.out.println(new LogEntry("pathInfo: " + pathInfo));
+				if(pathInfo == null) {
+					pathInfo = servletPath;//088 944 6592 - Hillary
+					//
+				}
+
+				if(user == null && contentNotPublic(pathInfo))
+				{
+					System.out.println(new LogEntry("" + pathInfo + " == " + loginPath));
+					if(!(pathInfo.equals(loginPath) || pathInfo.equals("/"))) {
+						System.out.println(new LogEntry("user must authenticate first to obtain " + pathInfo));
+						ServletSupport.respond((HttpServletResponse)servletResponse, loginPath, 403);
+						return;
+					}
 				}
 			}
 
@@ -409,40 +351,10 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		}
 	}
 
-	/**
-	 *
-	 * @param req
-	 * @param request
-	 * @throws SecurityException
-	 */
-/*	private void checkAccess(ServletRequest req, Request request)
-	{
-		if(req instanceof HttpServletRequest)
-		{
-			String requestURI = ((HttpServletRequest)req).getRequestURI();
-			Iterator i = securityConstraints.keySet().iterator();
-			LOOP:
-			while(i.hasNext())
-			{
-				String urlPattern = (String)i.next();
-				if(PatternMatchingSupport.valueMatchesWildcardExpression(requestURI, urlPattern))
-				{
-					User user = request.getUser();
-					List roles = (List)securityConstraints.get(urlPattern);
-					Iterator j = roles.iterator();
-					while(j.hasNext())
-					{
-						String role = (String)j.next();
-						if(user != null && user.hasRole(role))
-						{
-							break LOOP;
-						}
-					}
-					throw new SecurityException("user must have one of roles {" + CollectionSupport.format(roles, ", ") + "} to access " + requestURI);
-				}
-			}
-		}
-	}  */
+	private boolean contentNotPublic(String servletPath) {
+		return (publicContentRegExp == null || !PatternMatchingSupport.valueMatchesRegularExpression(servletPath, publicContentRegExp));
+	}
+
 
 
 	/**

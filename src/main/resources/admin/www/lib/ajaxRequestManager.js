@@ -51,9 +51,8 @@ function AjaxRequestManager()
 	this.callbackInputObjects = new Array();
 	this.ajaxRequests = new Array();
 
-
 	this.ajaxRequestHistory = new Array();
-
+	this.loginUrl = null;
 }
 
 function AjaxRequest(requestURL, callback, callbackInput, postData, multipart) {
@@ -64,6 +63,11 @@ function AjaxRequest(requestURL, callback, callbackInput, postData, multipart) {
 	this.multipart = multipart;
 }
 
+
+AjaxRequestManager.prototype.setLoginUrl = function(loginUrl)
+{
+	this.loginUrl = loginUrl;
+}
 
 AjaxRequestManager.prototype.checkAjaxSupport = function()
 {
@@ -199,6 +203,12 @@ function dispatchResponse(requestNr)
 		if(typeof ajaxRequestManager.callbacks[requestNr] != 'function') {
 			alert('' + ajaxRequestManager.callbacks[requestNr] + ' is not a function');
 		} else {
+			if(ajaxRequestManager.ajaxRequests[requestNr].status == 403) {
+				window.location.href = ajaxRequestManager.ajaxRequests[requestNr].responseText;
+				//alert(ajaxRequestManager.ajaxRequests[requestNr].responseText);
+				return;
+			}
+
 			if(ajaxRequestManager.callbackInputObjects[requestNr] == null) {
 				ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText);
 			} else {

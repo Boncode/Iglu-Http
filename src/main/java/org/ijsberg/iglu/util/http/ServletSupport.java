@@ -302,6 +302,16 @@ public abstract class ServletSupport extends HttpEncodingSupport
 		return retval;
 	}
 
+	public static Properties getPropertiesFromRequest(ServletRequest servletRequest) {
+		Properties properties = new Properties();
+		Enumeration<String> parameterNames = servletRequest.getParameterNames();
+		while(parameterNames.hasMoreElements()) {
+			String parameterName = parameterNames.nextElement();
+			properties.setProperty(parameterName, servletRequest.getParameter(parameterName));
+		}
+		return properties;
+	}
+
 	/**
 	 * Gets a clean base url including the path from the current request.
 	 *
@@ -429,6 +439,13 @@ public abstract class ServletSupport extends HttpEncodingSupport
 		{
 			throw (IOException) t;
 		}
+	}
+
+	public static void respond(HttpServletResponse response, String message, int status) throws IOException {
+		PrintWriter out = response.getWriter();
+		response.setContentType("text/plain");
+		response.setStatus(403);
+		out.print(message);
 	}
 
 	public static void printException(ServletResponse response, String message, Throwable cause) throws IOException, ServletException
