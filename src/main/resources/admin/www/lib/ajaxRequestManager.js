@@ -200,11 +200,20 @@ function dispatchResponse(requestNr)
 	{
 		this.totalNrofResponses++;
 
+/*		if(ajaxRequestManager.callbackInputObjects[requestNr] != null) {
+			if(typeof ajaxRequestManager.callbackInputObjects[requestNr].handleAjaxResponse != 'undefined') {
+				ajaxRequestManager.callbackInputObjects[requestNr].handleAjaxResponse(ajaxRequestManager.ajaxRequests[requestNr].responseText);
+		        removeFromRequestQueue(requestNr);
+				return;
+			}
+		}*/
+
 		if(typeof ajaxRequestManager.callbacks[requestNr] != 'function') {
 			alert('' + ajaxRequestManager.callbacks[requestNr] + ' is not a function');
 		} else {
 			if(ajaxRequestManager.ajaxRequests[requestNr].status == 403) {
 				window.location.href = ajaxRequestManager.ajaxRequests[requestNr].responseText;
+        		removeFromRequestQueue(requestNr);
 				//alert(ajaxRequestManager.ajaxRequests[requestNr].responseText);
 				return;
 			}

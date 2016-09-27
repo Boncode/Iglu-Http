@@ -27,6 +27,30 @@ FrameWidget
 |_______________ ___________________________________
 |               |               |                   |
 PanelWidget     WindowWidget    LogStreamWidget     MenuWidget
+
+
+deploy
+onDeploy
+
+FrameWidget : onDeploy -> draw -> writeHTML (empty)
+WidgetContent : onDeploy -> refresh -> writeHTML
+
+activate
+
+
+Page layout
+- css?
+- wireframe?
+- JSP / html? (search & replace)
+- alignment - location -> fixed / north/west/east/south / centered(H/V) / hover
+
+- frame vs content
+
+widget has a presence/form (height, width) and a location (Delphi)
+
+
+
+
 */
 /*
  * Keeps track of lots of different kinds of widgets.
@@ -187,11 +211,8 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 
 	if(widget != null) {
 		log('widget "' + widget.getId() + '" already exists');
-
-//		this.destroyWidget(widget.id);
 		this.activateCurrentWidget(widget.id);
     	return widget;
-
 	}
 
 
@@ -216,6 +237,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	//newWidget.draw();
 	newWidget.onDeploy();
 	log('widget "' + newWidget.getId() + '" deployed');
+//	alert('widget "' + newWidget.getId() + '" deployed ' + newWidget.onDeploy);
 
 	this.activateCurrentWidget(newWidget.id);
 	return newWidget;

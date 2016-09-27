@@ -13,6 +13,8 @@ Widget.prototype.constructWidget = function(settings) {
 
 	this.id = null;
 	this.cssClassName = null;
+	this.visibility = 'visible';
+	this.onclick = null;
 
 	if(typeof settings == 'undefined') {
         throw 'widget ' + this.constructor.name + ' must have settings';
@@ -46,7 +48,19 @@ Widget.prototype.getId = function()
 	return this.id;
 };
 
+Widget.prototype.makeInvisible = function()
+{
+//	alert('hidden:' + this.content + ':' + this.content.id);
+	this.visibility = 'hidden';
+	this.display(this.content, this.element);
+};
 
+Widget.prototype.makeVisible = function()
+{
+//	alert('visible:' + this.content + ':' + this.content.id + ': ' + this);
+	this.visibility = 'visible';
+	this.display(this.content, this.element);
+};
 
 Widget.prototype.setDOMElement = function(element)
 {
@@ -64,58 +78,68 @@ Widget.prototype.getDOMElement = function()
 
 
 
-Widget.prototype.onDestroy = function()
-{
+Widget.prototype.onDestroy = function() {
 	this.autoRefreshInterval = 0;
 };
 
 
-Widget.prototype.onDeploy = function()
-{
+Widget.prototype.onDeploy = function() {
 };
 
-
-Widget.prototype.refresh = function()
-{
+Widget.prototype.refresh = function() {
 }
 
-Widget.prototype.onFocus = function()
-{
+Widget.prototype.onFocus = function() {
 };
 
 
-Widget.prototype.onBlur = function()
-{
+Widget.prototype.onBlur = function() {
 };
 
-Widget.prototype.processJavaScript = function(input)
-{
-	try
-	{
+Widget.prototype.processJavaScript = function(input) {
+	try {
 		eval('' + input);
-	}
-	catch(e)
-	{
+	} catch(e) {
 		alert('Error: ' + e.message);
 	}
 };
 
 
-Widget.prototype.saveState = function() //JSON?
-{
+Widget.prototype.saveState = function() {
 };
 
-Widget.prototype.display = function(content, element)
-{
-	if(element != null)
-	{
-		element.content = content; /// ???
-		document.getElementById(element.id).innerHTML = content;
+Widget.prototype.handleAjaxResponse = function(responseText) {
+	this.display(responseText, this.element);
+};
+
+
+
+Widget.prototype.display = function(content, element) {
+	var domElement = null;
+	if(element != null && typeof element != 'undefined') {
+		//element.content = content; /// ???
+		//domElement = document.getElementById(element.id)
+		if(typeof element.display == 'function' && typeof element.element != 'undefined') {
+			element.display(content, element.element);
+			return;
+		} else {
+			domElement = element;
+		}
+	} else {
+		domElement = this.element;
 	}
-	else
-	{
+	if(content != null && typeof content == 'string') {
 		this.content = content;
-		document.getElementById(this.id).innerHTML = content;
+	}
+	if(domElement == null || typeof domElement == 'undefined'){
+		domElement = document.getElementById(this.id);
+	} else {
+	}
+	if(domElement != null && typeof domElement != 'undefined') {
+		if(this.content != null && typeof this.content == 'string') {
+			domElement.innerHTML = this.content;
+		}
+		domElement.style.visibility = this.visibility;
 	}
 };
 
@@ -131,7 +155,6 @@ Widget.prototype.evaluate = function(content, element) {
 //   WidgetContent   //
 //                   //
 ///////////////////////
-
 
 
 function WidgetContent(settings, content) {
@@ -187,23 +210,16 @@ WidgetContent.prototype.constructWidgetContent = function(settings, content) {
 	} else {
 		this.content = 'loading...';
 	}
-
-
 }
-
-
 
 
 WidgetContent.prototype.onDestroy = function()
 {
 };
 
-
 WidgetContent.prototype.onDeploy = function() {
 	this.refresh();
 };
-
-
 
 
 WidgetContent.prototype.refresh = function() {
@@ -217,5 +233,8 @@ WidgetContent.prototype.refresh = function() {
 
 
 WidgetContent.prototype.writeHTML = function() {
-	this.element.innerHTML = this.content;
+	if(this.element != null && typeof this.element != 'undefined') {
+		this.element.style.visibility = this.visibility;
+		this.element.innerHTML = this.content;
+	}
 };

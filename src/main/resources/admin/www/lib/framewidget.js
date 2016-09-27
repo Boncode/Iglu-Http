@@ -53,10 +53,12 @@ FrameWidget.prototype.constructFrameWidget = function(settings, enclosedWidget) 
 
 	this.positionListener = null;
 
-	if(typeof enclosedWidget != 'undefined') {
+	this.subWidgets = new Object();
+	if(enclosedWidget != null && typeof enclosedWidget != 'undefined') {
 	 	if(!enclosedWidget.onDeploy) {
 			throw 'content must be of type widget';
 		}
+		//this.addSubWidget(this.id, enclosedWidget);
 		enclosedWidget.outerWidget = this;
 	}
 
@@ -75,7 +77,6 @@ FrameWidget.prototype.constructFrameWidget = function(settings, enclosedWidget) 
 	this.outerWidgetsToStretchTo = new Object();
 	this.outerWidgetsToAlignWith = new Object();
 
-	this.subWidgets = new Object();
 };
 
 FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection, invertOffset) {
@@ -255,7 +256,15 @@ FrameWidget.prototype.resizeSouth = function(offset) {
 FrameWidget.prototype.onDestroy = function() {
 	//save state
 	for(containerId in this.subWidgets) {
-		WidgetManager.instance.destroyWidget(this.subWidgets[containerId].id);
+		//alert('CONTAINER ID: ' + containerId);
+		definedSubWidgets = this.subWidgets[containerId];
+		if(definedSubWidgets.length) {
+			for(var i = 0; i < definedSubWidgets.length; i++) {
+				WidgetManager.instance.destroyWidget(definedSubWidgets[i].id);
+			}
+		} else {
+			WidgetManager.instance.destroyWidget(definedSubWidgets.id);
+		}
 	}
 	if(this.content && this.content.onDestroy != 'undefined') {
 		WidgetManager.instance.destroyWidget(this.content.id);
@@ -313,13 +322,39 @@ FrameWidget.prototype.stretchToOuterWidget = function(outerWidget, directionMap)
 
 
 FrameWidget.prototype.alignWithOuterWidget = function(outerWidget, directionMap) {
+
+
+	var currentDirectionMap = this.outerWidgetsToAlignWith[outerWidget.id];
+	if(typeof currentDirectionMap == 'undefined') {
+		currentDirectionMap = new Object();
+		this.outerWidgetsToAlignWith[outerWidget.id] = currentDirectionMap;
+	}
 	if(typeof directionMap['e'] != 'undefined') {
-		this.left = outerWidget.left + outerWidget.width - this.width - directionMap['e'].offset;
-        outerWidget.addResizeListener(this, {'e':{'action':this.moveHorizontal, factor: 1}});
+		currentDirectionMap['e'] = directionMap['e'];
 	}
 	if(typeof directionMap['s'] != 'undefined') {
-		this.top = outerWidget.top + outerWidget.height - this.height - directionMap['s'].offset;
-        outerWidget.addResizeListener(this, {'s':{'action':this.moveVertical, factor: 1}});
+		currentDirectionMap['s'] = directionMap['s'];
+	}
+
+}
+
+FrameWidget.prototype.doAlignWithOuterWidget = function(outerWidget, directionMap) {
+
+	for(var outerWidgetId in this.outerWidgetsToAlignWith) {
+
+		var directionMap = this.outerWidgetsToAlignWith[outerWidgetId];
+		var outerWidget = WidgetManager.instance.getWidget(outerWidgetId);
+
+		if(typeof directionMap['e'] != 'undefined') {
+			this.left = outerWidget.left + outerWidget.width - this.width - directionMap['e'].offset;
+			outerWidget.addResizeListener(this, {'e':{'action':this.moveHorizontal, factor: 1}});
+
+
+		}
+		if(typeof directionMap['s'] != 'undefined') {
+			this.top = outerWidget.top + outerWidget.height - this.height - directionMap['s'].offset;
+			outerWidget.addResizeListener(this, {'s':{'action':this.moveVertical, factor: 1}});
+		}
 	}
 }
 
@@ -328,10 +363,23 @@ FrameWidget.prototype.centerInOuterWidget = function(outerWidget) {
 	this.top = outerWidget.top + parseInt((outerWidget.height - this.height) / 2);
 }
 
+FrameWidget.prototype.addSubWidget = function(containerId, subWidget) {
+//	if(containerId.indexOf('.') != -1) {
+//		throw 'please do not use dots in ids: ' + containerId;
+//	}
+	var subWidgetArray = this.subWidgets[containerId];
+	if(subWidgetArray == null || typeof subWidgetArray == 'undefined') {
+		var subWidgetArray = new Array();
+		this.subWidgets[containerId] = subWidgetArray;
+	}
+	subWidgetArray.push(subWidget);
+}
+
 FrameWidget.prototype.onDeploy = function() {
 
 	this.draw();
 	this.doStretchToOuterWidget();
+	this.doAlignWithOuterWidget();
 	this.setSizeAndPosition();
 
 	//TODO probably only necessary if position unknown
@@ -342,10 +390,6 @@ FrameWidget.prototype.onDeploy = function() {
 	this.element.onmouseout = new Function('event', 'event.stopPropagation();');
 	//this.element.onmousemove = new Function('event', 'event.stopPropagation();');
 
-/*    if(typeof this.stickToWindowHeightMinus != 'undefined' && this.stickToWindowHeightMinus != null) {
-		this.element.style.maxHeight = (document.documentElement.clientHeight - this.stickToWindowHeightMinus) + 'px';
-		WidgetManager.instance.registerWindowResizeListener(this);
-	} */
 
 	if(this.isDraggable) {
 		WidgetManager.instance.registerDraggableWidget(this);
@@ -355,16 +399,29 @@ FrameWidget.prototype.onDeploy = function() {
 		WidgetManager.instance.registerResizeableWidget(this, this.resizeDirections);
 	}
 
-	for(containerId in this.subWidgets) {
-		//alert('CONTAINER ID: ' + containerId);
-		WidgetManager.instance.deployWidgetInContainer(document.getElementById(containerId), this.subWidgets[containerId]);
+	for(var containerId in this.subWidgets) {
+		var definedSubWidgets = this.subWidgets[containerId];
+		if(definedSubWidgets.length) {
+			for(var i = 0; i < definedSubWidgets.length; i++) {
+//				alert('' + i + ' - deploying ' + definedSubWidgets[i].id + ' in ' + containerId);
+				WidgetManager.instance.deployWidgetInContainer(document.getElementById(containerId), definedSubWidgets[i]);
+			}
+		} else {
+			WidgetManager.instance.deployWidgetInContainer(document.getElementById(containerId), definedSubWidgets);
+		}
 	}
 
 	if(this.content && this.content.onDeploy != 'undefined') {
 //	    alert('DEPLOYING ' + this.content.content);
 		WidgetManager.instance.deployWidgetInContainer(this.element, this.content);
 	}
+		var onclick = this.onclick;
+		if(this.onclick != null) {
+			this.element.onclick = new Function(onclick);
+//			this.element.onclick = function(event) {alert(this.onclick)};
+		}
 
+	this.display();
 
 	//load state
 //	this.refresh();

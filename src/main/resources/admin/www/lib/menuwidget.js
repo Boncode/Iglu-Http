@@ -53,14 +53,6 @@ MenuWidget.prototype.process = function(value) {
 	alert(value);
 };
 
-/*MenuWidget.prototype.draw = function(left, top) {
-	if(this.element != null) {
-		this.element.style.visibility = 'hidden';
-		this.setSizeAndPosition();
-		this.writeHTML();
-		this.element.style.visibility = 'visible';
-	}
-};*/
 
 
 MenuWidget.prototype.setSizeAndPosition = function() {
@@ -133,14 +125,16 @@ function hideSubmenu(branchId) {
 
 
 MenuWidget.prototype.refresh = function() {
-	if(this.source != null) {
-		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
-	}
 };
 
 
 MenuWidget.prototype.onDestroy = function() {
 	//save state
+};
+
+
+MenuWidget.prototype.handleAjaxResponse = function(responseText) {
+	this.evaluate(responseText, this);
 };
 
 
@@ -155,12 +149,13 @@ MenuWidget.prototype.evaluate = function(contents, menuWidget) {
 };
 
 
-/*
+
 MenuWidget.prototype.onDeploy = function() {
-	this.draw();
-	this.refresh();
+	if(this.source != null) {
+		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
+	}
 };
-*/
+
 
 
 
