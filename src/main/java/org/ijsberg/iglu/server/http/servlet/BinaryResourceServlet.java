@@ -30,12 +30,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.TreeSet;
 
 /**
  */
 public abstract class BinaryResourceServlet extends HttpServlet {
 
 	protected String documentRoot;
+	private static TreeSet<String> requestedResources = new TreeSet<String>();
 
 	public void init(ServletConfig conf) throws ServletException {
 		super.init(conf);
@@ -49,7 +53,6 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		//Creates the output stream.
 		try {
-			ServletOutputStream out = response.getOutputStream();
 			String resourcePath = FileSupport.convertToUnixStylePath(documentRoot + '/' + request.getPathInfo());
 			if(resourcePath.startsWith("/")) {
 				resourcePath = resourcePath.substring(1);
@@ -57,10 +60,24 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 			if(resourcePath.endsWith("/")) {
 				resourcePath += "index.html";
 			}
+			if(resourcePath.endsWith("STATS")) {
+				writeStats(response);
+				return;
+			}
+			requestedResources.add(resourcePath);
+			ServletOutputStream out = response.getOutputStream();
             response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
 			out.write(getResource(resourcePath));
 		} catch (Exception e) {
 			System.out.println(new LogEntry("unable to obtain resource", e));
+		}
+	}
+
+	private void writeStats(HttpServletResponse response) throws IOException {
+		response.setContentType("text/plain");
+		PrintWriter out = response.getWriter();
+		for(String requestedResource : requestedResources) {
+			out.println(requestedResource);
 		}
 	}
 

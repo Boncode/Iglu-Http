@@ -29,15 +29,12 @@ import java.io.IOException;
  */
 public class ZipFileResourceServlet extends BinaryResourceServlet implements ZipFileResource {
 
-    //
 	private String zipFileName = null;
-
 
 	public void init(ServletConfig conf) throws ServletException {
 		super.init(conf);
 		zipFileName = conf.getInitParameter("zip_file_name");
 	}
-
 
 	@Override
 	public void setZipFileName(String zipFileName) {
@@ -51,11 +48,7 @@ public class ZipFileResourceServlet extends BinaryResourceServlet implements Zip
 		if(zipFileName == null) {
 			return "currently no resources available".getBytes();
 		}
-
 		byte[] resource = FileSupport.getBinaryFromJar(path, zipFileName);
-
-        //System.out.println(new LogEntry("found " + resource.length + " bytes for resource " + path + " in zip " + zipFileName));
-
         return resource;
 	}
 }
