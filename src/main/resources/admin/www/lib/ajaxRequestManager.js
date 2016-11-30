@@ -78,7 +78,6 @@ AjaxRequestManager.prototype.back = function()
 {
 	this.ajaxRequestHistory.pop();
 	var request = this.ajaxRequestHistory.pop();
-	//window.location.hash = "#" + this.totalNrofRequests;
 
 	if(!request) {
 		alert('No previous action available');
@@ -92,6 +91,11 @@ AjaxRequestManager.prototype.clearHistory = function()
 	this.ajaxRequestHistory = new Array();
 }
 
+AjaxRequestManager.prototype.doRequestAndKeepHistory = function(requestURL, callback, callbackInput, postData, multipart) {
+	this.ajaxRequestHistory.push(new AjaxRequest(requestURL, callback, callbackInput, postData, multipart));
+    window.location.hash = "#req" + this.totalNrofRequests;
+	this.doRequest(requestURL, callback, callbackInput, postData, multipart);
+}
 
 
 
@@ -106,8 +110,6 @@ AjaxRequestManager.prototype.clearHistory = function()
  */
 AjaxRequestManager.prototype.doRequest = function(requestURL, callback, callbackInput, postData, multipart)
 {
-	this.ajaxRequestHistory.push(new AjaxRequest(requestURL, callback, callbackInput, postData, multipart));
-    window.location.hash = "#req" + this.totalNrofRequests;
 
 	if(this.ajaxRequestHistory.length > 50) {
 		this.ajaxRequestHistory.shift();
