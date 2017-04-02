@@ -31,8 +31,6 @@ public class JsonArray implements JsonDecorator {
 
 	private List contents = new ArrayList();
 
-
-
 	public JsonArray addStringValue(Object ... objects) {
 
 		for(Object object : objects) {
@@ -41,7 +39,6 @@ public class JsonArray implements JsonDecorator {
 		return this;
 	}
 
-
 	public JsonArray addValue(Object ... objects) {
 		for(Object object : objects) {
 			contents.add(object);
@@ -49,7 +46,9 @@ public class JsonArray implements JsonDecorator {
 		return this;
 	}
 
-
+	public Object getValue(int index) {
+		return contents.get(index);
+	}
 
 	public String toString() {
 		return "[" + CollectionSupport.format(contents, " , ") + "]\n";
