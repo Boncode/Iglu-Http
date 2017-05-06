@@ -6,6 +6,7 @@ import org.ijsberg.iglu.util.misc.StringSupport;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  */
@@ -87,6 +88,10 @@ public class JsonData implements JsonDecorator {
 			retval = ((String) retval).substring(1, ((String) retval).length() - 1);
 		}
 		return retval;
+	}
+
+	public Set<String> getAttributeNames() {
+		return attributes.keySet();
 	}
 
 }
