@@ -28,9 +28,8 @@ import java.util.LinkedHashMap;
 
 /**
  */
-public class JsonObject implements JsonDecorator {
+public class JsonObject extends JsonData {
 
-	private LinkedHashMap<String, Object> attributes = new LinkedHashMap<String, Object>();
 	private String name;
 
 	public JsonObject(String name) {
@@ -40,73 +39,16 @@ public class JsonObject implements JsonDecorator {
 	public JsonObject() {
 	}
 
-	public boolean isEmpty() {
-		return attributes.isEmpty();
-	}
-
-	public JsonObject addStringAttribute(String name, String value) {
-		attributes.put(name, "\"" + formatHtmlEncodedWithLineContinuation(value) + "\"");
-		return this;
-	}
-
-	public static String formatHtmlEncodedWithLineContinuation(String text) {
-		text = StringSupport.replaceAll(text, "\n", "\\\n");//line continuation
-		text = HttpEncodingSupport.htmlEncode(text);
-		return text;
-	}
-
-
-	public JsonObject addAttribute(String name, Object value) {
-		attributes.put(name, value);
-		return this;
-	}
-
-
-	public JsonObject addAttribute(String name, JsonDecorator value) {
-		attributes.put(name, value);
-		return this;
-	}
-
-	public JsonObject addAttribute(String name, Collection<? extends JsonDecorator> value) {
-		attributes.put(name, value);
-		return this;
-	}
-
 	public String toString() {
 		StringBuffer retval = new StringBuffer();
 		if(name != null) {
 			retval.append("{ \"" + name + "\": ");
 		}
-		retval.append("{\n ");
-		for(String attrName : attributes.keySet()) {
-			Object value = attributes.get(attrName);
-			retval.append(" \"" + attrName + "\" : ");
-			if(value instanceof Collection) {
-				retval.append("[ " + CollectionSupport.format((Collection)value, " , ") + " ]");
-			} else {
-				retval.append(value);
-			}
-			retval.append(",");
-		}
-		//remove obsolete comma
-		retval.deleteCharAt(retval.length() - 1);
-
+		retval.append(super.toString());
 		if(name != null) {
 			retval.append(" }");
 		}
-		retval.append(" }\n");
-
 		return retval.toString();
 	}
-
-
-	public Object getAttribute(String id) {
-		Object retval = attributes.get(id);
-		if(retval != null && retval.toString().startsWith("\"")) {
-			retval = ((String) retval).substring(1, ((String) retval).length() - 1);
-		}
-		return retval;
-	}
-
 }
 
