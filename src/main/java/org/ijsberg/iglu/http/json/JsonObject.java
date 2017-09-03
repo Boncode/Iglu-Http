@@ -36,6 +36,7 @@ public class JsonObject extends JsonData {
 		this.name = name;
 	}
 
+	@Deprecated
 	public JsonObject() {
 	}
 
