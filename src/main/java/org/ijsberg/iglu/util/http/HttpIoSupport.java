@@ -14,8 +14,6 @@ import java.net.URLConnection;
 public class HttpIoSupport {
 
 	public static String getDataByHttp(String urlStr, int nrofTries) {
-		//
-
 		for(int i = 0; i < nrofTries; i++) {
 			String result = getDataByHttp(urlStr);
 			if(result != null) {
@@ -29,7 +27,6 @@ public class HttpIoSupport {
 			}
 		}
 		return null;
-
 	}
 
 
