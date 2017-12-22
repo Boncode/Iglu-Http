@@ -32,42 +32,42 @@ public class MenuItem extends JsonObject {
 	private List<JsonObject> links = new ArrayList<JsonObject>();
 
 	public MenuItem(String id, String label) {
-		addStringAttribute("id", id);
-		addStringAttribute("label", label);
+		addHtmlEscapedStringAttribute("id", id);
+		addHtmlEscapedStringAttribute("label", label);
 		addAttribute("link", links);
 	}
 
 	public MenuItem addLinkToTargetElement(String url, String target, String targetTitle) {
 		JsonObject link = new JsonObject();
-		link.addStringAttribute("url", url);
-		link.addStringAttribute("target", target);
-		link.addStringAttribute("target_label", targetTitle);
+		link.addHtmlEscapedStringAttribute("url", url);
+		link.addHtmlEscapedStringAttribute("target", target);
+		link.addHtmlEscapedStringAttribute("target_label", targetTitle);
 		links.add(link);
 		return this;
 	}
 
 	public MenuItem addLinkViaFunction(String functionName, String url, String targetTitle) {
 		JsonObject link = new JsonObject();
-		link.addStringAttribute("functionName", functionName);
-		link.addStringAttribute("url", url);
-		link.addStringAttribute("target_label", targetTitle);
+		link.addHtmlEscapedStringAttribute("functionName", functionName);
+		link.addHtmlEscapedStringAttribute("url", url);
+		link.addHtmlEscapedStringAttribute("target_label", targetTitle);
 		links.add(link);
 		return this;
 	}
 
 	public MenuItem addOnclick(String onclick) {
-		addStringAttribute("onclick", onclick);
+		addHtmlEscapedStringAttribute("onclick", onclick);
 		return this;
 	}
 
 	public MenuItem addCssClassName(String itemClassName) {
-		addStringAttribute("item_class_name", itemClassName);
+		addHtmlEscapedStringAttribute("item_class_name", itemClassName);
 		return this;
 	}
 
 	public MenuItem addCssClassNames(String itemClassName, String submenuClassName) {
-		addStringAttribute("item_class_name", itemClassName);
-		addStringAttribute("submenu_class_name", submenuClassName);
+		addHtmlEscapedStringAttribute("item_class_name", itemClassName);
+		addHtmlEscapedStringAttribute("submenu_class_name", submenuClassName);
 		return this;
 	}
 
@@ -77,9 +77,9 @@ public class MenuItem extends JsonObject {
 	}
 
 	public MenuItem setPropertyToggle(String name, String onValue, String offValue) {
-		addStringAttribute("toggleProperty_key", name);
-		addStringAttribute("toggleProperty_on", onValue);
-		addStringAttribute("toggleProperty_off", offValue);
+		addHtmlEscapedStringAttribute("toggleProperty_key", name);
+		addHtmlEscapedStringAttribute("toggleProperty_on", onValue);
+		addHtmlEscapedStringAttribute("toggleProperty_off", offValue);
 		return this;
 	}
 }

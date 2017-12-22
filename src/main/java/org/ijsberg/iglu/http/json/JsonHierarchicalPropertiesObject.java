@@ -16,7 +16,7 @@ public class JsonHierarchicalPropertiesObject extends JsonObject {
 	public void addAttributes(Properties properties) {
 		Set<String> rootKeys = PropertiesSupport.getRootKeys(properties);
 		for(String rootKey : rootKeys) {
-			addStringAttribute(rootKey, properties.getProperty(rootKey));
+			addHtmlEscapedStringAttribute(rootKey, properties.getProperty(rootKey));
 		}
 		Set<String> subsectionKeys = PropertiesSupport.getSubsectionKeys(properties);
 		for(String subsectionKey : subsectionKeys) {

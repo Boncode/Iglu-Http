@@ -154,8 +154,8 @@ public class UploadAgentImpl implements UploadAgent {
 	@Override
 	public String getProgress(String jsFunction) {
 		JsonObject retval = new JsonObject("progress");
-		retval.addStringAttribute("bytesRead", "" + getBytesRead());
-		retval.addStringAttribute("contentLength", "" + getContentLength());
+		retval.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
+		retval.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
 		return JsonSupport.toMessage(jsFunction, "progress", retval);
 	}
 

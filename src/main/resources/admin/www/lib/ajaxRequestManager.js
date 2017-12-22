@@ -108,7 +108,7 @@ AjaxRequestManager.prototype.doRequestAndKeepHistory = function(requestURL, call
  * @param postData HTML formdata that must be POSTed
  *
  */
-AjaxRequestManager.prototype.doRequest = function(requestURL, callback, callbackInput, postData, multipart)
+AjaxRequestManager.prototype.doRequest = function(requestURL, callback, callbackInput, postData, multipart, contentType)
 {
 
 	if(this.ajaxRequestHistory.length > 50) {
@@ -133,7 +133,7 @@ AjaxRequestManager.prototype.doRequest = function(requestURL, callback, callback
 		if (multipart) {
         	this.sendMultiPartRequest(this.ajaxRequests[requestNr], requestURL, postData);
         } else if (postData != null) {
-			this.sendPOSTRequest(this.ajaxRequests[requestNr], requestURL, postData);
+			this.sendPOSTRequest(this.ajaxRequests[requestNr], requestURL, postData, contentType);
 		} else {
 			this.sendGETRequest(this.ajaxRequests[requestNr], requestURL);
 		}
@@ -151,9 +151,9 @@ AjaxRequestManager.prototype.sendGETRequest = function(ajaxRequest, url) {
 }
 
 //internal function
-AjaxRequestManager.prototype.sendPOSTRequest = function(ajaxRequest, url, postData) {
+AjaxRequestManager.prototype.sendPOSTRequest = function(ajaxRequest, url, postData, contentType) {
 	ajaxRequest.open('POST', url, true);
-	ajaxRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+	ajaxRequest.setRequestHeader("Content-Type", typeof(contentType) == 'undefined' ? "application/x-www-form-urlencoded; charset=UTF-8" : contentType);
 	ajaxRequest.send(postData);
 }
 
@@ -198,6 +198,7 @@ function dispatchResponse(requestNr)
 {
 	//	alert('handling result: ' + message);
 	//serverResponse.status: 200, 500, 503, 404
+
 	if (ajaxRequestManager.ajaxRequests[requestNr].readyState == 4 || ajaxRequestManager.ajaxRequests[requestNr].readyState == 'complete')
 	{
 		this.totalNrofResponses++;
@@ -210,22 +211,24 @@ function dispatchResponse(requestNr)
 			}
 		}*/
 
+
+
 		if(typeof ajaxRequestManager.callbacks[requestNr] != 'function') {
 			alert('' + ajaxRequestManager.callbacks[requestNr] + ' is not a function');
 		} else {
-			if(ajaxRequestManager.ajaxRequests[requestNr].status == 403) {
+/*			if(ajaxRequestManager.ajaxRequests[requestNr].status == 403) {
 				window.location.href = ajaxRequestManager.ajaxRequests[requestNr].responseText;
         		removeFromRequestQueue(requestNr);
 				//alert(ajaxRequestManager.ajaxRequests[requestNr].responseText);
 				return;
 			}
-
-			if(ajaxRequestManager.callbackInputObjects[requestNr] == null) {
+*/
+/*			if(ajaxRequestManager.callbackInputObjects[requestNr] == null) {
 				ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText);
 			} else {
-				//calls callback(response, callbackInput[])
-				ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText, ajaxRequestManager.callbackInputObjects[requestNr]);
-			}
+*/				//calls callback(response, callbackInput[])
+				ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText, ajaxRequestManager.callbackInputObjects[requestNr], ajaxRequestManager.ajaxRequests[requestNr]);
+//			}
 		}
         removeFromRequestQueue(requestNr);
 	}

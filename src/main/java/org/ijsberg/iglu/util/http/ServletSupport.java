@@ -312,6 +312,32 @@ public abstract class ServletSupport extends HttpEncodingSupport
 		return properties;
 	}
 
+	public static Map<String, String> getQueryRequestParametersFromUrl(String url) throws UnsupportedEncodingException {
+
+		Map<String, String> retval = new LinkedHashMap<String, String>();
+		int queryStartIndex = url.indexOf('?');
+		if(queryStartIndex == -1) {
+			return retval;
+		}
+		String queryString = url.substring(queryStartIndex + 1);
+		StringTokenizer tokenizer = new StringTokenizer(queryString, "&", false);
+		while (tokenizer.hasMoreElements())
+		{
+			String nameValuePair = tokenizer.nextToken();
+			int separator = nameValuePair.indexOf('=');
+			if (separator != -1)
+			{
+				String name = URLDecoder.decode(nameValuePair.substring(0, separator), "UTF-8");
+				String value = URLDecoder.decode(nameValuePair.substring(separator + 1), "UTF-8");
+				retval.put(name, value);
+
+				System.out.println(new LogEntry("request parameter found: [" + name + '=' + value + ']'));
+			}
+		}
+		return retval;
+	}
+
+
 	/**
 	 * Gets a clean base url including the path from the current request.
 	 *

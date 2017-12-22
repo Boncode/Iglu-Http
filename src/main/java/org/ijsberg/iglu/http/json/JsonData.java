@@ -21,8 +21,22 @@ public class JsonData implements JsonDecorator {
 		return attributes.isEmpty();
 	}
 
-	public JsonData addStringAttribute(String name, String value) {
+	public JsonData addHtmlEscapedStringAttribute(String name, String value) {
 		attributes.put(name, "\"" + formatHtmlEncodedWithLineContinuation(value) + "\"");
+		return this;
+	}
+
+	public JsonData insertHtmlEscapedStringAttribute(String name, String value) {
+
+		LinkedHashMap<String, Object> copy = new LinkedHashMap<String, Object>(attributes);
+		attributes.clear();
+		attributes.put(name, "\"" + formatHtmlEncodedWithLineContinuation(value) + "\"");
+		attributes.putAll(copy);
+		return this;
+	}
+
+	public JsonData addStringAttribute(String name, String value) {
+		attributes.put(name, "\"" + value + "\"");
 		return this;
 	}
 
@@ -30,7 +44,7 @@ public class JsonData implements JsonDecorator {
 
 		LinkedHashMap<String, Object> copy = new LinkedHashMap<String, Object>(attributes);
 		attributes.clear();
-		attributes.put(name, "\"" + formatHtmlEncodedWithLineContinuation(value) + "\"");
+		attributes.put(name, "\"" + value + "\"");
 		attributes.putAll(copy);
 		return this;
 	}
@@ -41,6 +55,19 @@ public class JsonData implements JsonDecorator {
 		return text;
 	}
 
+	public static String escapeWithLineContinuation(String text) {
+		text = StringSupport.replaceAll(text, "\\", "\\\\");
+		text = StringSupport.replaceAll(text, "\n", "\\n");//line continuation
+		text = StringSupport.replaceAll(text, "\"", "\\\"");
+		return text;
+	}
+
+	public static String unEscapeWithLineContinuation(String text) {
+		text = StringSupport.replaceAll(text, "\\\\", "\\");
+		text = StringSupport.replaceAll(text, "\\n", "\n");//line continuation
+		text = StringSupport.replaceAll(text, "\\\"", "\"");
+		return text;
+	}
 
 	public JsonData addAttribute(String name, Object value) {
 		attributes.put(name, value);
@@ -70,6 +97,8 @@ public class JsonData implements JsonDecorator {
 			retval.append(" \"" + attrName + "\" : ");
 			if(value instanceof Collection) {
 				retval.append("[ " + CollectionSupport.format((Collection) value, " , ") + " ]");
+			} else if (value instanceof String) {
+				retval.append("\"" + escapeWithLineContinuation(getStringAttribute(attrName)) + "\"");
 			} else {
 				retval.append(value);
 			}
@@ -90,9 +119,19 @@ public class JsonData implements JsonDecorator {
 		return retval;
 	}
 
+	public String getStringAttribute(String id) {
+		Object retval = attributes.get(id);
+		if(retval instanceof String) {
+			if (retval != null && retval.toString().startsWith("\"")) {
+				retval = ((String) retval).substring(1, ((String) retval).length() - 1);
+			}
+			return retval.toString();
+		}
+		return null;
+	}
+
 	public Set<String> getAttributeNames() {
 		return attributes.keySet();
 	}
-
 }
 

@@ -1,5 +1,7 @@
 package org.ijsberg.iglu.http.json;
 
+import static org.ijsberg.iglu.http.json.JsonData.unEscapeWithLineContinuation;
+
 /**
  */
 public class JsonDeclaration {
@@ -13,7 +15,8 @@ public class JsonDeclaration {
 	}
 
 	public JsonDeclaration setStringValue(String value) {
-		this.value = "\"" + JsonObject.formatHtmlEncodedWithLineContinuation(value) + "\"";
+		this.value = "\"" + unEscapeWithLineContinuation(value)
+				+ "\"";
 		return this;
 	}
 

@@ -103,6 +103,10 @@ public class DispatcherServlet extends HttpServlet implements RequestDispatcher 
 		this.requestRegistry = requestRegistry;
 	}
 
+	public void setRequestRegistry(RequestRegistry requestRegistry) {
+		this.requestRegistry = requestRegistry;
+	}
+
 	//TODO document features
 	/**
 	 * @param conf
