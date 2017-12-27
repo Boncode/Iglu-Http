@@ -77,29 +77,8 @@ PanelWidget.prototype.writeHTML = function() {
 	this.addResizeListener(contentFrame, {'n':{'action':contentFrame.resizeSouth, factor: 1}});
     this.addResizeListener(contentFrame, {'w':{'action':contentFrame.resizeEast, factor: 1}});
 
-//	alert('' + this.id + ': ' + this.width + '->' + contentFrame.width + '\n' +
-//			'' + this.id + ': ' + this.height + '->' + contentFrame.height);
-
 	this.subWidgets[this.id] = contentFrame;
 
-	//widgetmanager.deployWidgetInContainer(this.element, contentFrame);
-
-/*	this.container = document.createElement('div');
-	this.container.id = this.id + '_contents';
-	this.container.className = 'panelcontents';
-//	this.container.onmouseover = new Function('event', 'event.stopPropagation();');
-//	this.container.onmouseout = new Function('event', 'event.stopPropagation();');
-	this.element.appendChild(this.container);       */
-    /*
-	if((typeof this.content.onDeploy != 'undefined')) {
-		widgetmanager.deployWidgetInContainer(this.container, this.content);
-	}
-    */
-/*	if((typeof this.content.writeHTML != 'undefined')) {
-		this.content.writeHTML();
-	} else {
-		this.container.innerHTML = this.content;
-	} */
 };
 
 

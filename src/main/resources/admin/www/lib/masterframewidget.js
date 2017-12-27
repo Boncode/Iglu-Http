@@ -253,6 +253,14 @@ WidgetManager.prototype.determineResizeAction = function(widget, event) {
 				document.body.style.cursor = 'auto';
 			}
          	this.resizeDirection = null;
+         	for(var widgetId in WidgetManager.instance.widgets) {
+         	if(WidgetManager.instance.widgets[widgetId] != null) {
+         	    WidgetManager.instance.widgets[widgetId].offsetOverFlowLeft = 0;
+         	    WidgetManager.instance.widgets[widgetId].offsetOverFlowTop = 0;
+         	    WidgetManager.instance.widgets[widgetId].offsetOverFlowRight = 0;
+         	    WidgetManager.instance.widgets[widgetId].offsetOverFlowBottom = 0;
+         	    }
+         	}
          }
 	}
 }
