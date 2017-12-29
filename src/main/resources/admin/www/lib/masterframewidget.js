@@ -67,6 +67,7 @@ function dragWidget(event) {
 			WidgetManager.instance.resizingWidget.resizeEast(offset);
 		}
 	} else if(widgetmanager.draggedWidget != null) {
+	    log('dragging widget ' + widgetmanager.draggedWidget.getId());
 		var mousePos = getMousePositionInWindow(event);
 		widgetmanager.draggedWidget.setPosition(mousePos.x - widgetmanager.mouseOffset.x, mousePos.y - widgetmanager.mouseOffset.y);
 	}
@@ -85,12 +86,14 @@ WidgetManager.prototype.registerDraggableWidget = function(widget)
 	widget.getDragSelectElement().onmousedown = function(event)
 	{
 		log('MOUSEDOWN:' + this.id);
-		if(widgetmanager.resizingWidget == null) {
-			var draggableWidget = widgetmanager.draggableWidgets[this.id];
-			WidgetManager.instance.draggedWidget = draggableWidget;
-			WidgetManager.instance.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(this, event);
-			WidgetManager.instance.activateCurrentWidget(draggableWidget.id);
-			log('activate ' + draggableWidget.id);
+		if(WidgetManager.instance.resizingWidget == null) {
+			var draggableWidget = WidgetManager.instance.draggableWidgets[this.id];
+			WidgetManager.initDraggingMode(event, draggableWidget);
+//    WidgetManager.instance.draggedWidget = draggableWidget;
+//    WidgetManager.instance.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(this, event);
+//    WidgetManager.instance.activateCurrentWidget(draggableWidget.id);
+//    log('activate ' + draggableWidget.id);
+
 		}
 	}
 
@@ -113,13 +116,24 @@ WidgetManager.prototype.registerDraggableWidget = function(widget)
 	//TODO if not resizeable
 	widget.getDOMElement().onmousedown = function(event)
 	{
-		WidgetManager.instance.activateCurrentWidget(this.id);
-		log('activate ' + this.id);
+		if(widgetmanager.resizingWidget == null) {
+			var draggableWidget = widgetmanager.draggableWidgets[this.id];
+			WidgetManager.instance.draggedWidget = draggableWidget;
+			WidgetManager.instance.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(this, event);
+			WidgetManager.instance.activateCurrentWidget(draggableWidget.id);
+			log('2 activate ' + draggableWidget.id);
+		}
 	}
 
 	this.activateCurrentWidget(widget);
 }
 
+WidgetManager.initDraggingMode = function(event, draggableWidget) {
+    WidgetManager.instance.draggedWidget = draggableWidget;
+    WidgetManager.instance.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(draggableWidget.getDragSelectElement(), event);
+    WidgetManager.instance.activateCurrentWidget(draggableWidget.id);
+    log('activate ' + draggableWidget.id);
+}
 
 WidgetManager.prototype.unregisterDraggableWidget = function(widget) {
 	if(typeof widget.getDragSelectElement != 'undefined') {
@@ -246,9 +260,7 @@ WidgetManager.prototype.determineResizeAction = function(widget, event) {
          if(direction != '') {
          	document.body.style.cursor = direction + '-resize';
          	this.resizeDirection = direction;
-//         	log('resizeDirection: ' + this.resizeDirection);
          } else {
-//         	log('no direction -> ' + document.body.style.cursor + ' ' + this.resizingWidget);
          	if(document.body.style.cursor != 'move' && this.resizingWidget == null) {
 				document.body.style.cursor = 'auto';
 			}

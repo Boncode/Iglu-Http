@@ -11,6 +11,8 @@ function Widget(settings, content) {
 
 Widget.prototype.constructWidget = function(settings) {
 
+    this.settings = settings;
+
 	this.id = null;
 	this.cssClassName = null;
 	this.visibility = 'visible';

@@ -295,13 +295,6 @@ WidgetManager.prototype.executeJson = function(responseMessage, feedbackMessage)
 
 
 
-
-
-
-//todo sort out x,y <-> top,left
-
-
-
 var widgetmanager = new WidgetManager();
 WidgetManager.instance = widgetmanager;
 

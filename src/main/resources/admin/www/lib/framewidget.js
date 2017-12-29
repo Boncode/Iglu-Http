@@ -181,11 +181,15 @@ FrameWidget.prototype.setPosition = function(left, top) {
 FrameWidget.prototype.moveVertical = function(offset) {
 	this.top += offset;
 	this.setSizeAndPosition();
+	this.notifyResizeListeners('s', offset);
+	this.notifyResizeListeners('n', offset);
 }
 
 FrameWidget.prototype.moveHorizontal = function(offset) {
 	this.left += offset;
 	this.setSizeAndPosition();
+	this.notifyResizeListeners('e', offset);
+	this.notifyResizeListeners('w', offset);
 }
 
 FrameWidget.prototype.move = function(left, top) {

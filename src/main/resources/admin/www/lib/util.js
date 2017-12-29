@@ -55,17 +55,29 @@ function copyMembers(classA, classB) {
 	}
 }
 
+function cloneAttributes(obj) {
+	var retval = new Object;
+	for(var name in obj) {
+      	retval[name] = obj[name];
+    }
+    return retval;
+}
+
 function log(message) {
+
+    var now = new Date();
+    var dateStr = now.getHours() + ':' + now.getMinutes() + '.' + now.getSeconds() + '.' + now.getMilliseconds();
+
 	if(typeof WidgetManager != 'undefined') {
 		var logStream = WidgetManager.instance.getWidget('logstream');
 		if(logStream != null) {
-			logStream.append(new Date() + ' ' + message);
+			logStream.append(dateStr + ' ' + message);
 			return;
 		}
 	}
 	var element = document.getElementById('logstream');
 	if(element != null) {
-		element.innerHTML = new Date() + ' ' + message + '<br>\n' + element.innerHTML;
+		element.innerHTML = dateStr + ' ' + message + '<br>\n' + element.innerHTML;
 	}
 }
 
@@ -191,6 +203,13 @@ function getElementPositionInWindow(element)
 	var scrollOffset = getScrollOffset();
 	return {x:elementPosInPage.x - scrollOffset.x, y:elementPosInPage.y - scrollOffset.y};
 }
+
+function getEventPositionInPage(event)
+{
+	var scrollOffset = getScrollOffset();
+	return {x:event.clientX + scrollOffset.x, y:event.clientY + scrollOffset.y};
+}
+
 
 function printStackTrace(e) {
 
