@@ -67,7 +67,7 @@ function dragWidget(event) {
 			WidgetManager.instance.resizingWidget.resizeEast(offset);
 		}
 	} else if(widgetmanager.draggedWidget != null) {
-	    log('dragging widget ' + widgetmanager.draggedWidget.getId());
+	    //log('dragging widget ' + widgetmanager.draggedWidget.getId());
 		var mousePos = getMousePositionInWindow(event);
 		widgetmanager.draggedWidget.setPosition(mousePos.x - widgetmanager.mouseOffset.x, mousePos.y - widgetmanager.mouseOffset.y);
 	}

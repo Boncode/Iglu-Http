@@ -192,6 +192,12 @@ FrameWidget.prototype.moveHorizontal = function(offset) {
 	this.notifyResizeListeners('w', offset);
 }
 
+FrameWidget.prototype.resizeEastAndMoveHorizontal = function(offset) {
+    this.resizeEast(offset);
+    this.moveHorizontal;
+}
+
+
 FrameWidget.prototype.move = function(left, top) {
 	this.top += top;
 	this.left += left;
@@ -217,7 +223,7 @@ FrameWidget.prototype.resizeNorth = function(offset) {
 
 FrameWidget.prototype.resizeEast = function(offset) {
 
-	log('' + this.id + ' OFL: ' + this.offsetOverFlowLeft);
+	//log('' + this.id + ' OFL: ' + this.offsetOverFlowLeft);
 	var maxOverFlowOfListeners = 0;
 	//log('' + this.id + ' OFO: ' + x);
 
@@ -253,7 +259,7 @@ FrameWidget.prototype.resizeWest = function(offset) {
 		this.width = FrameWidget.MINIMUM_FRAME_WIDTH;
 		this.offsetOverFlowLeft = newWidth - this.width;
         //offsetOverflow = newWidth - this.width;
-		log('offset: ' + offset + ' ---> OffsOL: ' + this.offsetOverFlowLeft);
+		//log('offset: ' + offset + ' ---> OffsOL: ' + this.offsetOverFlowLeft);
 	} else {
 		this.left = this.left + this.width - newWidth;
 		this.width = newWidth;
