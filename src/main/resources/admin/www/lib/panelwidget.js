@@ -31,9 +31,24 @@ PanelWidget.prototype.constructPanelWidget = function(settings, content) {
 	this.title = null;
 	//invoke super
 	this.constructFrameWidget(settings, content);
+	this.titleBarFunctions = new Array();
 
 };
 
+
+// + '<div class="close_icon" onclick="widgetmanager.destroyWidget(\'' + this.getId() + '\')"></div>'
+
+PanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString) {
+    this.titleBarFunctions.push({className: className, onclickFunctionAsString, onclickFunctionAsString});
+};
+
+PanelWidget.prototype.createTitleBarFunctionHtml = function() {
+    var html = '';
+    for(var i in this.titleBarFunctions) {
+        html += '<div class="' + this.titleBarFunctions[i].className + '" onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\')"></div>';
+    }
+    return html;
+};
 
 PanelWidget.prototype.onFocus = function() {
 	//highlight title
@@ -51,10 +66,10 @@ PanelWidget.prototype.writeHTML = function() {
 		this.header.className = 'panelheader';
 
 		if(this.content.title != null) {
-			this.header.innerHTML = this.content.title;
+			this.header.innerHTML = this.content.title + this.createTitleBarFunctionHtml();
 		} else {
 			if(this.title != null) {
-				this.header.innerHTML = this.title;
+				this.header.innerHTML = this.title + this.createTitleBarFunctionHtml();
 			}
 		}
 		this.element.appendChild(this.header);
@@ -80,9 +95,3 @@ PanelWidget.prototype.writeHTML = function() {
 	this.subWidgets[this.id] = contentFrame;
 
 };
-
-
-
-
-
-

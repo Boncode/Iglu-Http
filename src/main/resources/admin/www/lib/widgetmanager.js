@@ -260,10 +260,13 @@ WidgetManager.prototype.destroyWidget = function(widgetId) {
 			}
 		}
 		this.unregisterDraggableWidget(widget);
-		this.widgets[widgetId] = null;
+		delete this.widgets[widgetId];
 		log('done');
 	} else {
 		log('NOT removing unregistered widget "' + widgetId + '"');
+		if(typeof widgetId == 'undefined') {
+		    throw 'undefined widget ID';
+		}
 	}
 }
 
