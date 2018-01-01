@@ -69,27 +69,9 @@ WindowWidget.prototype.constructWindowWidget = function(settings, content) {
 };
 
 
-
-
-/*
-FrameWidget.prototype.refreshElementPosition = function()
-{
-	WidgetManager.instance.lastX = this.left;
-	WidgetManager.instance.lastY = this.top;
-
-	if(typeof this.element != 'undefined')
-	{
-		this.element.style.top = this.top + 'px';
-		this.element.style.left = this.left + 'px';
-	}
-}*/
-
 WindowWidget.prototype.getDragSelectElement = function() {
 	return this.dragActivationElement;
 };
-
-
-
 
 
 WindowWidget.prototype.setSizeAndPosition = function() {
@@ -98,15 +80,9 @@ WindowWidget.prototype.setSizeAndPosition = function() {
 	this.element.style.left = this.left + 'px';
 	if(this.height != null) {
 		this.element.style.height = this.height + 'px';
-/*		if(this.contentElement != null) {
-			this.contentElement.style.height = (this.height - (this.content.onDeploy ? 32 : 23)) + 'px';
-		}  */
 	}
 	if(this.width != null) {
 		this.element.style.width = this.width + 'px';
-/*		if(this.contentElement != null) {
-			this.contentElement.style.width = (this.width - (this.content.onDeploy ? 11 : 2)) + 'px';
-		} */
 	}
 
 };
@@ -173,58 +149,8 @@ WindowWidget.prototype.onDestroy = function() {
 	if(this.content && this.content.onDestroy != 'undefined') {
 		WidgetManager.instance.destroyWidget(this.content.id);
 	}
-
-/*	if(this.content.onDestroy) {
-	/*	if(!this.content.draw) {
-			WidgetManager.instance.destroyContentWidget(this.content.id);
-		} else {* /
-			WidgetManager.instance.destroyWidget(this.content.id);
-		}
-	}             */
-
 };
 
-
-/*WindowWidget.prototype.onDeploy = function() {
-
-	this.draw();
-
-
-	widgetmanager.registerDraggableWidget(this);
-	widgetmanager.registerResizeableWidget(this, 'se');
-
-	if(this.content.draw) {
-		WidgetManager.instance.deployWidgetInContainer(this.contentElement, this.content);
-		//let content handle overflow
-		this.contentElement.style.overflow = 'visible';
-	}
-
-	if(this.content.onDeploy) {
-		WidgetManager.instance.deployWidgetInContainer(this.contentElement, this.content);
-	}
-
-	//load state
-	this.refresh();
-};*/
-
-
-/*
-WindowWidget.prototype.refresh = function() {
-	//load state
-	if(this.source != null) {
-		ajaxRequestManager.doRequest(this.source, this.display, this);
-	}
-
-		//do not overwrite dragSelectionElement etc.
-	else if(this.content != null && !this.content.onDeploy) {
-
-     	this.contentElement.innerHTML = this.content;
-    }
-
-    else if (this.content.refresh) {
-    	this.content.refresh();
-    }
-}  */
 
 //todo rename to activate / deactivate
 
@@ -249,12 +175,14 @@ WindowWidget.prototype.setHeaderClass = function(className) {
 
 WindowWidget.prototype.display = function(content, element)
 {
-	if(element != null) {
-		element.content = content;
-		document.getElementById(element.id + '_contents').innerHTML = content;
-	} else {
-		this.content = content;
-		document.getElementById(this.id + '_contents').innerHTML = content;
+    if(typeof content != 'undefined') {
+        if(element != null) {
+            element.content = content; //TODO ???
+            document.getElementById(element.id + '_contents').innerHTML = content;
+        } else {
+            this.content = content; //TODO ???
+            document.getElementById(this.id + '_contents').innerHTML = content;
+        }
 	}
 };
 
