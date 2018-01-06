@@ -1,5 +1,6 @@
 package org.ijsberg.iglu.http.json;
 
+import org.ijsberg.iglu.util.collection.ArraySupport;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.HttpEncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
@@ -56,6 +57,7 @@ public class JsonData implements JsonDecorator {
 	}
 
 	public static String escapeWithLineContinuation(String text) {
+		text = StringSupport.replaceAll(text, "\t", "\\t");
 		text = StringSupport.replaceAll(text, "\\", "\\\\");
 		text = StringSupport.replaceAll(text, "\n", "\\n");//line continuation
 		text = StringSupport.replaceAll(text, "\"", "\\\"");
@@ -95,8 +97,10 @@ public class JsonData implements JsonDecorator {
 		for(String attrName : attributes.keySet()) {
 			Object value = attributes.get(attrName);
 			retval.append(" \"" + attrName + "\" : ");
-			if(value instanceof Collection) {
-				retval.append("[ " + CollectionSupport.format((Collection) value, " , ") + " ]");
+			if(value instanceof String[]) {
+				retval.append("[ " + ArraySupport.format("\"", "\"", (String[]) value, ", ") + " ]");
+			} else if(value instanceof Collection) {
+				retval.append("[ " + CollectionSupport.format((Collection) value, ", ") + " ]");
 			} else if (value instanceof String) {
 				retval.append("\"" + escapeWithLineContinuation(getStringAttribute(attrName)) + "\"");
 			} else {

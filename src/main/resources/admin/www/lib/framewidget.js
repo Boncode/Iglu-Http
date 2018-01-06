@@ -51,7 +51,7 @@ FrameWidget.prototype.constructFrameWidget = function(settings, enclosedWidget) 
 	this.resizeDirections = '';
 
    	//other widgets may resize or move if current widget resizes or moves
-   	this.sizeAndPositionListeners = new Array();
+   	this.sizeAndPositionListeners = new Object();
 
 	this.positionListener = null;
 
@@ -94,9 +94,13 @@ FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
 	this.sizeAndPositionListeners[widget.id] = listenerData;
 };
 
+FrameWidget.prototype.notifyWidgetDestroyed = function(destroyedWidget) {
+   delete this.sizeAndPositionListeners[destroyedWidget.id];
+};
+
+
 FrameWidget.prototype.notifyResizeListeners = function(direction, offSet) {
 
-    //log('NRL:' + direction + ':' + offSet);
     var offsetOverFlow = 0;
 
 	for(var widgetId in this.sizeAndPositionListeners) {

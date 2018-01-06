@@ -32,20 +32,21 @@ PanelWidget.prototype.constructPanelWidget = function(settings, content) {
 	//invoke super
 	this.constructFrameWidget(settings, content);
 	this.titleBarFunctions = new Array();
-
 };
 
 
 // + '<div class="close_icon" onclick="widgetmanager.destroyWidget(\'' + this.getId() + '\')"></div>'
 
-PanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString) {
-    this.titleBarFunctions.push({className: className, onclickFunctionAsString, onclickFunctionAsString});
+PanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString, tooltip) {
+    this.titleBarFunctions.push({className: className, onclickFunctionAsString: onclickFunctionAsString, tooltip: tooltip});
 };
 
 PanelWidget.prototype.createTitleBarFunctionHtml = function() {
     var html = '';
     for(var i in this.titleBarFunctions) {
-        html += '<div class="' + this.titleBarFunctions[i].className + '" onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\')"></div>';
+        html += '<div class="' + this.titleBarFunctions[i].className + '"' +
+        (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' title="' + this.titleBarFunctions[i].tooltip + '"' : '') +
+        '" onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\')"></div>';
     }
     return html;
 };
@@ -58,21 +59,30 @@ PanelWidget.prototype.onBlur = function() {
 	//gray title
 };
 
+PanelWidget.prototype.createEmptyHeader = function() {
+    this.header = document.createElement('div');
+    this.header.id = this.id + '_header';
+    this.header.className = 'panelheader';
+	this.element.appendChild(this.header);
+	return this.header;
+}
+
+PanelWidget.prototype.setHeaderContent = function() {
+    if(this.content.title != null) {
+        this.header.innerHTML = this.content.title + this.createTitleBarFunctionHtml();
+    } else {
+        if(this.title != null) {
+            this.header.innerHTML = this.title + this.createTitleBarFunctionHtml();
+        }
+    }
+}
+
+
 PanelWidget.prototype.writeHTML = function() {
 
 	if(this.hasHeader) {
-		this.header = document.createElement('div');
-		this.header.id = this.id + '_header';
-		this.header.className = 'panelheader';
-
-		if(this.content.title != null) {
-			this.header.innerHTML = this.content.title + this.createTitleBarFunctionHtml();
-		} else {
-			if(this.title != null) {
-				this.header.innerHTML = this.title + this.createTitleBarFunctionHtml();
-			}
-		}
-		this.element.appendChild(this.header);
+        this.createEmptyHeader();
+        this.setHeaderContent();
 	}
 
 	var contentFrame = new FrameWidget({

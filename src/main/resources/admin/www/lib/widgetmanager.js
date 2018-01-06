@@ -244,7 +244,6 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 }
 
 
-
 WidgetManager.prototype.destroyWidget = function(widgetId) {
 	var widget = this.widgets[widgetId];
 	if(widget != null) {
@@ -260,6 +259,11 @@ WidgetManager.prototype.destroyWidget = function(widgetId) {
 			}
 		}
 		this.unregisterDraggableWidget(widget);
+        //widgets may remain to be registered as resizeListeners
+        //notify all remaining widgets to enable them to clean up
+		for(var remainingWidgetId in this.widgets) {
+		    this.widgets[remainingWidgetId].notifyWidgetDestroyed(widget);
+		}
 		delete this.widgets[widgetId];
 		log('done');
 	} else {

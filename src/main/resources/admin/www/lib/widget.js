@@ -44,6 +44,16 @@ Widget.prototype.set = function(name, value, defaultValue) {
 	}
 };
 
+Widget.prototype.cloneSettings = function(extraSettingsNames) {
+    var clonedSettings = cloneAttributes(this.settings);
+	for(var name in this.settings) {
+      	clonedSettings[name] = this[name];
+    }
+	for(var i in extraSettingsNames) {
+      	clonedSettings[extraSettingsNames[i]] = this[extraSettingsNames[i]];
+    }
+    return clonedSettings;
+}
 
 Widget.prototype.getId = function()
 {
@@ -72,13 +82,10 @@ Widget.prototype.setDOMElement = function(element)
 	}
 };
 
-
 Widget.prototype.getDOMElement = function()
 {
 	return this.element;
 };
-
-
 
 Widget.prototype.onDestroy = function() {
 	this.autoRefreshInterval = 0;
@@ -110,17 +117,17 @@ Widget.prototype.processJavaScript = function(input) {
 Widget.prototype.saveState = function() {
 };
 
+Widget.prototype.notifyWidgetDestroyed = function(destroyedWidget) {
+};
+
+
 Widget.prototype.handleAjaxResponse = function(responseText) {
 	this.display(responseText, this.element);
 };
 
-
-
 Widget.prototype.display = function(content, element) {
 	var domElement = null;
 	if(element != null && typeof element != 'undefined') {
-		//element.content = content; /// ???
-		//domElement = document.getElementById(element.id)
 		if(typeof element.display == 'function' && typeof element.element != 'undefined') {
 			element.display(content, element.element);
 			return;
