@@ -212,7 +212,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	if(widget != null) {
 		log('widget "' + widget.getId() + '" already exists');
 		this.activateCurrentWidget(widget.id);
-    	return widget;
+    	return false;
 	}
 
 
@@ -240,7 +240,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 //	alert('widget "' + newWidget.getId() + '" deployed ' + newWidget.onDeploy);
 
 	this.activateCurrentWidget(newWidget.id);
-	return newWidget;
+	return true;
 }
 
 

@@ -46,7 +46,7 @@ PanelWidget.prototype.createTitleBarFunctionHtml = function() {
     for(var i in this.titleBarFunctions) {
         html += '<div class="' + this.titleBarFunctions[i].className + '"' +
         (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' title="' + this.titleBarFunctions[i].tooltip + '"' : '') +
-        '" onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\')"></div>';
+        '" onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)"></div>';
     }
     return html;
 };

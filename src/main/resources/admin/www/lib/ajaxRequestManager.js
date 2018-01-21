@@ -153,7 +153,7 @@ AjaxRequestManager.prototype.sendGETRequest = function(ajaxRequest, url) {
 //internal function
 AjaxRequestManager.prototype.sendPOSTRequest = function(ajaxRequest, url, postData, contentType) {
 	ajaxRequest.open('POST', url, true);
-	ajaxRequest.setRequestHeader("Content-Type", typeof(contentType) == 'undefined' ? "application/x-www-form-urlencoded; charset=UTF-8" : contentType);
+	ajaxRequest.setRequestHeader("Content-Type", typeof(contentType) == 'undefined' ? "application/x-www-form-urlencoded; charset=UTF-8" : contentType + "; charset=UTF-8");
 	ajaxRequest.send(postData);
 }
 
