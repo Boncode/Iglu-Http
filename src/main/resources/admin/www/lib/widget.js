@@ -236,7 +236,11 @@ WidgetContent.prototype.refresh = function() {
       	this.writeHTML();
     }
 	if(this.source != null) {
-		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
+	    if(typeof this[this.source_load_action] != 'undefined') {
+		    ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
+		} else if (typeof window[this.source_load_action] != 'undefined') {
+		    ajaxRequestManager.doRequest(this.source, window[this.source_load_action], this);
+		}
 	}
 };
 
