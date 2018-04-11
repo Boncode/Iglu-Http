@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -88,36 +89,33 @@ public class HttpIoSupport {
 	}
 
 
-	private static HttpResponse sendPost(String url, String postData, String contentType) throws IOException {
+	public static HttpResponse sendPost(String url, String postData, String contentType) throws IOException {
 
 		URL obj = new URL(url);
-		URLConnection con = obj.openConnection();
-		con.setRequestProperty("Method", "POST");
-		con.setRequestProperty("Content-Type", contentType);
+		HttpURLConnection con = null;
+		String response;
+		int status;
+		try {
+			con = (HttpURLConnection) obj.openConnection();
+			con.setRequestProperty("Method", "POST");
+			con.setRequestProperty("Content-Type", contentType);
+			con.setConnectTimeout(5000);
 
-		con.setDoOutput(true);
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(postData);
-		wr.flush();
-		wr.close();
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(postData);
+			wr.flush();
+			wr.close();
 
-		System.out.println("[" + con.getHeaderField(0) + "]");
-		String resultStr = con.getHeaderField(0);
-		String[] resultArr = resultStr.split(" ");
-		int status = Integer.parseInt(resultArr[1]);
-		System.out.println("[" + status + "]");
-
-		BufferedReader in = new BufferedReader(
-				new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
-
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
+			status = con.getResponseCode();
+			response = con.getResponseMessage();
+			System.out.println("[" + status + "]");
+		} finally {
+			if(con != null) {
+				con.disconnect();
+			}
 		}
-		in.close();
-
-		return new HttpResponse(status, response.toString());
+		return new HttpResponse(status, response);
 	}
 }
 

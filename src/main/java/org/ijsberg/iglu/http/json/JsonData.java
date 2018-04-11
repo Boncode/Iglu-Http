@@ -23,6 +23,7 @@ public class JsonData implements JsonDecorator {
 	}
 
 	public JsonData addHtmlEscapedStringAttribute(String name, String value) {
+
 		attributes.put(name, "\"" + formatHtmlEncodedWithLineContinuation(value) + "\"");
 		return this;
 	}
