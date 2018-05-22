@@ -22,6 +22,8 @@ package org.ijsberg.iglu.server.http.servlet;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.Request;
 import org.ijsberg.iglu.access.Session;
+import org.ijsberg.iglu.logging.Level;
+import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.io.FileSupport;
 
 import java.io.IOException;
@@ -51,6 +53,7 @@ public class SessionBoundZipFileResourceServlet  extends BinaryResourceServlet i
 		Session session = request.getSession(true);
 		String zipFileName = (String)session.getAttribute("zip_file_name");
 		if(zipFileName == null) {
+			System.out.println(new LogEntry(Level.CRITICAL, this.getClass().getSimpleName() + ": cannot resolve resource"));
 			return "currently no resources available".getBytes();
 		}
 		byte[] resource = null;

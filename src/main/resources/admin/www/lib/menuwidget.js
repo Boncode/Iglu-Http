@@ -34,7 +34,7 @@ function MenuWidget(id, content) {
 	settings.content = content;
 	this.constructMenuWidget(settings, settings.content);
 
-
+    this.expertMode = false;
 	//TODO initialize and invoke super
 }
 
@@ -53,16 +53,33 @@ MenuWidget.prototype.process = function(value) {
 	alert(value);
 };
 
-
-
 MenuWidget.prototype.setSizeAndPosition = function() {
-
 };
 
+MenuWidget.prototype.setExpertMode = function(value) {
+
+//item.toggleProperty_value == item.toggleProperty_off
+
+    this.rememberToggleSettings(this.menu);
+
+    this.expertMode = value;
+};
+
+MenuWidget.prototype.rememberToggleSettings = function(tree) {
+    for(var i in tree) {
+        if(typeof tree[i].toggleProperty_key != 'undefined') {
+            tree[i].toggleProperty_value = WidgetManager.instance.settings[tree[i].toggleProperty_key];
+        }
+        if(typeof(tree[i].submenu) != 'undefined') {
+            this.rememberToggleSettings(tree[i].submenu);
+        }
+    }
+};
 
 MenuWidget.prototype.writeHTML = function() {
 
 	if(this.element && this.menu) {
+	    this.element.innerHTML = '';
 		this.createTree(this.menu, this.element, false);
 	}
 
@@ -70,12 +87,18 @@ MenuWidget.prototype.writeHTML = function() {
 
 MenuWidget.prototype.createTree = function(tree, container) {
     for(var i in tree) {
-        this.addItem(tree[i], container);
+        if(!tree[i].expertMode || this.expertMode) {
+            this.addItem(tree[i], container);
+        }
     }
 }
 
-
 MenuWidget.prototype.addItem = function(item, container) {
+
+    if(item.id == 'expert_mode') {
+//        item.toggleProperty_value = this.expertMode ? item.toggleProperty_on : item.toggleProperty_off;
+    }
+
 	var itemId = container.id + '.' + item.id;
 	var itemLabel = item.label;
 	if(typeof(item.link) != 'undefined' || typeof(item.onclick) != 'undefined') {

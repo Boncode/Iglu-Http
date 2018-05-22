@@ -32,9 +32,15 @@ public class MenuItem extends JsonObject {
 	private List<JsonObject> links = new ArrayList<JsonObject>();
 
 	public MenuItem(String id, String label) {
+		addAttribute("expertMode", false);
 		addHtmlEscapedStringAttribute("id", id);
 		addHtmlEscapedStringAttribute("label", label);
 		addAttribute("link", links);
+	}
+
+	public MenuItem setExpertMode() {
+		addAttribute("expertMode", true);
+		return this;
 	}
 
 	public MenuItem addLinkToTargetElement(String url, String target, String targetTitle) {
