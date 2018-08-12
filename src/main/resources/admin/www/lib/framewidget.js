@@ -94,6 +94,15 @@ FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
 	this.sizeAndPositionListeners[widget.id] = listenerData;
 };
 
+FrameWidget.prototype.removeResizeListener = function(widget, direction) {
+	var listenerData = this.sizeAndPositionListeners[widget.id];
+	if(typeof listenerData != 'undefined' && listenerData != null) {
+    	delete this.sizeAndPositionListeners[widget.id];
+	}
+	//listenerData.actionsByDirection[direction] = null;
+	//this.sizeAndPositionListeners[widget.id] = listenerData;
+};
+
 FrameWidget.prototype.notifyWidgetDestroyed = function(destroyedWidget) {
    delete this.sizeAndPositionListeners[destroyedWidget.id];
 };
