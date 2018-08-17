@@ -6,7 +6,7 @@ import java.util.*;
 
 /**
  */
-public class JsonHierarchicalPropertiesObject extends JsonObject {
+public class JsonHierarchicalPropertiesObject extends JsonData {
 
 	public JsonHierarchicalPropertiesObject(Properties properties) {
 		addAttributes(properties);

@@ -22,6 +22,7 @@ package org.ijsberg.iglu.http.json;
 import org.ijsberg.iglu.invocation.ExposeInConsole;
 import org.ijsberg.iglu.util.collection.ArraySupport;
 
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 
 /**
@@ -56,5 +57,8 @@ public class JsonMethodDecorator implements JsonDecorator {
 	}
 
 
-
+	@Override
+	public void print(PrintStream out) {
+		out.print(toString());
+	}
 }

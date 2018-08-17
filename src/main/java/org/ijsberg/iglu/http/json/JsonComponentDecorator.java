@@ -22,6 +22,7 @@ package org.ijsberg.iglu.http.json;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.server.admin.InvocationSupport;
 
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,5 +56,8 @@ public class JsonComponentDecorator implements JsonDecorator {
 	}
 
 
-
+	@Override
+	public void print(PrintStream out) {
+		out.print(toString());
+	}
 }

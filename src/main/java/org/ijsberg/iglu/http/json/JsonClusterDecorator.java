@@ -22,6 +22,7 @@ package org.ijsberg.iglu.http.json;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,16 +41,23 @@ public class JsonClusterDecorator implements JsonDecorator {
 
     public String toString() {
 
-		JsonObject jsonObject = new JsonObject(clusterId);
+    	JsonData json = new JsonData();
+		JsonData jsonData = new JsonData();
+		json.addAttribute(clusterId, jsonData);
 
 		List<JsonComponentDecorator> componentList = new ArrayList<JsonComponentDecorator>();
 		Map<String, Component> components = cluster.getInternalComponents();
 		for(String componentId : components.keySet()) {
 			Component component = components.get(componentId);
-			jsonObject.addAttribute(componentId, new JsonComponentDecorator(clusterId, componentId, component));
+			jsonData.addAttribute(componentId, new JsonComponentDecorator(clusterId, componentId, component));
 			componentList.add(new JsonComponentDecorator(clusterId, componentId, component));
 		}
-		jsonObject.addAttribute("components", componentList);
-		return jsonObject.toString();
+		jsonData.addAttribute("components", componentList);
+		return json.toString();
     }
+
+	@Override
+	public void print(PrintStream out) {
+		out.print(toString());
+	}
 }

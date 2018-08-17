@@ -23,7 +23,7 @@ import org.ijsberg.iglu.access.AgentFactory;
 import org.ijsberg.iglu.access.BasicAgentFactory;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.access.component.RequestRegistry;
-import org.ijsberg.iglu.http.json.JsonObject;
+import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
@@ -153,9 +153,11 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	public String getProgress(String jsFunction) {
-		JsonObject retval = new JsonObject("progress");
-		retval.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
-		retval.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
+		JsonData retval = new JsonData();
+		JsonData jsonData = new JsonData();
+		retval.addAttribute("progress", jsonData);
+		jsonData.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
+		jsonData.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
 		return JsonSupport.toMessage(jsFunction, "progress", retval);
 	}
 

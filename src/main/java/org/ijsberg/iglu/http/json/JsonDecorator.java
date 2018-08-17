@@ -19,9 +19,11 @@
 
 package org.ijsberg.iglu.http.json;
 
+import org.ijsberg.iglu.util.io.Printer;
+
 /**
  */
-public interface JsonDecorator {
+public interface JsonDecorator extends Printer {
 
     String toString();
 

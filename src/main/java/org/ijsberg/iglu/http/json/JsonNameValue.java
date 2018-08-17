@@ -19,6 +19,8 @@
 
 package org.ijsberg.iglu.http.json;
 
+import java.io.PrintStream;
+
 /**
  */
 public class JsonNameValue implements JsonDecorator {
@@ -32,6 +34,11 @@ public class JsonNameValue implements JsonDecorator {
 	}
 
 	public String toString() {
-		return "{ \"" + name + "\" : \"" + JsonObject.formatHtmlEncodedWithLineContinuation(value) + "\" }";
+		return "{ \"" + name + "\" : \"" + JsonData.formatHtmlEncodedWithLineContinuation(value) + "\" }";
+	}
+
+	@Override
+	public void print(PrintStream out) {
+		out.print(toString());
 	}
 }

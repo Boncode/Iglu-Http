@@ -21,6 +21,7 @@ package org.ijsberg.iglu.http.json;
 
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,5 +66,12 @@ public class JsonArray implements JsonDecorator {
 			return contents.indexOf("\"" + value + "\"");
 		}
 		return contents.indexOf(value);
+	}
+
+	@Override
+	public void print(PrintStream out) {
+		out.print("[");
+		CollectionSupport.print(contents, out, " , ");
+		out.println("]");
 	}
 }

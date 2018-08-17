@@ -5,6 +5,9 @@ import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.HttpEncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -93,28 +96,41 @@ public class JsonData implements JsonDecorator {
 	}
 
 	public String toString() {
-		StringBuffer retval = new StringBuffer();
-		retval.append("{\n ");
-		for(String attrName : attributes.keySet()) {
-			Object value = attributes.get(attrName);
-			retval.append(" \"" + attrName + "\" : ");
-			if(value instanceof String[]) {
-				retval.append("[ " + ArraySupport.format("\"", "\"", (String[]) value, ", ") + " ]");
-			} else if(value instanceof Collection) {
-				retval.append("[ " + CollectionSupport.format((Collection) value, ", ") + " ]");
-			} else if (value instanceof String) {
-				retval.append("\"" + escapeWithLineContinuation(getStringAttribute(attrName)) + "\"");
-			} else {
-				retval.append(value);
-			}
-			retval.append(",");
-		}
-		//remove obsolete comma
-		retval.deleteCharAt(retval.length() - 1);
-		retval.append(" }\n");
-		return retval.toString();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		print(out);
+		return new String(baos.toByteArray());
 	}
 
+	public void print(PrintStream out) {
+		out.print("{\n ");
+		int i = 0;
+		for(String attrName : attributes.keySet()) {
+			Object value = attributes.get(attrName);
+			out.print(" \"" + attrName + "\" : ");
+			if(value instanceof String[]) {
+				out.print("[");
+				ArraySupport.print("\"", "\"", (String[])value, ", ", out);
+				out.print("]");
+			} else if(value instanceof Collection) {
+				out.print("[");
+				CollectionSupport.print((Collection)value, out, ", ");
+				out.print("]");
+//				out.print("[ " + CollectionSupport.format((Collection) value, ", ") + " ]");
+			} else if (value instanceof String) {
+				out.print("\"" + escapeWithLineContinuation(getStringAttribute(attrName)) + "\"");
+			} else if (value instanceof JsonData) {
+				((JsonData)value).print(out);
+			} else {
+				out.print(value);
+			}
+			i++;
+			if(i < attributes.size()) {
+				out.print(",");
+			}
+		}
+		out.print(" }\n");
+	}
 
 	public Object getAttribute(String id) {
 		Object retval = attributes.get(id);

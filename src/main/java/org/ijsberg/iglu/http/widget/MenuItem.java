@@ -19,7 +19,7 @@
 
 package org.ijsberg.iglu.http.widget;
 
-import org.ijsberg.iglu.http.json.JsonObject;
+import org.ijsberg.iglu.http.json.JsonData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,9 +27,9 @@ import java.util.List;
 
 /**
  */
-public class MenuItem extends JsonObject {
+public class MenuItem extends JsonData {
 
-	private List<JsonObject> links = new ArrayList<JsonObject>();
+	private List<JsonData> links = new ArrayList<JsonData>();
 
 	public MenuItem(String id, String label) {
 		addAttribute("expertMode", false);
@@ -44,7 +44,7 @@ public class MenuItem extends JsonObject {
 	}
 
 	public MenuItem addLinkToTargetElement(String url, String target, String targetTitle) {
-		JsonObject link = new JsonObject();
+		JsonData link = new JsonData();
 		link.addHtmlEscapedStringAttribute("url", url);
 		link.addHtmlEscapedStringAttribute("target", target);
 		link.addHtmlEscapedStringAttribute("target_label", targetTitle);
@@ -53,7 +53,7 @@ public class MenuItem extends JsonObject {
 	}
 
 	public MenuItem addLinkViaFunction(String functionName, String url, String targetTitle) {
-		JsonObject link = new JsonObject();
+		JsonData link = new JsonData();
 		link.addHtmlEscapedStringAttribute("functionName", functionName);
 		link.addHtmlEscapedStringAttribute("url", url);
 		link.addHtmlEscapedStringAttribute("target_label", targetTitle);
