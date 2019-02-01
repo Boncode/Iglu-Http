@@ -19,6 +19,7 @@
 
 package org.ijsberg.iglu.server.http.servlet;
 
+import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.mail.MimeTypeSupport;
@@ -50,7 +51,7 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 		}
 	}
 
-	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	public void service(HttpServletRequest request, HttpServletResponse response) {
 		//Creates the output stream.
 		try {
 			String resourcePath = FileSupport.convertToUnixStylePath(documentRoot + '/' + request.getPathInfo());
@@ -69,7 +70,8 @@ public abstract class BinaryResourceServlet extends HttpServlet {
             response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
 			out.write(getResource(resourcePath));
 		} catch (Exception e) {
-			System.out.println(new LogEntry("unable to obtain resource", e));
+			System.out.println(new LogEntry(Level.CRITICAL, "unable to obtain resource", e));
+			response.setStatus(500);
 		}
 	}
 
