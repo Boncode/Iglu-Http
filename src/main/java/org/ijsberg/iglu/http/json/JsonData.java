@@ -132,16 +132,16 @@ public class JsonData implements JsonDecorator {
 		out.print(" }\n");
 	}
 
-	public Object getAttribute(String id) {
-		Object retval = attributes.get(id);
+	public Object getAttribute(String name) {
+		Object retval = attributes.get(name);
 		if(retval != null && retval.toString().startsWith("\"")) {
 			retval = ((String) retval).substring(1, ((String) retval).length() - 1);
 		}
 		return retval;
 	}
 
-	public String getStringAttribute(String id) {
-		Object retval = attributes.get(id);
+	public String getStringAttribute(String name) {
+		Object retval = attributes.get(name);
 		if(retval instanceof String) {
 			if (retval != null && retval.toString().startsWith("\"")) {
 				retval = ((String) retval).substring(1, ((String) retval).length() - 1);
@@ -149,6 +149,10 @@ public class JsonData implements JsonDecorator {
 			return retval.toString();
 		}
 		return null;
+	}
+
+	public boolean containsAttribute(String name) {
+		return attributes.containsKey(name);
 	}
 
 	public Set<String> getAttributeNames() {
