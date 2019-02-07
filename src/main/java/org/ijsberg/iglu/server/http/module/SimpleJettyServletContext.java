@@ -138,7 +138,7 @@ public class SimpleJettyServletContext implements Startable {
 
 		this.section = properties;
 		section.getProperty("xmlConfigurationFileName", "./conf/jetty.xml");
-		//try to obtain a reference to a specific Jetty XML configuratiin (jetty.xml) 
+		//try to obtain a reference to a specific Jetty XML configuration (jetty.xml)
 		String xmlConfig = section.getProperty("xmlConfigurationFileName");
 		if (xmlConfig == null) {
 			contextPath = section.getProperty("context_path", contextPath);
