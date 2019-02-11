@@ -307,8 +307,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				String pathInfo = ((HttpServletRequest) servletRequest).getPathInfo();
 				System.out.println(new LogEntry("pathInfo: " + pathInfo));
 				if(pathInfo == null) {
-					pathInfo = servletPath;//088 944 6592 - Hillary
-					//
+					pathInfo = servletPath;
 				}
 
 				if(user == null && contentNotPublic(pathInfo))
