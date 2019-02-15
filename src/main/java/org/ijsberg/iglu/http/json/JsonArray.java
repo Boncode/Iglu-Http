@@ -47,8 +47,20 @@ public class JsonArray implements JsonDecorator {
 		return this;
 	}
 
+	public List getContents() {
+		return contents;
+	}
+
 	public Object getValue(int index) {
-		return contents.get(index);
+		return JsonSupport.purgeStringValue(contents.get(index));
+	}
+
+	public String getStringValue(int index) {
+		Object retval = getValue(index);
+		if(retval != null) {
+			return retval.toString();
+		}
+		return null;
 	}
 
 	public String toString() {

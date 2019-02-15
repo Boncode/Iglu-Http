@@ -44,4 +44,14 @@ public class JsonSupport {
     public static String toAttr(String name, String value) {
         return "\"" + name + "\" : \"" + value + "\"";
     }
+
+    public static Object purgeStringValue(Object value) {
+        Object retval = value;
+        if(value instanceof String) {
+            if (retval != null && retval.toString().startsWith("\"")) {
+                retval = ((String) retval).substring(1, ((String) retval).length() - 1);
+            }
+        }
+        return retval;
+    }
 }

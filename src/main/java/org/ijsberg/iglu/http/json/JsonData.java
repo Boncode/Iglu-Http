@@ -133,19 +133,12 @@ public class JsonData implements JsonDecorator {
 	}
 
 	public Object getAttribute(String name) {
-		Object retval = attributes.get(name);
-		if(retval != null && retval.toString().startsWith("\"")) {
-			retval = ((String) retval).substring(1, ((String) retval).length() - 1);
-		}
-		return retval;
+		return JsonSupport.purgeStringValue(attributes.get(name));
 	}
 
 	public String getStringAttribute(String name) {
-		Object retval = attributes.get(name);
-		if(retval instanceof String) {
-			if (retval != null && retval.toString().startsWith("\"")) {
-				retval = ((String) retval).substring(1, ((String) retval).length() - 1);
-			}
+		Object retval = getAttribute(name);
+		if(retval != null) {
 			return retval.toString();
 		}
 		return null;
