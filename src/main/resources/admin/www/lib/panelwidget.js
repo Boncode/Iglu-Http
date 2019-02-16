@@ -80,6 +80,7 @@ PanelWidget.prototype.setHeaderContent = function() {
 
 PanelWidget.prototype.writeHTML = function() {
 
+
 	if(this.hasHeader) {
         this.createEmptyHeader();
         this.setHeaderContent();
@@ -89,10 +90,10 @@ PanelWidget.prototype.writeHTML = function() {
         id : this.id + '_frame',
         cssClassName : 'panelcontentframe',
         //todo margin
-        top: 30,
+        top: (this.hasHeader ? 30 : 5),
         left: 5,
         width: (this.width - 10),
-        height: (this.height - 35)
+        height: (this.hasHeader ? (this.height - 35) : (this.height - 5))
 	}, this.content);
 	contentFrame.stretchToOuterWidget(this, {'e':{'offset':5}});
 	contentFrame.stretchToOuterWidget(this, {'s':{'offset':5}});
