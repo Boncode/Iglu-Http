@@ -50,7 +50,9 @@ Widget.prototype.cloneSettings = function(extraSettingsNames) {
       	clonedSettings[name] = this[name];
     }
 	for(var i in extraSettingsNames) {
-      	clonedSettings[extraSettingsNames[i]] = this[extraSettingsNames[i]];
+	    if(typeof this[extraSettingsNames[i]] != 'undefined') {
+      	    clonedSettings[extraSettingsNames[i]] = this[extraSettingsNames[i]];
+      	}
     }
     return clonedSettings;
 }
