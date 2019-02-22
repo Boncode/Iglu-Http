@@ -32,8 +32,8 @@ MasterFrameWidget.prototype.onDeploy = function() {
 
 MasterFrameWidget.prototype.onWindowResizeEvent = function(event) {
 	var offset = this.resetDimensions();
-	this.notifyResizeListeners('e', offset.x);
-	this.notifyResizeListeners('s', offset.y);
+	this.notifySizeAndPositionListeners('e', offset.x);
+	this.notifySizeAndPositionListeners('s', offset.y);
 }
 
 
@@ -203,7 +203,7 @@ WidgetManager.prototype.registerResizeableWidget = function(widget, resizeDirect
 		if(WidgetManager.instance.resizeDirection != null) {
 			WidgetManager.instance.activateCurrentWidget(this.id);
 			WidgetManager.instance.resizingWidget = WidgetManager.instance.currentWidget;
-			log('current resizing widget ' + this.id)
+			//log('current resizing widget ' + this.id)
 		}
 	}
 	widget.getDOMElement().onmouseup = function(event) {
@@ -215,7 +215,7 @@ WidgetManager.prototype.registerResizeableWidget = function(widget, resizeDirect
 	}
 
 	widget.getDOMElement().onmouseover = function(event) {
-//		log('=====> ' + this.id);
+		//log('=====> ' + this.id);
 		if(WidgetManager.instance.resizingWidget == null) {
 			WidgetManager.instance.determineResizeAction(widget, event);
 		}
@@ -247,7 +247,7 @@ WidgetManager.prototype.determineResizeAction = function(widget, event) {
 		if(widget.allowsResize('n') && this.mouseOffset.y < 5) {
 			direction = 'n';
          }
-        // log('allows: ' + widget.allowsResize('s') + ': ' + this.mouseOffset.y + ' > ' + (widget.height - 5));
+        //log('allows: ' + widget.allowsResize('s') + ': ' + this.mouseOffset.y + ' > ' + (widget.height - 5));
 		if(widget.allowsResize('s') && this.mouseOffset.y > widget.height - 5) {
 			direction = 's';
         }
@@ -258,6 +258,7 @@ WidgetManager.prototype.determineResizeAction = function(widget, event) {
 			direction += 'e';
          }
          if(direction != '') {
+            //log('direction: ' + direction);
          	document.body.style.cursor = direction + '-resize';
          	this.resizeDirection = direction;
          } else {

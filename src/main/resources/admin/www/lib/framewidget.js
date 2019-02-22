@@ -89,6 +89,7 @@ FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
 	}
 	listenerData.widget = widget;
 	for(var direction in actionsByDirection) {
+	    //log('' + this.id + ' will notify ' + widget.id + ' of event ' + direction);
 		listenerData.actionsByDirection[direction] = actionsByDirection[direction];
 	}
 	this.sizeAndPositionListeners[widget.id] = listenerData;
@@ -97,7 +98,8 @@ FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
 FrameWidget.prototype.removeResizeListener = function(widget, direction) {
 	var listenerData = this.sizeAndPositionListeners[widget.id];
 	if(typeof listenerData != 'undefined' && listenerData != null) {
-    	delete this.sizeAndPositionListeners[widget.id];
+	    delete listenerData.actionsByDirection[direction];
+    	//delete this.sizeAndPositionListeners[widget.id];
 	}
 	//listenerData.actionsByDirection[direction] = null;
 	//this.sizeAndPositionListeners[widget.id] = listenerData;
@@ -108,12 +110,19 @@ FrameWidget.prototype.notifyWidgetDestroyed = function(destroyedWidget) {
 };
 
 
-FrameWidget.prototype.notifyResizeListeners = function(direction, offSet) {
+/*
+event: [move,resize]
+direction: [e,w,n,s] / [h,v]
+offSet: float
+*/
+FrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSet) {
 
     var offsetOverFlow = 0;
 
 	for(var widgetId in this.sizeAndPositionListeners) {
+	    //log('' + this.id + ' trying to trigger ' + widgetId);
 		var listenerData = this.sizeAndPositionListeners[widgetId];
+
 		var actionData = listenerData.actionsByDirection[direction];
 		if(typeof actionData != 'undefined') {
 			//log('' + this.id + ' triggers ' + actionData.action + ' of ' + widgetId + ' ' + direction + ':' + offSet);
@@ -122,6 +131,8 @@ FrameWidget.prototype.notifyResizeListeners = function(direction, offSet) {
 			if(Math.abs(newOffsetOverFlow) > Math.abs(offsetOverFlow)) {
 			    offsetOverFlow = newOffsetOverFlow;
 			}
+		} else {
+    	    //log('' + this.id + ' trying to trigger ' + widgetId + ' : no actionData for direction ' + direction);
 		}
 	}
 	return offsetOverFlow;
@@ -132,7 +143,9 @@ FrameWidget.prototype.addWidgetToAlignTo = function(widget) {
 };
 
 FrameWidget.prototype.allowsResize = function(direction) {
-	return this.resizeDirections.indexOf(direction) != -1;
+	var result = this.resizeDirections.indexOf(direction) != -1;
+	//log(this.id + ' direction: ' + direction + ' : ' + result);
+	return result;
 };
 
 FrameWidget.prototype.allowHorizontalResize = function() {
@@ -192,17 +205,18 @@ FrameWidget.prototype.setPosition = function(left, top) {
 }
 
 FrameWidget.prototype.moveVertical = function(offset) {
+    //log('' + this.id + ' moving vertical ' + offset);
 	this.top += offset;
 	this.setSizeAndPosition();
-	this.notifyResizeListeners('s', offset);
-	this.notifyResizeListeners('n', offset);
+	this.notifySizeAndPositionListeners('v', offset);
+	//this.notifySizeAndPositionListeners('n', offset);
 }
 
 FrameWidget.prototype.moveHorizontal = function(offset) {
 	this.left += offset;
 	this.setSizeAndPosition();
-	this.notifyResizeListeners('e', offset);
-	this.notifyResizeListeners('w', offset);
+	this.notifySizeAndPositionListeners('h', offset);
+	//this.notifySizeAndPositionListeners('w', offset);
 }
 
 FrameWidget.prototype.resizeEastAndMoveHorizontal = function(offset) {
@@ -230,7 +244,7 @@ FrameWidget.prototype.resizeNorth = function(offset) {
 		this.offsetOverFlowTop = 0;
 	}
 	this.setSizeAndPosition();
-	this.notifyResizeListeners('n', offset);
+	this.notifySizeAndPositionListeners('n', offset);
 	return 0;
 };
 
@@ -245,13 +259,13 @@ FrameWidget.prototype.resizeEast = function(offset) {
 
 	var newWidth = calcOffset + this.width;
 	if(newWidth < FrameWidget.MINIMUM_FRAME_WIDTH) {
-		this.notifyResizeListeners('e', FrameWidget.MINIMUM_FRAME_WIDTH - this.width);
+		this.notifySizeAndPositionListeners('e', FrameWidget.MINIMUM_FRAME_WIDTH - this.width);
 		this.width = FrameWidget.MINIMUM_FRAME_WIDTH;
 		this.offsetOverFlowLeft = newWidth - this.width;
 		this.offsetOverFlowRight = 0;
 		//log(offset + ' - ' + this.offsetOverFlowLeft + ' = ' + (offset - this.offsetOverFlowLeft));
 	} else if(newWidth > FrameWidget.MINIMUM_FRAME_WIDTH){
-	    maxOverFlowOfListeners = this.notifyResizeListeners('e', offset);
+	    maxOverFlowOfListeners = this.notifySizeAndPositionListeners('e', offset);
 		this.width = offset + this.offsetOverFlowRight + maxOverFlowOfListeners + this.width;
 		this.offsetOverFlowRight = -maxOverFlowOfListeners;
 		this.offsetOverFlowLeft = 0;
@@ -263,6 +277,7 @@ FrameWidget.prototype.resizeEast = function(offset) {
 
 FrameWidget.prototype.resizeWest = function(offset) {
 
+    //log('resize west ' + this.id + ' offset: ' + offset);
 	//log('offset: ' + offset + ' ---> 1111 OffsOL: ' + this.offsetOverFlowLeft);
 	var calcOffset = offset + this.offsetOverFlowLeft;
     //log('RW:' + calcOffset)
@@ -278,7 +293,7 @@ FrameWidget.prototype.resizeWest = function(offset) {
 		this.width = newWidth;
 		this.offsetOverFlowLeft = 0;
 	}
-	this.notifyResizeListeners('w', offset);
+	this.notifySizeAndPositionListeners('w', offset);
 	this.setSizeAndPosition();
 	return this.offsetOverFlowLeft;
 };
@@ -295,7 +310,7 @@ FrameWidget.prototype.resizeSouth = function(offset) {
 		this.offsetOverFlowTop = 0;
 	}
 	this.setSizeAndPosition();
-	this.notifyResizeListeners('s', offset);
+	this.notifySizeAndPositionListeners('s', offset);
 	return 0;
 };
 
@@ -375,11 +390,19 @@ FrameWidget.prototype.alignWithOuterWidget = function(outerWidget, directionMap)
 		currentDirectionMap = new Object();
 		this.outerWidgetsToAlignWith[outerWidget.id] = currentDirectionMap;
 	}
+	// <DEPRECATED>
 	if(typeof directionMap['e'] != 'undefined') {
 		currentDirectionMap['e'] = directionMap['e'];
 	}
 	if(typeof directionMap['s'] != 'undefined') {
 		currentDirectionMap['s'] = directionMap['s'];
+	}
+	// </DEPRECATED>
+	if(typeof directionMap['h'] != 'undefined') {
+		currentDirectionMap['h'] = directionMap['h'];
+	}
+	if(typeof directionMap['v'] != 'undefined') {
+		currentDirectionMap['v'] = directionMap['v'];
 	}
 }
 
@@ -390,6 +413,7 @@ FrameWidget.prototype.doAlignWithOuterWidget = function(outerWidget, directionMa
 		var directionMap = this.outerWidgetsToAlignWith[outerWidgetId];
 		var outerWidget = WidgetManager.instance.getWidget(outerWidgetId);
 
+	    // <DEPRECATED>
 		if(typeof directionMap['e'] != 'undefined') {
 			this.left = outerWidget.left + outerWidget.width - this.width - directionMap['e'].offset;
 			outerWidget.addResizeListener(this, {'e':{'action':this.moveHorizontal, factor: 1}});
@@ -397,6 +421,16 @@ FrameWidget.prototype.doAlignWithOuterWidget = function(outerWidget, directionMa
 		if(typeof directionMap['s'] != 'undefined') {
 			this.top = outerWidget.top + outerWidget.height - this.height - directionMap['s'].offset;
 			outerWidget.addResizeListener(this, {'s':{'action':this.moveVertical, factor: 1}});
+		}
+    	// </DEPRECATED>
+
+		if(typeof directionMap['h'] != 'undefined') {
+			this.left = outerWidget.left + outerWidget.width - this.width - directionMap['h'].offset;
+			outerWidget.addResizeListener(this, {'h':{'action':this.moveHorizontal, factor: 1}});
+		}
+		if(typeof directionMap['v'] != 'undefined') {
+			this.top = outerWidget.top + outerWidget.height - this.height - directionMap['v'].offset;
+			outerWidget.addResizeListener(this, {'v':{'action':this.moveVertical, factor: 1}});
 		}
 	}
 }
