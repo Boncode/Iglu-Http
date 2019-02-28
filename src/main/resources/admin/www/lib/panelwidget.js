@@ -90,13 +90,13 @@ PanelWidget.prototype.writeHTML = function() {
         id : this.id + '_frame',
         cssClassName : 'panelcontentframe',
         //todo margin
-        top: (this.hasHeader ? 30 : 5),
-        left: 5,
-        width: (this.width - 10),
-        height: (this.hasHeader ? (this.height - 35) : (this.height - 5))
+        top: (this.hasHeader ? 45 : 0),
+        left: 0,
+        width: (this.width),
+        height: (this.hasHeader ? (this.height - 45) : (this.height - 0))
 	}, this.content);
-	contentFrame.stretchToOuterWidget(this, {'e':{'offset':5}});
-	contentFrame.stretchToOuterWidget(this, {'s':{'offset':5}});
+	contentFrame.stretchToOuterWidget(this, {'e':{'offset':0}});
+	contentFrame.stretchToOuterWidget(this, {'s':{'offset':0}});
 
 	this.addResizeListener(contentFrame, {'e':{'action':contentFrame.resizeEast, factor: 1}});
     this.addResizeListener(contentFrame, {'s':{'action':contentFrame.resizeSouth, factor: 1}});
