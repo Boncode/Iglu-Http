@@ -88,7 +88,7 @@ PanelWidget.prototype.writeHTML = function() {
 
 	var contentFrame = new FrameWidget({
         id : this.id + '_frame',
-        cssClassName : 'panelcontentframe',
+        cssClassName : (this.hasHeader ? ('panelcontentframe') : ('panelcontentframe_noheader')),
         //todo margin
         top: (this.hasHeader ? 45 : 0),
         left: 0,
