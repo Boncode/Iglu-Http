@@ -135,12 +135,12 @@ WindowWidget.prototype.writeHTML = function() {
 
 
 WindowWidget.prototype.onDestroy = function() {
-
+    console.log('WindowWidget.prototype.onDestroy:' + this.left);
 	if(typeof this.left != 'undefined' && this.left != null) {
-		WidgetManager.instance.lastX = this.left;
+		WidgetManager.instance.lastX = this.left - 20;
 	}
-	if(typeof this.right != 'undefined' && this.right != null) {
-		WidgetManager.instance.lastY = this.top;
+	if(typeof this.top != 'undefined' && this.top != null) {
+		WidgetManager.instance.lastY = this.top - 20;
 	}
 
 	for(containerId in this.subWidgets) {
