@@ -238,23 +238,24 @@ WidgetManager.prototype.registerResizeableWidget = function(widget, resizeDirect
 
 }
 
+WidgetManager.RESIZE_DETECTION_OFFSET = 5;
 
 WidgetManager.prototype.determineResizeAction = function(widget, event) {
 	if(this.draggedWidget == null) {
 		//TODO mouseOffset may be wrong if screen is scrolled
 		this.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(widget.getDOMElement(), event);
 		var direction = '';
-		if(widget.allowsResize('n') && this.mouseOffset.y < 5) {
+		if(widget.allowsResize('n') && this.mouseOffset.y < WidgetManager.RESIZE_DETECTION_OFFSET) {
 			direction = 'n';
          }
         //log('allows: ' + widget.allowsResize('s') + ': ' + this.mouseOffset.y + ' > ' + (widget.height - 5));
-		if(widget.allowsResize('s') && this.mouseOffset.y > widget.height - 5) {
+		if(widget.allowsResize('s') && this.mouseOffset.y > widget.height - WidgetManager.RESIZE_DETECTION_OFFSET) {
 			direction = 's';
         }
-		if(widget.allowsResize('w') && this.mouseOffset.x < 5) {
+		if(widget.allowsResize('w') && this.mouseOffset.x < WidgetManager.RESIZE_DETECTION_OFFSET) {
 			direction += 'w';
         }
-		if(widget.allowsResize('e') && this.mouseOffset.x > widget.width - 5) {
+		if(widget.allowsResize('e') && this.mouseOffset.x > widget.width - WidgetManager.RESIZE_DETECTION_OFFSET) {
 			direction += 'e';
          }
          if(direction != '') {
