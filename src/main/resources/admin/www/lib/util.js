@@ -324,3 +324,26 @@ function getUrlParameters(url) {
 
   return obj;
 }
+
+function globalValueExists(valueStr) {
+    try {
+        var value = eval(valueStr);
+        return typeof value != 'undefined' && value != null;
+    } catch(e) {
+        return false;
+    }
+}
+
+function valueExistsInContext(valueStr, context) {
+    try {
+        var value = evalInContext(valueStr, context);
+        return typeof value != 'undefined' && value != null;
+    } catch(e) {
+        return false;
+    }
+}
+
+function evalInContext(valueStr, context) {
+    //# Return the results of the in-line anonymous function we .call with the passed context
+    return function() { return eval(valueStr); }.call(context);
+}
