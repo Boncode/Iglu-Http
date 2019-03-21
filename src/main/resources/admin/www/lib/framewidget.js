@@ -117,10 +117,12 @@ offSet: float
 */
 FrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSet) {
 
+//	console.log('FrameWidget.prototype.notifySizeAndPositionListeners');
+
     var offsetOverFlow = 0;
 
 	for(var widgetId in this.sizeAndPositionListeners) {
-	    //log('' + this.id + ' trying to trigger ' + widgetId);
+//	    console.log('' + this.id + ' trying to trigger ' + widgetId);
 		var listenerData = this.sizeAndPositionListeners[widgetId];
 
 		var actionData = listenerData.actionsByDirection[direction];
