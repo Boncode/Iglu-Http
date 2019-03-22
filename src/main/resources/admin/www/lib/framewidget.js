@@ -358,9 +358,6 @@ FrameWidget.prototype.setDOMElement = function(element) {
 	if(this.height != null) {
 		element.style.height = this.height;
 	}
-	element.style.position = 'absolute';
-	element.style.padding = '0px';
-	element.style.margin = '0px';
 };
 
 FrameWidget.prototype.stretchToOuterWidget = function(outerWidget, directionMap) {
