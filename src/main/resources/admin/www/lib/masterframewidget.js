@@ -67,8 +67,8 @@ function dragWidget(event) {
 			WidgetManager.instance.resizingWidget.resizeEast(offset);
 		}
 	} else if(widgetmanager.draggedWidget != null) {
-	    //log('dragging widget ' + widgetmanager.draggedWidget.getId());
-		var mousePos = getMousePositionInWindow(event);
+	    //console.log('dragging widget ' + widgetmanager.draggedWidget.getId());
+		var mousePos = getMousePositionInPage(event);
 		widgetmanager.draggedWidget.setPosition(mousePos.x - widgetmanager.mouseOffset.x, mousePos.y - widgetmanager.mouseOffset.y);
 	}
 }

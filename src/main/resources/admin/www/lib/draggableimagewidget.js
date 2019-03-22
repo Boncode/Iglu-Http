@@ -93,7 +93,7 @@ DraggableImageWidget.prototype.getDragSelectElement = function() {
 
 DraggableImageWidget.prototype.setPosition = function(x, y) {
 
-    log('DraggableImageWidget pos ' + this.element.style.left + ',' + this.element.style.top + '  (' + x + ',' + y + ')');
+    console.log('DraggableImageWidget pos ' + this.element.style.left + ',' + this.element.style.top + '  (' + x + ',' + y + ')');
     this.top = y;
     this.left = x;
 	if(this.top != null) {

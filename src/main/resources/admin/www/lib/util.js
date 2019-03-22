@@ -44,13 +44,8 @@ function registerEventHandler(element, eventDesc, handler) {
 //for IE it works with objects only
 function copyMembers(classA, classB) {
 	for (var n in classB) {
-//	alert(typeof classB[n]);
 		if(typeof classB[n] === 'function') {
-
-//			if(classB[n] != classB.constructor) {
-	//		alert('copying ' + classB[n]);
-				classA[n] = classB[n];
-//			}
+			classA[n] = classB[n];
 		}
 	}
 }
@@ -87,10 +82,6 @@ function subclass(subclass, baseclass) {
 	subclass.prototype = clone(baseclass.prototype);
 	subclass.prototype.constructor = subclass;
 	subclass.prototype.supertype = clone(baseclass.prototype);
-//	subclass.prototype.super.constructor = subclass;
-//	subclass.prototype.super = new Object();
-//	subclass.prototype.super = baseclass.prototype;
-//	copyMembers(subclass.prototype.supertype, baseclass.prototype);
 }
 
 
