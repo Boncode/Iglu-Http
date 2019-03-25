@@ -68,7 +68,10 @@ function dragWidget(event) {
 		}
 	} else if(widgetmanager.draggedWidget != null) {
 	    //console.log('dragging widget ' + widgetmanager.draggedWidget.getId());
-		var mousePos = getMousePositionInPage(event);
+	    //must be used if complete page is scrolled
+//		var mousePos = getMousePositionInPage(event);
+        //must be used if part of the page scrolled
+		var mousePos = getMousePositionInWindow(event);
 		widgetmanager.draggedWidget.setPosition(mousePos.x - widgetmanager.mouseOffset.x, mousePos.y - widgetmanager.mouseOffset.y);
 	}
 }
