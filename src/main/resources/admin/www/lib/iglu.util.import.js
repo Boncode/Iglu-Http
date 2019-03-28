@@ -6,7 +6,11 @@ iglu.util.import.loadJsonData = function(data, servletPath, callbackWhenDone) {
 	iglu.util.import.callbackWhenFilesLoaded = callbackWhenDone;
 	iglu.util.import.nrofFilesToLoad = data.length;
 	for(var i in data) {
-		ajaxRequestManager.doRequest((typeof servletPath != 'undefined' ? servletPath : './') + data[i][1], new Function("jsonData", iglu.util.import.getJsonParseFunctionText(data[i][0])));
+	    try {
+		    ajaxRequestManager.doRequest((typeof servletPath != 'undefined' ? servletPath : './') + data[i][1], new Function("jsonData", iglu.util.import.getJsonParseFunctionText(data[i][0])));
+        } catch(e) {
+            console.error('unable to perform request ' + servletPath + ': ' + e.message);
+        }
 	}
 }
 
