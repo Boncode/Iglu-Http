@@ -21,9 +21,7 @@ Widget.prototype.constructWidget = function(settings) {
 	if(typeof settings == 'undefined') {
         throw 'widget ' + this.constructor.name + ' must have settings';
 	}
-	for(var name in settings) {
-      	this.set(name, settings[name], this[name]);
-    }
+	this.refreshSettings(settings);
 	if(this.id == null) {
         throw 'widget ' + this.constructor.name + ' must have an id';
 	}
@@ -31,6 +29,13 @@ Widget.prototype.constructWidget = function(settings) {
 	this.autoRefreshInterval = 0;
 
 }
+
+Widget.prototype.refreshSettings = function(settings) {
+	for(var name in settings) {
+      	this.set(name, settings[name], this[name]);
+    }
+}
+
 
 //TODO move to settings Object
 
