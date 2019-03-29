@@ -171,6 +171,16 @@ MenuWidget.prototype.evaluate = function(contents, menuWidget) {
 	//save state
 };
 
+MenuWidget.prototype.load = function(contents, menuWidget) {
+
+	if(!this.isLoaded) {
+	    console.log('loading menu contents');
+		menuWidget.menu = JSON.parse(contents).menu;
+		menuWidget.writeHTML();
+		this.isLoaded = true;
+	}
+	//save state
+};
 
 
 MenuWidget.prototype.onDeploy = function() {
