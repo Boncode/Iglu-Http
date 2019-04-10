@@ -403,7 +403,9 @@ function createLink(item, alternativeLabel) {
 				onclick += link.functionName + '(\'' + link.url + '\', \'' + link.target_label + '\');';
 			} else if(link.url.endsWith('.js')) {
 				onclick += 'linkToJavaScript(\'' + link.url + '\', \'' + link.target + '\', \'' + link.target_label + '\');';
-			} else {
+			} else if(link.url.endsWith('.json')) {
+                onclick += 'linkToJson(\'' + link.url + '\', \'' + link.target + '\', \'' + link.target_label + '\');';
+            } else {
 				onclick += 'linkToHtml(\'' + link.url + '\', \'' + link.target + '\', \'' + link.target_label + '\');';
 			}
 		}

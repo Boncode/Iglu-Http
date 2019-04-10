@@ -2,8 +2,9 @@ var iglu = new Object();
 iglu.util = new Object();
 iglu.util.import = new Object();
 
-iglu.util.import.loadJsonData = function(data, servletPath, callbackWhenDone) {
+iglu.util.import.loadJsonData = function(data, servletPath, callbackWhenDone, callbackInput) {
 	iglu.util.import.callbackWhenFilesLoaded = callbackWhenDone;
+	iglu.util.import.callbackInput = callbackInput;
 	iglu.util.import.nrofFilesToLoad = data.length;
 	for(var i in data) {
 	    try {
@@ -26,6 +27,6 @@ iglu.util.import.getJsonParseFunctionText = function(varName) {
 iglu.util.import.checkNrofFilesToLoad = function() {
 	iglu.util.import.nrofFilesToLoad--;
 	if(iglu.util.import.nrofFilesToLoad == 0 && typeof iglu.util.import.callbackWhenFilesLoaded != 'undefined') {
-    	iglu.util.import.callbackWhenFilesLoaded.call();
+    	iglu.util.import.callbackWhenFilesLoaded.call(this, iglu.util.import.callbackInput);
 	}
 }
