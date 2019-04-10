@@ -51,6 +51,7 @@ Widget.prototype.set = function(name, value, defaultValue) {
 
 Widget.prototype.cloneSettings = function(extraSettingsNames) {
     var clonedSettings = cloneAttributes(this.settings);
+
 	for(var name in this.settings) {
       	clonedSettings[name] = this[name];
     }
