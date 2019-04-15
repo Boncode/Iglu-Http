@@ -91,8 +91,8 @@ AjaxRequestManager.prototype.clearHistory = function()
 	this.ajaxRequestHistory = new Array();
 }
 
-AjaxRequestManager.prototype.doRequestAndKeepHistory = function(requestURL, callback, callbackInput, postData, multipart) {
-	this.ajaxRequestHistory.push(new AjaxRequest(requestURL, callback, callbackInput, postData, multipart));
+AjaxRequestManager.prototype.doRequestAndKeepHistory = function(requestURL, callback, callbackInput, postData, multipart, contentType) {
+	this.ajaxRequestHistory.push(new AjaxRequest(requestURL, callback, callbackInput, postData, multipart, contentType));
     window.location.hash = "#req" + this.totalNrofRequests;
 	this.doRequest(requestURL, callback, callbackInput, postData, multipart);
 }
@@ -110,7 +110,6 @@ AjaxRequestManager.prototype.doRequestAndKeepHistory = function(requestURL, call
  */
 AjaxRequestManager.prototype.doRequest = function(requestURL, callback, callbackInput, postData, multipart, contentType)
 {
-
 	if(this.ajaxRequestHistory.length > 50) {
 		this.ajaxRequestHistory.shift();
 	}
