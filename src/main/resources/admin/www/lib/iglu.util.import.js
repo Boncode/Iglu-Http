@@ -1,5 +1,3 @@
-var iglu = new Object();
-iglu.util = new Object();
 iglu.util.import = new Object();
 
 iglu.util.import.loadJsonData = function(data, servletPath, callbackWhenDone, callbackInput) {
