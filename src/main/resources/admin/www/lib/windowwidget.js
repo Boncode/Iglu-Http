@@ -105,9 +105,6 @@ WindowWidget.prototype.writeHTML = function() {
 	var titleFrame = new FrameWidget({
         id : this.id + '_title_frame',
         cssClassName : 'paneltitleframe',
-        top: 0,
-        left: 0,
-        height: 20
 	}, titleContent);
 
 	this.subWidgets[this.id + '_title_frame'] = titleFrame;
@@ -117,8 +114,6 @@ WindowWidget.prototype.writeHTML = function() {
 	var contentFrame = new FrameWidget({
         id : this.id + '_frame',
         cssClassName : 'panelcontentframe',
-        top: 30,
-        left: 5,
         width: (this.width - 10),
         height: (this.height - 35)
 	}, this.content);
@@ -155,9 +150,7 @@ WindowWidget.prototype.onDestroy = function() {
 //todo rename to activate / deactivate
 
 WindowWidget.prototype.onFocus = function() {
-
 	log('this.id:' + this.id);
-
 	this.setHeaderClass('title_bar_active');
 };
 
