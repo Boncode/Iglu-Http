@@ -28,12 +28,14 @@ PanelWidget.prototype.constructPanelWidget = function(settings, content) {
 
 	this.cssClassName = 'panel';
 	this.hasHeader = false;
+	this.hasMenu = false;
 	this.title = null;
 	//invoke super
 	this.constructFrameWidget(settings, content);
 	this.titleBarFunctions = new Array();
 };
 
+//PanelWIdget.prototype.editTitl
 
 // + '<div class="close_icon" onclick="widgetmanager.destroyWidget(\'' + this.getId() + '\')"></div>'
 
@@ -68,11 +70,16 @@ PanelWidget.prototype.createEmptyHeader = function() {
 }
 
 PanelWidget.prototype.setHeaderContent = function() {
+    var menuHTML = ""
+    if(this.hasMenu) {
+        menuHTML = '<img src = "img/hamburger_menu_icon.png" class = "hamburger_menu_image" onclick = "handleHamburgerMenu()"><div id="hamburger_menu" style="float:right"></div>';
+    }
+
     if(this.content.title != null) {
-        this.header.innerHTML = this.content.title + this.createTitleBarFunctionHtml();
+        this.header.innerHTML = '<div id="' + this.id + '_header_title">' + this.content.title + '</div>'+ this.createTitleBarFunctionHtml() + menuHTML;
     } else {
         if(this.title != null) {
-            this.header.innerHTML = this.title + this.createTitleBarFunctionHtml();
+            this.header.innerHTML = this.title + this.createTitleBarFunctionHtml() + menuHTML;
         }
     }
 }
