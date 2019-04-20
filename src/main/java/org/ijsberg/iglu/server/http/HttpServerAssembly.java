@@ -3,6 +3,7 @@ package org.ijsberg.iglu.server.http;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.access.component.StandardAccessManager;
+import org.ijsberg.iglu.assembly.CommonAssembly;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
@@ -33,21 +34,19 @@ import java.util.Properties;
 /**
  * Created by jeroe on 06/01/2018.
  */
-public abstract class HttpServerAssembly extends BasicAssembly{
+public abstract class HttpServerAssembly extends CommonAssembly {
     private Map<String, Cluster> clusters = new HashMap<String, Cluster>();
-    protected Cluster core;
+    //protected Cluster core;
     protected Cluster admin;
 
     protected StandardAccessManager accessManager;
-    private RotatingFileLogger logger;
 
     //	private static CMSService service;
     private UserManager adminUserManager;
 
     public void initialize(String[] args) {
 
-        core = new StandardCluster();
-
+        super.initialize(args);
         createInfraLayer();
         createDataLayer();
         createServiceLayer();
@@ -80,6 +79,8 @@ public abstract class HttpServerAssembly extends BasicAssembly{
 
 
     protected void createInfraLayer() {
+
+        super.createInfraLayer();
         Component schedulerComponent = new StandardComponent(new StandardScheduler());
         core.connect("Scheduler", schedulerComponent);
 
@@ -93,11 +94,6 @@ public abstract class HttpServerAssembly extends BasicAssembly{
         core.connect("RequestRegistry", requestManagerComponent, RequestRegistry.class);
 
 
-        logger = new RotatingFileLogger("logs/website");
-
-        Component loggerComponent = new StandardComponent(logger);
-        core.connect("Logger", loggerComponent);
-        loggerComponent.setProperties(PropertiesSupport.loadProperties("conf/logger.properties"));
     }
 
     private void createAdminLayer() {
@@ -169,9 +165,5 @@ public abstract class HttpServerAssembly extends BasicAssembly{
         admin.connect("Assembly", new StandardComponent(this));
         admin.connect("ServiceCluster", new StandardComponent(admin), Cluster.class);
         admin.connect("CoreCluster", new StandardComponent(core));
-    }
-
-    public void addAppender(Logger logger) {
-        this.logger.addAppender(logger);
     }
 }
