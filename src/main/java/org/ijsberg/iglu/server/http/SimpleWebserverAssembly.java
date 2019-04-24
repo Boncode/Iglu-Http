@@ -1,5 +1,6 @@
 package org.ijsberg.iglu.server.http;
 
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.ijsberg.iglu.configuration.Assembly;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
@@ -55,7 +56,7 @@ public class SimpleWebserverAssembly extends BasicAssembly {
 
         Properties webserverProperties = new Properties();
         webserverProperties.setProperty("port", "" + port);
-        webserverProperties.setProperty("servlet.staticcontentservlet.class", org.mortbay.jetty.servlet.DefaultServlet.class.getName());
+        webserverProperties.setProperty("servlet.staticcontentservlet.class", DefaultServlet.class.getName());
         webserverProperties.setProperty("servlet.staticcontentservlet.url_pattern", "/");
         webserverProperties.setProperty("document_root", projectDir);
 

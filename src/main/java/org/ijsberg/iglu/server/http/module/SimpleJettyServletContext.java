@@ -20,31 +20,28 @@
 package org.ijsberg.iglu.server.http.module;
 
 
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.Holder;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.MultiException;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
 import org.ijsberg.iglu.util.execution.Executable;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.PropertiesSupport;
 import org.ijsberg.iglu.util.reflection.ReflectionSupport;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.FilterHolder;
-import org.mortbay.jetty.servlet.Holder;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.thread.BoundedThreadPool;
-import org.mortbay.util.MultiException;
-import org.mortbay.xml.XmlConfiguration;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * This component acts as a wrapper for the Jetty webserver / servlet runner
@@ -88,6 +85,8 @@ public class SimpleJettyServletContext implements Startable {
 			// contextInitialized() event before the servlet itself
 			// is init()
 //			ctx.getServletHandler().setInitializeAtStart(false);
+			ctx.setClassLoader(Thread.currentThread().getContextClassLoader());
+
 			server.start();
 
 //			ctx.getServletHandler().initialize();
@@ -129,7 +128,7 @@ public class SimpleJettyServletContext implements Startable {
 		return server.isStarted();
 	}
 
-	private Context ctx;
+	private ServletContextHandler ctx;
 
 	/**
 	 * @throws ConfigurationException
@@ -161,8 +160,8 @@ public class SimpleJettyServletContext implements Startable {
 				throw new ConfigurationException("file '" + xmlConfig + "' does not exist");
 			}
 			try {
-				XmlConfiguration configuration = new XmlConfiguration(new FileInputStream(file));
-				configuration.configure(server);
+//				XmlConfiguration configuration = new XmlConfiguration(new FileInputStream(file));
+//				configuration.configure(server);
 			}
 			catch (Exception e) {
 				throw new ConfigurationException("web environment can not be initialized", e);
@@ -170,16 +169,17 @@ public class SimpleJettyServletContext implements Startable {
 		} else {
 			log("configuring Jetty using Iglu configuration");
 
-
+/*
 			BoundedThreadPool pool = new BoundedThreadPool();
 			pool.setMinThreads(minimumThreads);
 			pool.setMaxThreads(maximumThreads);
 			server.setThreadPool(pool);
+*/
 
+			ctx = new ServletContextHandler(server, contextPath, ServletContextHandler.SESSIONS);
 
-			ctx = new Context(server, contextPath, Context.SESSIONS);
-
-			ctx.setInitParams(PropertiesSupport.getSubsection(properties, "initparam"));
+			setInitParameters(ctx, PropertiesSupport.getSubsection(properties, "initparam"));
+			//ctx.setInitParams(PropertiesSupport.getSubsection(properties, "initparam"));
 
 			ctx.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeout);
 			//set root directory
@@ -199,7 +199,15 @@ public class SimpleJettyServletContext implements Startable {
 	}
 
 
-	public void addServlets(Context ctx, Properties section) {
+	public void setInitParameters(ServletContextHandler ctx, Properties section) {
+		for(String key : section.stringPropertyNames()) {
+			ctx.setInitParameter(key, section.getProperty(key));
+		}
+	}
+
+	public void addServlets(ServletContextHandler ctx, Properties section) {
+
+
 		Map<String, Properties> servletParameters = PropertiesSupport.getSubsections(section, "servlet");
 
 		if (servletParameters != null) {
@@ -245,7 +253,7 @@ public class SimpleJettyServletContext implements Startable {
 	}
 
 
-	public void addFilters(Context ctx, Properties section) {
+	public void addFilters(ServletContextHandler ctx, Properties section) {
 		Map<String, Properties> filterParameters = PropertiesSupport.getSubsections(section, "filter");
 
 		if (filterParameters != null) {
@@ -263,13 +271,15 @@ public class SimpleJettyServletContext implements Startable {
 					try {
 						Filter filter = (Filter) ReflectionSupport.instantiateClass(filterClassName);
 						filters.add(filter);
+
 						FilterHolder filterHolder = new FilterHolder(filter);
 						filterHolder.setName(filterName);
+
 						addInitParameters(filterHolder, subSection);
 
 						for (String urlPattern : urlPatterns) {
 							//add filter for each alias
-							ctx.addFilter(filterHolder, urlPattern, Handler.DEFAULT);
+							ctx.addFilter(filterHolder, urlPattern, EnumSet.allOf(DispatcherType.class));
 						}
 					}
 					catch (InstantiationException e) {
@@ -280,7 +290,7 @@ public class SimpleJettyServletContext implements Startable {
 		}
 	}
 
-	public void addListeners(Context ctx, Properties section) {
+	public void addListeners(ServletContextHandler ctx, Properties section) {
 		Map<String, Properties> listenerParameters = PropertiesSupport.getSubsections(section, "listener");
 
 		if (listenerParameters != null) {

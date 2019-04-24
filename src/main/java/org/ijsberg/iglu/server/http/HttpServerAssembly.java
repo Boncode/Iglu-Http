@@ -42,7 +42,6 @@ public abstract class HttpServerAssembly extends CommonAssembly {
     protected StandardAccessManager accessManager;
 
     //	private static CMSService service;
-    private UserManager adminUserManager;
 
     public void initialize(String[] args) {
 
@@ -113,7 +112,7 @@ public abstract class HttpServerAssembly extends CommonAssembly {
         core.connect("AdminAccessManager", requestManagerComponent);
         admin.connect("RequestRegistry", requestManagerComponent, RequestRegistry.class);
 
-        adminUserManager = new StandardUserManager();
+        UserManager adminUserManager = new StandardUserManager();
         Component adminUserManagerComponent = new StandardComponent(adminUserManager);
         core.connect("Authenticator", adminUserManagerComponent);
         //TODO properties
