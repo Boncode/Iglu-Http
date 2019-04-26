@@ -277,10 +277,10 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			{
 				userId = null;
 			}
- 			if(accessManager != null) {
+ 			//if(accessManager != null) {
 				appRequest = accessManager.bindRequest(this);
 				Session session = appRequest.resolveSession(sessionToken, userId);
-			}
+			//}
 
 			if (this.syncUserPrefs &&  appRequest.getTimesEntered() == 0)
 			{

@@ -46,8 +46,8 @@ public class AdminAjaxResponseAgent implements AdminResponseAgent {
 	private Session session;
     private Cluster core;
 
-    public static AgentFactory<AdminResponseAgent> getAgentFactory() {
-        return new BasicAgentFactory<AdminResponseAgent>(ADMIN_RESPONSE_AGENT_NAME) {
+    public static AgentFactory<AdminResponseAgent> getAgentFactory(Cluster cluster) {
+        return new BasicAgentFactory<AdminResponseAgent>(cluster, ADMIN_RESPONSE_AGENT_NAME) {
             public AdminResponseAgent createAgentImpl() {
                 return new AdminAjaxResponseAgent();
             }

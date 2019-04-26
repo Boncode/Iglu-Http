@@ -21,6 +21,7 @@ package org.ijsberg.iglu.server.facilities.module;
 
 import org.ijsberg.iglu.access.*;
 import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.server.facilities.UserAgent;
 
 /**
@@ -30,8 +31,8 @@ public class UserAgentImpl implements UserAgent {
 	private RequestRegistry requestRegistry;
 	private Session session;
 
-	public static AgentFactory<UserAgent> getAgentFactory() {
-		return new BasicAgentFactory<UserAgent>(USER_AGENT_NAME) {
+	public static AgentFactory<UserAgent> getAgentFactory(Cluster cluster) {
+		return new BasicAgentFactory<UserAgent>(cluster, USER_AGENT_NAME) {
 			public UserAgent createAgentImpl() {
 				return new UserAgentImpl();
 			}

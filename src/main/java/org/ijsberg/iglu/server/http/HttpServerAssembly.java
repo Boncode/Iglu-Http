@@ -1,5 +1,6 @@
 package org.ijsberg.iglu.server.http;
 
+import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.access.component.StandardAccessManager;
 import org.ijsberg.iglu.assembly.CommonAssembly;
@@ -64,7 +65,7 @@ public abstract class HttpServerAssembly extends CommonAssembly {
         accessManager.setProperties(accessManProps);
 
         Component requestManagerComponent = new StandardComponent(accessManager);
-        core.connect("AccessManager", requestManagerComponent, RequestRegistry.class);
+        core.connect("AccessManager", requestManagerComponent, RequestRegistry.class, AccessManager.class);
         core.connect("RequestRegistry", requestManagerComponent, RequestRegistry.class);
 
         return core;

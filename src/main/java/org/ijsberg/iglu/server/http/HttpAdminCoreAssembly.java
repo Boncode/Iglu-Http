@@ -39,7 +39,7 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
         admin = createCluster("admin");
 
         admin.connect("Logger", new StandardComponent(logger), Logger.class);
-        admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(PropertiesSupport.loadProperties("admin/config/web_utility_agent.properties"))));
+        admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, PropertiesSupport.loadProperties("admin/config/web_utility_agent.properties"))));
 
         AccessManager adminAccessManager = new StandardAccessManager();
 
@@ -55,8 +55,8 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
         //TODO properties
         admin.connect("UserManager", adminUserManagerComponent);
 
-        admin.connect("AdminAgentFactory", new StandardComponent(AdminAgentImpl.getAgentFactory()));
-        admin.connect("AdminAgentResponseFactory", new StandardComponent(AdminAjaxResponseAgent.getAgentFactory()));
+        admin.connect("AdminAgentFactory", new StandardComponent(AdminAgentImpl.getAgentFactory(admin)));
+        admin.connect("AdminAgentResponseFactory", new StandardComponent(AdminAjaxResponseAgent.getAgentFactory(admin)));
 
         RequestMapper requestMapper = new StandardRequestMapper();
         Component requestMapperComponent = new StandardComponent(requestMapper);
