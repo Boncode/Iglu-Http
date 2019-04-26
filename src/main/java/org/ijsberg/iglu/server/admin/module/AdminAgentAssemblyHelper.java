@@ -56,7 +56,9 @@ public class AdminAgentAssemblyHelper {
 		Startable componentStarter = new ComponentStarter();
 		admin.connect("ComponentStarter", new StandardComponent(componentStarter));
 
-		admin.connect("Logger", new StandardComponent(logger), Logger.class);
+		if(logger != null) {
+			admin.connect("Logger", new StandardComponent(logger), Logger.class);
+		}
 		admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(loadProperties("admin/config/web_utility_agent.properties"))));
 
 		StandardAccessManager adminAccessManager = new StandardAccessManager();

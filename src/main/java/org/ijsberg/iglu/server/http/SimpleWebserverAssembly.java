@@ -23,8 +23,8 @@ import java.util.Properties;
  * Created by J Meetsma on 26-4-2017.
  */
 public class SimpleWebserverAssembly extends BasicAssembly {
-    private Map<String, Cluster> clusters = new HashMap<String, Cluster>();
-    private Cluster core;
+//    private Map<String, Cluster> clusters = new HashMap<String, Cluster>();
+//    private Cluster core;
     private static Logger logger;
 
     private static String resourceFilter = "*";
@@ -42,10 +42,9 @@ public class SimpleWebserverAssembly extends BasicAssembly {
     }
 
     public void initialize(String[] args) {
-        core = new StandardCluster();
         createPresentationLayer();
-        core.connect("ServiceCluster", new StandardComponent(core));
-        clusters.put("core", core);
+//        core.connect("ServiceCluster", new StandardComponent(core));
+//        clusters.put("core", core);
     }
 
 
@@ -62,16 +61,6 @@ public class SimpleWebserverAssembly extends BasicAssembly {
 
         jettyComponent.setProperties(webserverProperties);
         core.connect("JettyServletContext", jettyComponent);
-    }
-
-    @Override
-    public Map<String, Cluster> getClusters() {
-        return clusters;
-    }
-
-    @Override
-    public Cluster getCoreCluster() {
-        return core;
     }
 
     /**
