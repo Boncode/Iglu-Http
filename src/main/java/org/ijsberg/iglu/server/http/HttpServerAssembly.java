@@ -3,9 +3,9 @@ package org.ijsberg.iglu.server.http;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.access.component.StandardAccessManager;
-import org.ijsberg.iglu.assembly.CommonAssembly;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
+import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
 
@@ -14,7 +14,7 @@ import java.util.Properties;
 /**
  * Created by jeroe on 06/01/2018.
  */
-public abstract class HttpServerAssembly extends CommonAssembly {
+public abstract class HttpServerAssembly extends BasicAssembly {
 
     protected StandardAccessManager accessManager;
 
@@ -23,9 +23,13 @@ public abstract class HttpServerAssembly extends CommonAssembly {
     protected Cluster serviceLayer;
     protected Cluster presentationLayer;
 
-    public void initialize(String[] args) {
+    protected Properties properties;
 
-        super.initialize(args);
+    public HttpServerAssembly(Properties properties) {
+
+        super();
+
+        this.properties = properties;
 
         infraLayer = createInfraLayer();
 
@@ -55,7 +59,7 @@ public abstract class HttpServerAssembly extends CommonAssembly {
 
     protected Cluster createInfraLayer() {
 
-        super.createInfraLayer();
+        //super.createInfraLayer();
         Component schedulerComponent = new StandardComponent(new StandardScheduler());
         core.connect("Scheduler", schedulerComponent);
 
