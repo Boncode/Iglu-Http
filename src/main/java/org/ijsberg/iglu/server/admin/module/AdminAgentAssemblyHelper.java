@@ -56,14 +56,16 @@ public class AdminAgentAssemblyHelper {
 		Startable componentStarter = new ComponentStarter();
 		admin.connect("ComponentStarter", new StandardComponent(componentStarter));
 
-		admin.connect("Logger", new StandardComponent(logger), Logger.class);
-		admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(loadProperties("admin/config/web_utility_agent.properties"))));
+		if(logger != null) {
+			admin.connect("Logger", new StandardComponent(logger), Logger.class);
+		}
+		admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, loadProperties("admin/config/web_utility_agent.properties"))));
 
 		StandardAccessManager adminAccessManager = new StandardAccessManager();
 
 		Component requestManagerComponent = new StandardComponent(adminAccessManager);
 		admin.connect("AdminAccessManager", requestManagerComponent, RequestRegistry.class);
-		adminAccessManager.setServiceCluster(admin);
+
 		//make it start & stop
 //		admin.connect("AdminAccessManager", requestManagerComponent);
 		admin.connect("AdminRequestRegistry", requestManagerComponent, RequestRegistry.class);
@@ -76,8 +78,8 @@ public class AdminAgentAssemblyHelper {
 		//TODO properties
 		admin.connect("UserManager", adminUserManagerComponent);
 
-		admin.connect("AdminAgentFactory", new StandardComponent(AdminAgentImpl.getAgentFactory()));
-		admin.connect("AdminAgentResponseFactory", new StandardComponent(AdminAjaxResponseAgent.getAgentFactory()));
+		admin.connect("AdminAgentFactory", new StandardComponent(AdminAgentImpl.getAgentFactory(admin)));
+		admin.connect("AdminAgentResponseFactory", new StandardComponent(AdminAjaxResponseAgent.getAgentFactory(admin)));
 
 		RequestMapper requestMapper = new StandardRequestMapper();
 		Component requestMapperComponent = new StandardComponent(requestMapper);

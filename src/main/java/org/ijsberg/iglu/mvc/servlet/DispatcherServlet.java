@@ -91,6 +91,10 @@ public class DispatcherServlet extends HttpServlet implements RequestDispatcher 
 		this.assembly = assembly;
 	}
 
+	//depending on which way the injection is solved
+	public void setAssembly(Assembly assembly) {
+		this.assembly = assembly;
+	}
 /*
 	public void setServiceCluster(Cluster cluster) {
 	public void register(Cluster cluster) {

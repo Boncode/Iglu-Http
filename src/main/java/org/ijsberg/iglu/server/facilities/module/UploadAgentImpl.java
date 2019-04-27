@@ -23,6 +23,7 @@ import org.ijsberg.iglu.access.AgentFactory;
 import org.ijsberg.iglu.access.BasicAgentFactory;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
@@ -59,8 +60,8 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 
-	public static AgentFactory<UploadAgent> getAgentFactory(Properties agentProperties) {
-		return new BasicAgentFactory<UploadAgent>(UPLOAD_AGENT_NAME, agentProperties) {
+	public static AgentFactory<UploadAgent> getAgentFactory(Cluster cluster, Properties agentProperties) {
+		return new BasicAgentFactory<UploadAgent>(cluster, UPLOAD_AGENT_NAME, agentProperties) {
 			public UploadAgent createAgentImpl() {
 				return new UploadAgentImpl();
 			}

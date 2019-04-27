@@ -21,6 +21,7 @@ package org.ijsberg.iglu.server.admin.module;
 
 import org.ijsberg.iglu.access.*;
 import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.http.widget.MenuItem;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.logging.Logger;
@@ -42,11 +43,14 @@ public class AdminAgentImpl implements AdminAgent, SessionDestructionListener, L
 	private Logger loggerAppender;
 	private static int MAX_LOG_SIZE = 1000;
 
-    public static AgentFactory<AdminAgent> getAgentFactory() {
-        return new BasicAgentFactory<AdminAgent>(ADMIN_AGENT_NAME) {
+    public static AgentFactory<AdminAgent> getAgentFactory(Cluster cluster) {
+        return new BasicAgentFactory<AdminAgent>(cluster, ADMIN_AGENT_NAME) {
             public AdminAgent createAgentImpl() {
                 return new AdminAgentImpl();
             }
+            public Cluster getCluster() {
+            	return cluster;
+			}
         };
     }
 

@@ -1,5 +1,6 @@
 package org.ijsberg.iglu.server.http;
 
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.ijsberg.iglu.configuration.Assembly;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
@@ -22,8 +23,8 @@ import java.util.Properties;
  * Created by J Meetsma on 26-4-2017.
  */
 public class SimpleWebserverAssembly extends BasicAssembly {
-    private Map<String, Cluster> clusters = new HashMap<String, Cluster>();
-    private Cluster core;
+//    private Map<String, Cluster> clusters = new HashMap<String, Cluster>();
+//    private Cluster core;
     private static Logger logger;
 
     private static String resourceFilter = "*";
@@ -41,10 +42,9 @@ public class SimpleWebserverAssembly extends BasicAssembly {
     }
 
     public void initialize(String[] args) {
-        core = new StandardCluster();
         createPresentationLayer();
-        core.connect("ServiceCluster", new StandardComponent(core));
-        clusters.put("core", core);
+//        core.connect("ServiceCluster", new StandardComponent(core));
+//        clusters.put("core", core);
     }
 
 
@@ -55,22 +55,12 @@ public class SimpleWebserverAssembly extends BasicAssembly {
 
         Properties webserverProperties = new Properties();
         webserverProperties.setProperty("port", "" + port);
-        webserverProperties.setProperty("servlet.staticcontentservlet.class", org.mortbay.jetty.servlet.DefaultServlet.class.getName());
+        webserverProperties.setProperty("servlet.staticcontentservlet.class", DefaultServlet.class.getName());
         webserverProperties.setProperty("servlet.staticcontentservlet.url_pattern", "/");
         webserverProperties.setProperty("document_root", projectDir);
 
         jettyComponent.setProperties(webserverProperties);
         core.connect("JettyServletContext", jettyComponent);
-    }
-
-    @Override
-    public Map<String, Cluster> getClusters() {
-        return clusters;
-    }
-
-    @Override
-    public Cluster getCoreCluster() {
-        return core;
     }
 
     /**
