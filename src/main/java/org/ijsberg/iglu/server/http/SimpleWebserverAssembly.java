@@ -1,6 +1,8 @@
 package org.ijsberg.iglu.server.http;
 
 import org.eclipse.jetty.servlet.DefaultServlet;
+import org.ijsberg.iglu.Application;
+import org.ijsberg.iglu.assembly.StandardApplication;
 import org.ijsberg.iglu.configuration.Assembly;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
@@ -35,16 +37,11 @@ public class SimpleWebserverAssembly extends BasicAssembly {
     private int port = 17680;
 
     public SimpleWebserverAssembly() {
+        createPresentationLayer();
     }
 
     public SimpleWebserverAssembly(int port) {
         this.port = port;
-    }
-
-    public void initialize(String[] args) {
-        createPresentationLayer();
-//        core.connect("ServiceCluster", new StandardComponent(core));
-//        clusters.put("core", core);
     }
 
 
@@ -85,21 +82,17 @@ public class SimpleWebserverAssembly extends BasicAssembly {
             resourceFilter = args[2];
         }
 
-        ServerEnvironment env = null;
+        StandardApplication application = null;
         try {
-            Assembly assembly = new SimpleWebserverAssembly(port);
-            assembly.initialize(args);
-            env = new ServerEnvironment(assembly);
-            //IDE started app must log to std out
-            logger = new StandardOutLogger();
-            env.start();
+            application = new StandardApplication(new SimpleWebserverAssembly(port));
+            application.start();
             Desktop.getDesktop().browse(new URI("http://localhost:" + port));
             System.out.println("Press ENTER to stop server...");
             System.in.read();
 
         } finally {
-            if(env != null) {
-                env.shutDown();
+            if(application != null) {
+                application.stop();
             }
         }
     }
