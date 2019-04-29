@@ -1,6 +1,6 @@
 package org.ijsberg.iglu.http.json;
 
-import org.ijsberg.iglu.util.properties.PropertiesSupport;
+import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.util.*;
 
@@ -14,15 +14,15 @@ public class JsonHierarchicalPropertiesObject extends JsonData {
 
 
 	public void addAttributes(Properties properties) {
-		Set<String> rootKeys = PropertiesSupport.getRootKeys(properties);
+		Set<String> rootKeys = IgluProperties.getRootKeys(properties);
 		for(String rootKey : rootKeys) {
 			addHtmlEscapedStringAttribute(rootKey, properties.getProperty(rootKey));
 		}
-		Set<String> subsectionKeys = PropertiesSupport.getSubsectionKeys(properties);
+		Set<String> subsectionKeys = IgluProperties.getSubsectionKeys(properties);
 		for(String subsectionKey : subsectionKeys) {
 			addAttribute(subsectionKey,
 					new JsonHierarchicalPropertiesObject(
-							PropertiesSupport.getSubsection(properties, subsectionKey)));
+							IgluProperties.getSubsection(properties, subsectionKey)));
 		}
 	}
 }

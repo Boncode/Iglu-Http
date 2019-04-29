@@ -2,8 +2,7 @@ package org.ijsberg.iglu.server.http.servlet;
 
 import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.http.json.JsonHierarchicalPropertiesObject;
-import org.ijsberg.iglu.logging.LogEntry;
-import org.ijsberg.iglu.util.properties.PropertiesSupport;
+import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -25,7 +24,7 @@ public class PropertiesServlet extends HttpServlet {
     public void init(ServletConfig conf) throws ServletException {
         super.init(conf);
         String propertiesFile = getInitParameter("properties_file");
-        Properties properties = PropertiesSupport.loadProperties(propertiesFile);
+        Properties properties = IgluProperties.loadProperties(propertiesFile);
         jsonProperties = new JsonHierarchicalPropertiesObject(properties);
     }
 

@@ -20,9 +20,7 @@
 package org.ijsberg.iglu.server.http.module;
 
 
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.Holder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -32,7 +30,7 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
 import org.ijsberg.iglu.util.execution.Executable;
 import org.ijsberg.iglu.util.misc.StringSupport;
-import org.ijsberg.iglu.util.properties.PropertiesSupport;
+import org.ijsberg.iglu.util.properties.IgluProperties;
 import org.ijsberg.iglu.util.reflection.ReflectionSupport;
 
 import javax.servlet.DispatcherType;
@@ -40,7 +38,6 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.*;
 
 /**
@@ -178,7 +175,7 @@ public class SimpleJettyServletContext implements Startable {
 
 			ctx = new ServletContextHandler(server, contextPath, ServletContextHandler.SESSIONS);
 
-			setInitParameters(ctx, PropertiesSupport.getSubsection(properties, "initparam"));
+			setInitParameters(ctx, IgluProperties.getSubsection(properties, "initparam"));
 			//ctx.setInitParams(PropertiesSupport.getSubsection(properties, "initparam"));
 
 			ctx.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeout);
@@ -208,7 +205,7 @@ public class SimpleJettyServletContext implements Startable {
 	public void addServlets(ServletContextHandler ctx, Properties section) {
 
 
-		Map<String, Properties> servletParameters = PropertiesSupport.getSubsections(section, "servlet");
+		Map<String, Properties> servletParameters = IgluProperties.getSubsections(section, "servlet");
 
 		if (servletParameters != null) {
 			//read servlets
@@ -254,7 +251,7 @@ public class SimpleJettyServletContext implements Startable {
 
 
 	public void addFilters(ServletContextHandler ctx, Properties section) {
-		Map<String, Properties> filterParameters = PropertiesSupport.getSubsections(section, "filter");
+		Map<String, Properties> filterParameters = IgluProperties.getSubsections(section, "filter");
 
 		if (filterParameters != null) {
 			for (String filterName : filterParameters.keySet()) {
@@ -291,7 +288,7 @@ public class SimpleJettyServletContext implements Startable {
 	}
 
 	public void addListeners(ServletContextHandler ctx, Properties section) {
-		Map<String, Properties> listenerParameters = PropertiesSupport.getSubsections(section, "listener");
+		Map<String, Properties> listenerParameters = IgluProperties.getSubsections(section, "listener");
 
 		if (listenerParameters != null) {
 			//read servlets
@@ -325,7 +322,7 @@ public class SimpleJettyServletContext implements Startable {
 
 	public static void addInitParameters(Holder holder, Properties subSection) {
 		//TODO rename initparam to property
-		Properties properties = PropertiesSupport.getSubsection(subSection, "initparam");
+		Properties properties = IgluProperties.getSubsection(subSection, "initparam");
 //		System.out.println("PROPS:" + properties);
 		for (Object key : properties.keySet()) {
 //			System.out.println(key + "->" + properties.get(key));

@@ -42,7 +42,7 @@ import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
-import static org.ijsberg.iglu.util.properties.PropertiesSupport.loadProperties;
+import static org.ijsberg.iglu.util.properties.IgluProperties.loadProperties;
 
 /**
  */
