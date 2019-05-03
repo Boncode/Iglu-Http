@@ -53,8 +53,12 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 
 	public void service(HttpServletRequest request, HttpServletResponse response) {
 		//Creates the output stream.
+		String pathInfo = request.getPathInfo();
+		if(pathInfo == null) {
+			pathInfo = "";
+		}
 		try {
-			String resourcePath = FileSupport.convertToUnixStylePath(documentRoot + '/' + request.getPathInfo());
+			String resourcePath = FileSupport.convertToUnixStylePath(documentRoot + '/' + pathInfo);
 			if(resourcePath.startsWith("/")) {
 				resourcePath = resourcePath.substring(1);
 			}

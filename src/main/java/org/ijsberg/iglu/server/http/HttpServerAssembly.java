@@ -23,13 +23,10 @@ public abstract class HttpServerAssembly extends BasicAssembly {
     protected Cluster serviceLayer;
     protected Cluster presentationLayer;
 
-    protected Properties properties;
 
     public HttpServerAssembly(Properties properties) {
 
-        super();
-
-        this.properties = properties;
+        super(properties);
 
         infraLayer = createInfraLayer();
 

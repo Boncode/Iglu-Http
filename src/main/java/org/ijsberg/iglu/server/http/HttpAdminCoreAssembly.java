@@ -18,7 +18,7 @@ import org.ijsberg.iglu.server.http.filter.WebAppEntryPoint;
 import org.ijsberg.iglu.server.http.module.SimpleJettyServletContext;
 import org.ijsberg.iglu.usermanagement.UserManager;
 import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
-import org.ijsberg.iglu.util.properties.PropertiesSupport;
+import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -28,7 +28,8 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
 
     protected Cluster admin;
 
-    public HttpAdminCoreAssembly() {
+    public HttpAdminCoreAssembly(Properties properties) {
+        super(properties);
         createAdminLayer();
     }
 
@@ -39,7 +40,7 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
         admin = createCluster("admin");
 
         admin.connect("Logger", new StandardComponent(logger), Logger.class);
-        admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, PropertiesSupport.loadProperties("admin/config/web_utility_agent.properties"))));
+        admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, IgluProperties.loadProperties("admin/config/web_utility_agent.properties"))));
 
         AccessManager adminAccessManager = new StandardAccessManager();
 
@@ -60,14 +61,14 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
 
         RequestMapper requestMapper = new StandardRequestMapper();
         Component requestMapperComponent = new StandardComponent(requestMapper);
-        requestMapperComponent.setProperties(PropertiesSupport.loadProperties("admin/config/request_mapper.properties"));
+        requestMapperComponent.setProperties(IgluProperties.loadProperties("admin/config/request_mapper.properties"));
         admin.connect("AdminRequestMapper", requestMapperComponent);
         //register as external component
         core.getFacade().connect(requestMapperComponent);
 
         SimpleJettyServletContext servletContext = new SimpleJettyServletContext();
         Component jettyComponent = new StandardComponent(servletContext);
-        Properties servletProperties = PropertiesSupport.loadProperties("admin/config/servlet_context.properties");
+        Properties servletProperties = IgluProperties.loadProperties("admin/config/servlet_context.properties");
         jettyComponent.setProperties(servletProperties);
         admin.connect("AdminServletContext", jettyComponent);
         //register as external component

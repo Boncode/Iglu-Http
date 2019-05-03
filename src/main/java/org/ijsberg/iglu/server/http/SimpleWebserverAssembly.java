@@ -37,10 +37,12 @@ public class SimpleWebserverAssembly extends BasicAssembly {
     private int port = 17680;
 
     public SimpleWebserverAssembly() {
+        super(new Properties());
         createPresentationLayer();
     }
 
     public SimpleWebserverAssembly(int port) {
+        super(new Properties());
         this.port = port;
     }
 

@@ -86,15 +86,15 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 	private String publicContentRegExp;
 
-	private static class ExceptionHandlingSettings
-	{
+	private String accessControlAllowOrigin;
+
+
+	private static class ExceptionHandlingSettings {
 		public String redirectPage;
 		public int loglevel;
 
 
-
-		public ExceptionHandlingSettings(String redirectPage, int loglevel)
-		{
+		public ExceptionHandlingSettings(String redirectPage, int loglevel) {
 			this.redirectPage = redirectPage;
 			this.loglevel = loglevel;
 		}
@@ -119,16 +119,13 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 *
 	 * @param session
 	 */
-	public void onSessionUpdate(Request currentRequest, Session session)
-	{
+	public void onSessionUpdate(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		storeSessionDataInCookie(SESSION_TOKEN_KEY, session.getToken(), response);
-		if(session.getUser(/*realm.getId()*/) != null)
-		{
+		if(session.getUser() != null) {
 			storeSessionDataInCookie(USER_ID_KEY, session.getUser(/*realm.getId()*/).getId(), response);
 		}
-		else
-		{
+		else {
 			storeSessionDataInCookie(USER_ID_KEY, null, response);
 		}
 	}
@@ -138,8 +135,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 *
 	 * @param session
 	 */
-	public void onSessionDestruction(Request currentRequest, Session session)
-	{
+	public void onSessionDestruction(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		storeSessionDataInCookie(SESSION_TOKEN_KEY, null, response);
 		storeSessionDataInCookie(USER_ID_KEY, null, response);
@@ -150,8 +146,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
      * @param currentRequest
      * @param properties
      */
-    public void exportUserSettings(Request currentRequest, Properties properties)
-	{
+    public void exportUserSettings(Request currentRequest, Properties properties) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		ServletSupport.exportCookieValues(response, properties, "/", userPrefsMaxAge);
 	}
@@ -165,8 +160,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 * @param value
 	 * @param response
 	 */
-	public static void storeSessionDataInCookie(String key, String value, ServletResponse response)
-	{
+	public static void storeSessionDataInCookie(String key, String value, ServletResponse response) {
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
 		cookie.setMaxAge(-1);//expire when browser closes
@@ -178,21 +172,18 @@ public class WebAppEntryPoint implements Filter, EntryPoint
      * @param currentRequest
      * @param properties
      */
-    public void importUserSettings(Request currentRequest, Properties properties)
-	{
+    public void importUserSettings(Request currentRequest, Properties properties) {
 		ServletRequest request = (ServletRequest)httpRequest.get();
 		ServletSupport.importCookieValues(request, properties);
 	}
 
 
-
 	//TODO document init params
 	/**
 	 * @param conf
-	 * @throws ServletException
+	 * @throws
 	 */
-	public final void init(FilterConfig conf) throws ServletException
-	{
+	public final void init(FilterConfig conf) {
 		filterName = conf.getFilterName();
 
 		String syncUserPrefsStr = conf.getInitParameter("sync_user_prefs");
@@ -202,9 +193,11 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false);
 		loginPath = conf.getInitParameter("login_path");
 
-		System.out.println(new LogEntry("loginRequired:" + loginRequired));
+		accessControlAllowOrigin = conf.getInitParameter("header.Access-Control-Allow-Origin");
+		//                servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
-	//	System.out.println("syncUserPrefs=" + syncUserPrefs);
+
+		System.out.println(new LogEntry("loginRequired:" + loginRequired));
 
 		String userPrefsMaxAgeStr = conf.getInitParameter("user_prefs_max_age");
 		userPrefsMaxAge = userPrefsMaxAgeStr != null ? Integer.valueOf(userPrefsMaxAgeStr) : userPrefsMaxAge;
@@ -255,26 +248,26 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 *
 	 * @param servletRequest
 	 * @param servletResponse
-	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws ServletException, IOException
-	{
+	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
+
+		if(accessControlAllowOrigin != null) {
+			((HttpServletResponse)servletResponse).addHeader("Access-Control-Allow-Origin", accessControlAllowOrigin);
+		}
+
 		servletRequest.setCharacterEncoding("UTF-8");
 		httpRequest.set(servletRequest);
 		httpResponse.set(servletResponse);
 
 		Request appRequest = null;
-		try
-		{
+		try {
 			String sessionToken = ServletSupport.getCookieValue(servletRequest, SESSION_TOKEN_KEY);
 			String userId = ServletSupport.getCookieValue(servletRequest, USER_ID_KEY);
-			if("".equals(sessionToken))
-			{
+			if("".equals(sessionToken)) {
 				sessionToken = null;
 			}
-			if("".equals(userId))
-			{
+			if("".equals(userId)) {
 				userId = null;
 			}
  			//if(accessManager != null) {
@@ -282,8 +275,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				Session session = appRequest.resolveSession(sessionToken, userId);
 			//}
 
-			if (this.syncUserPrefs &&  appRequest.getTimesEntered() == 0)
-			{
+			if (this.syncUserPrefs &&  appRequest.getTimesEntered() == 0) {
 				//pass user preferences here
 				ServletSupport.importCookieValues(servletRequest,  appRequest.getUserSettings());
 				ServletSupport.exportCookieValues(servletResponse,  appRequest.getUserSettings(), "/", userPrefsMaxAge, Arrays.asList(new String[]{SESSION_TOKEN_KEY}));
@@ -310,8 +302,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 					pathInfo = servletPath;
 				}
 
-				if(user == null && contentNotPublic(pathInfo))
-				{
+				if(user == null && contentNotPublic(pathInfo)) {
 					System.out.println(new LogEntry("" + pathInfo + " == " + loginPath));
 					if(!(pathInfo.equals(loginPath) || pathInfo.equals("/"))) {
 						System.out.println(new LogEntry("user must authenticate first to obtain " + pathInfo));
@@ -392,18 +383,14 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		}
 
  		//print error to screen
-		if(this.printUnhandledExceptions)
-		{
-			if(!response.isCommitted())
-			{
+		if(this.printUnhandledExceptions) {
+			if(!response.isCommitted())	{
 				System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName, cause));
 				ServletSupport.printException(response, "An exception occurred for which no exception page is defined.\n" +
 						"Make sure you do so if your application is in a production environment.\n" +
 						"(in section [" + exceptionPagesSectionId + "])" +
 						"\n\n" + CollectionSupport.format(messageStack, "\n"), cause);
-			}
-			else
-			{
+			} else {
 				System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName + " can not be printed: response already committed", cause));
 			}
 		}
@@ -414,8 +401,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	/**
 	 * Is invoked when the servlet runner shuts down
 	 */
-	public void destroy()
-	{
+	public void destroy() {
 	}
 
 
