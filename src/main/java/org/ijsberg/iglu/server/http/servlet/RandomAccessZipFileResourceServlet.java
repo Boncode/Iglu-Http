@@ -16,7 +16,7 @@ public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
 
     private String resourceDir;
 
-    private Map<String, String> resources = new HashMap<>();
+    protected Map<String, String> resources = new HashMap<>();
 
     public void init(ServletConfig conf) throws ServletException {
         super.init(conf);
@@ -31,9 +31,6 @@ public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
         }
     }
 
-/*    public RandomAccessZipFileResourceServlet() {
-        System.out.println(resources);
-    }*/
 
     @Override
     public byte[] getResource(String path) throws IOException, ServletException {
