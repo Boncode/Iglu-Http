@@ -28,6 +28,8 @@ function MenuWidget(id, content) {
 		this.content = null;
 	}
 	this.isLoaded = false;
+    console.log('isLoaded:' + this.isLoaded);
+
 
 	var settings = new Object();
 	settings.id = id;
@@ -35,6 +37,7 @@ function MenuWidget(id, content) {
 	this.constructMenuWidget(settings, settings.content);
 
     this.expertMode = false;
+    console.log('isLoaded:' + this.isLoaded);
 	//TODO initialize and invoke super
 }
 
@@ -156,6 +159,12 @@ MenuWidget.prototype.onDestroy = function() {
 };
 
 
+MenuWidget.prototype.display = function() {
+//	alert('display');
+};
+
+
+
 MenuWidget.prototype.handleAjaxResponse = function(responseText) {
 	this.evaluate(responseText, this);
 };
@@ -163,6 +172,7 @@ MenuWidget.prototype.handleAjaxResponse = function(responseText) {
 
 MenuWidget.prototype.evaluate = function(contents, menuWidget) {
 
+	console.log('evaluate');
 	if(!this.isLoaded) {
 		menuWidget.menu = eval(contents);
 		menuWidget.writeHTML();
@@ -173,11 +183,14 @@ MenuWidget.prototype.evaluate = function(contents, menuWidget) {
 
 MenuWidget.prototype.load = function(contents, menuWidget) {
 
-	if(!this.isLoaded) {
+    //console.log('menuwidget this ' + this);
+	if(!menuWidget.isLoaded) {
 	    console.log('loading menu contents');
 		menuWidget.menu = JSON.parse(contents).menu;
 		menuWidget.writeHTML();
-		this.isLoaded = true;
+		menuWidget.isLoaded = true;
+	} else {
+	    console.log('menu contents already loaded');
 	}
 	//save state
 };

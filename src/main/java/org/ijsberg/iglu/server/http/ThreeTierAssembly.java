@@ -8,25 +8,33 @@ import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
+import org.ijsberg.iglu.util.collection.ArraySupport;
 
 import java.util.Properties;
 
 /**
  * Created by jeroe on 06/01/2018.
  */
-public abstract class HttpServerAssembly extends BasicAssembly {
+public abstract class ThreeTierAssembly extends BasicAssembly {
 
-    protected StandardAccessManager accessManager;
+    protected Component accessManager;
 
     protected Cluster infraLayer;
     protected Cluster dataLayer;
     protected Cluster serviceLayer;
     protected Cluster presentationLayer;
 
+    protected String home;
 
-    public HttpServerAssembly(Properties properties) {
+
+    public ThreeTierAssembly(Properties properties) {
 
         super(properties);
+        createLayers(properties);
+    }
+
+    public void createLayers(Properties properties) {
+        home = properties.getProperty("home", ".");
 
         infraLayer = createInfraLayer();
 
@@ -40,11 +48,13 @@ public abstract class HttpServerAssembly extends BasicAssembly {
         presentationLayer = createPresentationLayer();
         presentationLayer.connect("InfraCluster", infraLayer);
         presentationLayer.connect("ServiceCluster", serviceLayer);
-
-//        core.connect("ServiceCluster", serviceLayer);
-
     }
 
+    public ThreeTierAssembly(Properties properties, Component ssoAccessManager) {
+        super(properties);
+        accessManager = ssoAccessManager;
+        createLayers(properties);
+    }
 
     protected abstract Cluster createDataLayer();
 
@@ -60,14 +70,18 @@ public abstract class HttpServerAssembly extends BasicAssembly {
         Component schedulerComponent = new StandardComponent(new StandardScheduler());
         core.connect("Scheduler", schedulerComponent);
 
-        accessManager = new StandardAccessManager();
-        Properties accessManProps = new Properties();
-        accessManProps.setProperty("session_timeout", "" + (60 * 60 * 24));
-        accessManager.setProperties(accessManProps);
+        if(accessManager == null) {
+            StandardAccessManager standardAccessManager = new StandardAccessManager();
+            Properties accessManProps = new Properties();
+            accessManProps.setProperty("session_timeout", "" + (60 * 60 * 24));
+            standardAccessManager.setProperties(accessManProps);
+            accessManager = new StandardComponent(standardAccessManager);
+        }
 
-        Component requestManagerComponent = new StandardComponent(accessManager);
-        core.connect("AccessManager", requestManagerComponent, RequestRegistry.class, AccessManager.class);
-        core.connect("RequestRegistry", requestManagerComponent, RequestRegistry.class);
+        //Component requestManagerComponent = new StandardComponent(accessManager);
+        //System.out.println("==============> " + ArraySupport.format(requestManagerComponent.getInterfaces(),","));
+        core.connect("AccessManager", accessManager, RequestRegistry.class, AccessManager.class);
+        core.connect("RequestRegistry", accessManager, RequestRegistry.class);
 
         return core;
     }
