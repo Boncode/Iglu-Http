@@ -47,7 +47,7 @@ Widget.prototype.set = function(name, value, defaultValue) {
 	} else if(typeof defaultValue != 'undefined') {
 		this[name] = defaultValue;
 	}
-	console.log(name + ' set to ' + value + ' : ' + this[name]);
+	//console.log(name + ' set to ' + value + ' : ' + this[name]);
 };
 
 Widget.prototype.cloneSettings = function(extraSettingsNames) {
