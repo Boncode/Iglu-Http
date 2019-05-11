@@ -274,13 +274,13 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				appRequest = accessManager.bindRequest(this);
 				Session session = appRequest.resolveSession(sessionToken, userId);
 			//}
-
-			if (this.syncUserPrefs &&  appRequest.getTimesEntered() == 0) {
+/*
+			if (this.syncUserPrefs && appRequest.getTimesEntered() == 0) {
 				//pass user preferences here
 				ServletSupport.importCookieValues(servletRequest,  appRequest.getUserSettings());
 				ServletSupport.exportCookieValues(servletResponse,  appRequest.getUserSettings(), "/", userPrefsMaxAge, Arrays.asList(new String[]{SESSION_TOKEN_KEY}));
 			}
-
+*/
 			//if a user logged in, the user id must be stored
 			if(userId == null)
 			{
@@ -367,14 +367,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		messageStack.add("Remote address: " + request.getRemoteAddr());
 		messageStack.add("Remote host: " + request.getRemoteHost());
 
-		//unwrap exception
-		while(/*cause instanceof ServletException && */cause.getCause() != null)
-		{
-			messageStack.add("Exception with message: " + cause.getMessage());
-			messageStack.add(cause.getStackTrace()[0].toString());
-
-			cause = cause.getCause();
-		}
 		//all servlets are responsible for handling all possible situations
 		//so an exception handled here is a critical one
 		if(cause instanceof ServletRequestAlreadyRedirectedException)
