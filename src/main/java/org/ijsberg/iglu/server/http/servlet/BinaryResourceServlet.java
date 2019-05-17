@@ -52,7 +52,7 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 	}
 
 	public void service(HttpServletRequest request, HttpServletResponse response) {
-		//Creates the output stream.
+
 		String pathInfo = request.getPathInfo();
 		if(pathInfo == null) {
 			pathInfo = "";
