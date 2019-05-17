@@ -72,7 +72,7 @@ PanelWidget.prototype.createEmptyHeader = function() {
 PanelWidget.prototype.setHeaderContent = function() {
     var menuHTML = ""
     if(this.hasMenu) {
-        menuHTML = '<div class = "hamburger_fancy" onclick = "handleHamburgerMenu()"><span></span></div><div id="hamburger_menu" style="float:right"></div>';
+        menuHTML = '<div id = "' + this.id + '_hamburgermenu" class = "hamburger_fancy" onclick = "handleHamburgerMenu()"><span></span></div><div id="hamburger_menu" style="float:right"></div>';
 
     }
 
