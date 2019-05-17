@@ -72,11 +72,12 @@ PanelWidget.prototype.createEmptyHeader = function() {
 PanelWidget.prototype.setHeaderContent = function() {
     var menuHTML = ""
     if(this.hasMenu) {
-        menuHTML = '<img src = "img/hamburger_menu_icon.png" class = "hamburger_menu_image" onclick = "handleHamburgerMenu()"><div id="hamburger_menu" style="float:right"></div>';
+        menuHTML = '<div class = "hamburger_fancy" onclick = "handleHamburgerMenu()"><span></span></div><div id="hamburger_menu" style="float:right"></div>';
+
     }
 
     if(this.content.title != null) {
-        this.header.innerHTML = '<div id="' + this.id + '_header_title">' + this.content.title + '</div>'+ this.createTitleBarFunctionHtml() + menuHTML;
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title">' + this.content.title + '</div>'+ this.createTitleBarFunctionHtml() + menuHTML;
     } else {
         if(this.title != null) {
             this.header.innerHTML = this.title + this.createTitleBarFunctionHtml() + menuHTML;
