@@ -24,7 +24,6 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     protected Cluster serviceLayer;
     protected Cluster presentationLayer;
 
-    protected String home;
 
 
     public ThreeTierAssembly(Properties properties) {
@@ -34,8 +33,6 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     }
 
     public void createLayers(Properties properties) {
-        home = properties.getProperty("home", ".");
-
         infraLayer = createInfraLayer();
 
         dataLayer = createDataLayer();
