@@ -98,6 +98,11 @@ AjaxRequestManager.prototype.doRequestAndKeepHistory = function(requestURL, call
 }
 
 
+AjaxRequestManager.prototype.doSyncRequest = function(requestURL, postData) {
+    var request = createAjaxRequest();
+	this.sendPOSTRequest(request, requestURL, postData, false);
+}
+
 
 /**
  *
@@ -132,7 +137,7 @@ AjaxRequestManager.prototype.doRequest = function(requestURL, callback, callback
 		if (multipart) {
         	this.sendMultiPartRequest(this.ajaxRequests[requestNr], requestURL, postData);
         } else if (postData != null) {
-			this.sendPOSTRequest(this.ajaxRequests[requestNr], requestURL, postData, contentType);
+			this.sendPOSTRequest(this.ajaxRequests[requestNr], requestURL, postData, true, contentType);
 		} else {
 			this.sendGETRequest(this.ajaxRequests[requestNr], requestURL);
 		}
@@ -150,8 +155,8 @@ AjaxRequestManager.prototype.sendGETRequest = function(ajaxRequest, url) {
 }
 
 //internal function
-AjaxRequestManager.prototype.sendPOSTRequest = function(ajaxRequest, url, postData, contentType) {
-	ajaxRequest.open('POST', url, true);
+AjaxRequestManager.prototype.sendPOSTRequest = function(ajaxRequest, url, postData, async, contentType) {
+	ajaxRequest.open('POST', url, async);
 	ajaxRequest.setRequestHeader("Content-Type", typeof(contentType) == 'undefined' ? "application/x-www-form-urlencoded; charset=UTF-8" : contentType + "; charset=UTF-8");
 	ajaxRequest.send(postData);
 }
