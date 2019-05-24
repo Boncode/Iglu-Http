@@ -97,9 +97,8 @@ AjaxRequestManager.prototype.doRequestAndKeepHistory = function(requestURL, call
 	this.doRequest(requestURL, callback, callbackInput, postData, multipart);
 }
 
-
 AjaxRequestManager.prototype.doSyncRequest = function(requestURL, postData) {
-    var request = createAjaxRequest();
+    var request = this.createAjaxRequest();
 	this.sendPOSTRequest(request, requestURL, postData, false);
 }
 
