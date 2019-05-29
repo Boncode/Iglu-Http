@@ -131,6 +131,7 @@ MenuWidget.prototype.addItem = function(item, container) {
 		itemDiv.appendChild(branchDiv);
 		this.createTree(item.submenu, branchDiv);
 	} else {
+	    itemDiv.setAttribute('id', itemId);
 		itemDiv.innerHTML = itemLabel;
 	}
 }
