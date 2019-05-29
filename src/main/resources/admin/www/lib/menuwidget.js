@@ -17,7 +17,7 @@
  * along with Iglu.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function MenuWidget(id, content) {
+function MenuWidget(id, content, callback) {
 
 	//Widget.call(this);
 	this.id = id;
@@ -27,6 +27,7 @@ function MenuWidget(id, content) {
 	} else {
 		this.content = null;
 	}
+	this.callback = callback;
 	this.isLoaded = false;
     console.log('isLoaded:' + this.isLoaded);
 
@@ -190,6 +191,9 @@ MenuWidget.prototype.load = function(contents, menuWidget) {
 		menuWidget.menu = JSON.parse(contents).menu;
 		menuWidget.writeHTML();
 		menuWidget.isLoaded = true;
+		if(typeof menuWidget.callback != 'undefined') {
+		    menuWidget.callback(menuWidget);
+		}
 	} else {
 	    console.log('menu contents already loaded');
 	}
