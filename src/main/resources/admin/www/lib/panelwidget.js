@@ -77,7 +77,7 @@ PanelWidget.prototype.setHeaderContent = function() {
     }
 
     if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title">' + this.content.title + '</div>'+ this.createTitleBarFunctionHtml() + menuHTML;
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title">' + this.content.title + '</div><div class = "panelheadericons">'+ this.createTitleBarFunctionHtml() + '</div>' + menuHTML;
     } else {
         if(this.title != null) {
             this.header.innerHTML = this.title + this.createTitleBarFunctionHtml() + menuHTML;
