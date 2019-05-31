@@ -44,12 +44,13 @@ PanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionA
 };
 
 PanelWidget.prototype.createTitleBarFunctionHtml = function() {
-    var html = '';
+    var html = (this.titleBarFunctions.length == 0 ? '' : '<div class = "panelheadericons">');
     for(var i in this.titleBarFunctions) {
         html += '<div class="' + this.titleBarFunctions[i].className + '"' +
         (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' title="' + this.titleBarFunctions[i].tooltip + '"' : '') +
         '" onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)"></div>';
     }
+    html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
     return html;
 };
 
@@ -77,7 +78,7 @@ PanelWidget.prototype.setHeaderContent = function() {
     }
 
     if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title">' + this.content.title + '</div><div class = "panelheadericons">'+ this.createTitleBarFunctionHtml() + '</div>' + menuHTML;
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '">' + this.content.title + '</div>'+ this.createTitleBarFunctionHtml() + menuHTML;
     } else {
         if(this.title != null) {
             this.header.innerHTML = this.title + this.createTitleBarFunctionHtml() + menuHTML;
