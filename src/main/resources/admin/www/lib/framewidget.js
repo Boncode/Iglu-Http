@@ -156,6 +156,12 @@ FrameWidget.prototype.allowHorizontalResize = function() {
 	}
 };
 
+FrameWidget.prototype.disallowHorizontalResize = function() {
+	if(this.resizeDirections.indexOf('e') != -1) {
+		this.resizeDirections.split('e').join('');
+	}
+};
+
 FrameWidget.prototype.allowVerticalResize = function() {
 	if(this.resizeDirections.indexOf('s') == -1) {
 		this.resizeDirections += 's';

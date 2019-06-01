@@ -31,8 +31,10 @@ public class ClassPathResourceServlet extends BinaryResourceServlet {
 
 	@Override
 	public byte[] getResource(String path) throws IOException, ServletException {
-		if(!path.endsWith(".class") && !(path.endsWith(".java"))) {
-			return FileSupport.getBinaryFromClassLoader(path);
+		if(path.contains(".")) { //prevent accessing directories
+			if (!path.endsWith(".class") && !(path.endsWith(".java"))) {
+				return FileSupport.getBinaryFromClassLoader(path);
+			}
 		}
 		throw new ServletException("inaccessible resource: " + path);
 	}
