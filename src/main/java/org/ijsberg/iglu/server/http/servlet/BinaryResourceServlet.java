@@ -69,10 +69,10 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 				writeStats(response);
 				return;
 			}
-			requestedResources.add(resourcePath);
 			ServletOutputStream out = response.getOutputStream();
             response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
 			out.write(getResource(resourcePath));
+			requestedResources.add(resourcePath);
 		} catch (Exception e) {
 			System.out.println(new LogEntry(Level.CRITICAL, "unable to obtain resource", e));
 			response.setStatus(500);
