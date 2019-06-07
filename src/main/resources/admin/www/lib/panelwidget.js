@@ -77,8 +77,13 @@ PanelWidget.prototype.setHeaderContent = function() {
 
     }
 
+    var subtitleString = this.content.subtitle;
+    if(this.content.subtitle == null) {
+        subtitleString = '';
+    }
+
     if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '">' + this.content.title + '</div>'+ this.createTitleBarFunctionHtml() + menuHTML;
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div>' + this.content.title + '</div><div class="subtitle">' + subtitleString.toUpperCase() + '</div></div>'+ this.createTitleBarFunctionHtml() + menuHTML;
     } else {
         if(this.title != null) {
             this.header.innerHTML = this.title + this.createTitleBarFunctionHtml() + menuHTML;
