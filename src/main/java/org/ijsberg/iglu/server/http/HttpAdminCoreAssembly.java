@@ -40,7 +40,7 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
         admin = createCluster("admin");
 
         admin.connect("Logger", new StandardComponent(logger), Logger.class);
-        admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, IgluProperties.loadProperties("admin/config/web_utility_agent.properties"))));
+        admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, IgluProperties.loadProperties("admin/config/upload_agent.properties"))));
 
         AccessManager adminAccessManager = new StandardAccessManager();
 

@@ -59,7 +59,7 @@ public class AdminAgentAssemblyHelper {
 		if(logger != null) {
 			admin.connect("Logger", new StandardComponent(logger), Logger.class);
 		}
-		admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, loadProperties("admin/config/web_utility_agent.properties"))));
+		admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, loadProperties("admin/config/upload_agent.properties"))));
 
 		StandardAccessManager adminAccessManager = new StandardAccessManager();
 

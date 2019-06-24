@@ -30,8 +30,11 @@ import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.http.MultiPartReader;
+import org.ijsberg.iglu.util.io.FileData;
+import org.ijsberg.iglu.util.io.FileSupport;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -49,6 +52,13 @@ public class UploadAgentImpl implements UploadAgent {
 	private boolean readingUpload;
 	private boolean isUploadCancelled = false;
 	private RequestRegistry requestRegistry;
+	private Properties properties;
+	private String targetDir;
+
+	public UploadAgentImpl(Properties agentProperties) {
+		this.properties = agentProperties;
+		targetDir = properties.getProperty("target_dir");
+	}
 
 
 	public void setProperties(Properties properties) {
@@ -63,7 +73,7 @@ public class UploadAgentImpl implements UploadAgent {
 	public static AgentFactory<UploadAgent> getAgentFactory(Cluster cluster, Properties agentProperties) {
 		return new BasicAgentFactory<UploadAgent>(cluster, UPLOAD_AGENT_NAME, agentProperties) {
 			public UploadAgent createAgentImpl() {
-				return new UploadAgentImpl();
+				return new UploadAgentImpl(getAgentProperties());
 			}
 		};
 	}
@@ -132,7 +142,25 @@ public class UploadAgentImpl implements UploadAgent {
 			}
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
+		postProcess();
 		return "DONE";
+	}
+
+	private void postProcess() {
+		if(targetDir != null) {
+			File uploadedFile = reader.getUploadFile();
+			FileData fileData = new FileData(uploadedFile.getPath());
+			String tmpFileName = targetDir + "/ignore.tmp";
+			String permanentFileName = targetDir + "/" + fileData.getFileName();
+			try {
+				FileSupport.copyFile(reader.getUploadFile(), tmpFileName, true);
+				File file = new File(tmpFileName);
+				//make file appear as atomic as possible
+				file.renameTo(new File(permanentFileName));
+			} catch (IOException e) {
+				System.out.println(new LogEntry(Level.CRITICAL, "cannot copy file to target dir", e));
+			}
+		}
 	}
 
 	@Override
