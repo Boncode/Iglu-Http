@@ -25,7 +25,7 @@ import org.ijsberg.iglu.access.AuthenticationException;
 import org.ijsberg.iglu.access.Base64EncodedCredentials;
 import org.ijsberg.iglu.access.Request;
 import org.ijsberg.iglu.access.User;
-import org.ijsberg.iglu.exception.ResourceException;
+import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
