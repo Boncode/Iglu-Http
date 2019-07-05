@@ -334,3 +334,16 @@ function evalInContext(valueStr, context) {
     //# Return the results of the in-line anonymous function we .call with the passed context
     return function() { return eval(valueStr); }.call(context);
 }
+
+
+function scrollToElement(containerId, scrollTargetId) {
+	var scrollTarget = document.getElementById(scrollTargetId);
+	var container = document.getElementById(containerId);
+
+	if(scrollTarget != null) {
+		container.scrollTop = scrollTarget.offsetTop;
+	} else {
+    	console.log('cannot scroll ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
+		container.scrollTop = 0;
+	}
+}

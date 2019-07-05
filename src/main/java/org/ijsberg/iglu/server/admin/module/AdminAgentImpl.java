@@ -160,12 +160,7 @@ public class AdminAgentImpl implements AdminAgent, SessionDestructionListener, L
 		}
 	}
 
-	@Override
-	public String getStatus() {
-		return null;
-	}
-
-	@Override
+    @Override
 	public void addAppender(Logger appender) {
 
 	}

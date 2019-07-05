@@ -185,6 +185,8 @@ WidgetManager.prototype.doAutoRefreshWidget = function(widgetId) {
 			widget.refresh();
 			setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widgetId + '")', autoRefreshInterval);
 		}
+	} else {
+		console.log('cannot auto refresh ' + widgetId + ', widget not registered');
 	}
 }
 

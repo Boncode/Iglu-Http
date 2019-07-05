@@ -40,7 +40,7 @@ import java.util.TreeSet;
 public abstract class BinaryResourceServlet extends HttpServlet {
 
 	protected String documentRoot;
-	private static TreeSet<String> requestedResources = new TreeSet<String>();
+//	private static TreeSet<String> requestedResources = new TreeSet<String>();
 
 	public void init(ServletConfig conf) throws ServletException {
 		super.init(conf);
@@ -65,28 +65,28 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 			if(resourcePath.endsWith("/")) {
 				resourcePath += "index.html";
 			}
-			if(resourcePath.endsWith("STATS")) {
+/*			if(resourcePath.endsWith("STATS")) {
 				writeStats(response);
 				return;
 			}
-			ServletOutputStream out = response.getOutputStream();
+*/			ServletOutputStream out = response.getOutputStream();
             response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
 			out.write(getResource(resourcePath));
-			requestedResources.add(resourcePath);
+//			requestedResources.add(resourcePath);
 		} catch (Exception e) {
 			System.out.println(new LogEntry(Level.CRITICAL, "unable to obtain resource", e));
 			response.setStatus(500);
 		}
 	}
 
-	private void writeStats(HttpServletResponse response) throws IOException {
+/*	private void writeStats(HttpServletResponse response) throws IOException {
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
 		for(String requestedResource : requestedResources) {
 			out.println(requestedResource);
 		}
 	}
-
+*/
 
 	public abstract byte[] getResource(String path) throws IOException, ServletException;
 
