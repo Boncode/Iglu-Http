@@ -91,6 +91,7 @@ function WidgetManager() {
 	this.masterFrameWidget = null;
 
 	this.settings = new Object();
+	this.widgetTimerMap = new Object();
 
 }
 
@@ -183,7 +184,12 @@ WidgetManager.prototype.doAutoRefreshWidget = function(widgetId) {
 		var autoRefreshInterval = widget.autoRefreshInterval;
 		if(typeof widget.autoRefreshInterval != null && widget.autoRefreshInterval > 0) {
 			widget.refresh();
-			setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widgetId + '")', autoRefreshInterval);
+
+			//if timer for widget exists; remove it before setting a new one.
+			if(this.widgetTimerMap[widgetId] != null && this.widgetTimerMap[widgetId] != 'undefined') {
+                clearTimeout(this.widgetTimerMap[widgetId]);
+            }
+			this.widgetTimerMap[widgetId] = setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widgetId + '")', autoRefreshInterval);
 		}
 	} else {
 		console.log('cannot auto refresh ' + widgetId + ', widget not registered');
@@ -192,7 +198,7 @@ WidgetManager.prototype.doAutoRefreshWidget = function(widgetId) {
 
 WidgetManager.prototype.autoRefreshWidget = function(widget, autoRefreshInterval) {
 	widget.autoRefreshInterval = autoRefreshInterval;
-	setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widget.id + '")', autoRefreshInterval);
+	this.widgetTimerMap[widget.id] = setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widget.id + '")', autoRefreshInterval);
 }
 
 WidgetManager.prototype.deployWidget = function(newWidget, x, y) {
