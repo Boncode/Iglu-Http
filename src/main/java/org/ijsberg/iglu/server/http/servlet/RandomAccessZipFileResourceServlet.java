@@ -17,6 +17,7 @@ import java.util.Map;
 public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
 
     private String resourceDir;
+    //TODO get from config
     private String includeMask = "*.zip";
     private FSFileCollection fileCollection;
 
@@ -29,7 +30,7 @@ public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
         if(resourceDir == null) {
             throw new ServletException("please provide paramater resource_dir");
         }
-        FileCollection fileCollection = new FSFileCollection(resourceDir, new FileFilterRuleSet().setIncludeFilesWithNameMask("*.zip|*.jar"));
+        fileCollection = new FSFileCollection(resourceDir, new FileFilterRuleSet().setIncludeFilesWithNameMask("*.zip|*.jar"));
         mapResources(fileCollection);
     }
 

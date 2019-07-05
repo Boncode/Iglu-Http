@@ -2,6 +2,7 @@ package org.ijsberg.iglu.server.http.servlet;
 
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.logging.Logger;
+import org.ijsberg.iglu.util.misc.StringSupport;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -33,7 +34,9 @@ public class LoggerServlet extends HttpServlet implements Logger {
 
         List<LogEntry> logEntries = new ArrayList<>(logEntryQueue);
         for(LogEntry logEntry : logEntries) {
-            out.println("<span class=\"LogEntry\">" + logEntry.toString() + "</span><br>");
+            String entryString = logEntry.toString();
+            entryString = StringSupport.replaceAll(entryString, "\n", "<br>");
+            out.println("<span class=\"LogEntry\">" + entryString + "</span><br>");
         }
         out.println("<div id=\"end_of_log\"></div>");
     }
