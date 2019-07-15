@@ -16,6 +16,7 @@ import java.util.Properties;
 public class PropertiesServlet extends HttpServlet {
 
     private JsonData jsonProperties;
+    private Properties additionalProperties;
 
     /**
      * @param conf
@@ -26,9 +27,24 @@ public class PropertiesServlet extends HttpServlet {
         String propertiesFile = getInitParameter("properties_file");
         Properties properties = IgluProperties.loadProperties(propertiesFile);
         jsonProperties = new JsonHierarchicalPropertiesObject(properties);
+        enrich();
     }
 
-        public void service(HttpServletRequest servletRequest, HttpServletResponse response) throws IOException, ServletException {
+    public void enrich(Properties additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+
+    private void enrich() {
+        if(additionalProperties != null) {
+            for (String key : additionalProperties.stringPropertyNames()) {
+                if (!jsonProperties.containsAttribute(key)) {
+                    jsonProperties.addStringAttribute(key, additionalProperties.getProperty(key));
+                }
+            }
+        }
+    }
+
+    public void service(HttpServletRequest servletRequest, HttpServletResponse response) throws IOException, ServletException {
         ServletOutputStream out = response.getOutputStream();
         response.setContentType("application/json");
         out.println(jsonProperties.toString());
