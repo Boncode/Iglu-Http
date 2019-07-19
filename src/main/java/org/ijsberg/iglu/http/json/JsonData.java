@@ -46,10 +46,13 @@ public class JsonData implements JsonDecorator {
 	}
 
 	public JsonData insertStringAttribute(String name, String value) {
+		return insertAttribute(name, "\"" + value + "\"");
+	}
 
+	public JsonData insertAttribute(String name, Object value) {
 		LinkedHashMap<String, Object> copy = new LinkedHashMap<String, Object>(attributes);
 		attributes.clear();
-		attributes.put(name, "\"" + value + "\"");
+		attributes.put(name, value);
 		attributes.putAll(copy);
 		return this;
 	}
