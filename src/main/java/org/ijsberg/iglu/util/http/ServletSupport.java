@@ -283,6 +283,11 @@ public abstract class ServletSupport extends HttpEncodingSupport
 
 		String data = new String(StreamSupport.absorbInputStream(input));
 
+		Properties retval = convertUrlEncodedData(data);
+		return retval;
+	}
+
+	public static Properties convertUrlEncodedData(String data) throws UnsupportedEncodingException {
 		Properties retval = new Properties(/*"http-request-parameters"*/);
 
 		StringTokenizer tokenizer = new StringTokenizer(data, "&", false);

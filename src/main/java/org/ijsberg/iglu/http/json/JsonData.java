@@ -4,12 +4,14 @@ import org.ijsberg.iglu.util.collection.ArraySupport;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.HttpEncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
+import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -153,6 +155,44 @@ public class JsonData implements JsonDecorator {
 
 	public Set<String> getAttributeNames() {
 		return attributes.keySet();
+	}
+
+	public Properties toProperties() {
+		String usedPrefix = "";
+		Properties properties = new IgluProperties();
+		//out.print("{\n ");
+		int i = 0;
+		for(String attrName : attributes.keySet()) {
+			Object value = attributes.get(attrName);
+			StringBuffer line = new StringBuffer();
+			//line.append(usedPrefix + "=");
+			//oattrName + "\" : ");
+			if(value instanceof String[]) {
+				line.append("[");
+				line.append(ArraySupport.format("\"", "\"", (String[])value, ", "));
+				line.append("]");
+			} else if(value instanceof Collection) {
+				line.append("[");
+				line.append(CollectionSupport.format((Collection)value,", "));
+				line.append("]");
+//				out.print("[ " + CollectionSupport.format((Collection) value, ", ") + " ]");
+			} else if (value instanceof String) {
+				line.append("\"" + escapeWithLineContinuation(getStringAttribute(attrName)) + "\"");
+			} else if (value instanceof JsonData) {
+				((IgluProperties) properties).addSubsection(attrName, ((JsonData)value).toProperties());
+				continue;
+				//line.append((JsonData)value).print(out);
+			} else {
+				line.append(value);
+			}
+			i++;
+			if(i < attributes.size()) {
+//				out.print(",");
+			}
+			properties.setProperty(usedPrefix + attrName, line.toString());
+		}
+//		out.print(" }\n");
+		return properties;
 	}
 }
 
