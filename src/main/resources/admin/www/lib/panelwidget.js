@@ -91,6 +91,13 @@ PanelWidget.prototype.setHeaderContent = function() {
     }
 }
 
+PanelWidget.prototype.suppressScrolling = function() {
+    this.subWidgets[this.id].getDOMElement().style.overflow = 'hidden';
+}
+
+PanelWidget.prototype.allowScrolling = function() {
+    this.subWidgets[this.id].getDOMElement().style.overflow = null;
+}
 
 PanelWidget.prototype.writeHTML = function() {
 
@@ -118,5 +125,4 @@ PanelWidget.prototype.writeHTML = function() {
     this.addResizeListener(contentFrame, {'w':{'action':contentFrame.resizeEast, factor: 1}});
 
 	this.subWidgets[this.id] = contentFrame;
-
 };

@@ -46,10 +46,12 @@ function dropWidget(event) {
 
 
 
+
 function dragWidget(event) {
 	event = event || window.event;
 	if(widgetmanager.resizingWidget != null && widgetmanager.resizeDirection != null) {
 		var mousePos = getMousePositionInPage(event);
+		//log('widgetmanager.resizeDirection: ' + widgetmanager.resizeDirection);
 		if(widgetmanager.resizeDirection.indexOf('n') > -1) {
 			widgetmanager.resizingWidget.resizeNorth(-1 * (mousePos.y - widgetmanager.mouseOffset.y - widgetmanager.resizingWidget.top));
 		}
@@ -202,7 +204,7 @@ WidgetManager.prototype.registerResizeableWidget = function(widget, resizeDirect
 		widget.resizeDirections = 'nesw';//North - East - South - West
 	}
 	widget.getDOMElement().onmousedown = function(event) {
-//		log('--> ' + this.id);
+		log('mousedown noticed for resizing for widget ' + this.id);
 		if(WidgetManager.instance.resizeDirection != null) {
 			WidgetManager.instance.activateCurrentWidget(this.id);
 			WidgetManager.instance.resizingWidget = WidgetManager.instance.currentWidget;
@@ -225,9 +227,11 @@ WidgetManager.prototype.registerResizeableWidget = function(widget, resizeDirect
 	}
 
 	widget.getDOMElement().onmousemove = function(event) {
+//    	log('mousemove noticed for resizing for widget ' + WidgetManager.instance.resizingWidget);
 		if(WidgetManager.instance.resizingWidget == null) {
 			WidgetManager.instance.determineResizeAction(widget, event);
 		} else {
+//    		log('mousemove noticed for resizing for widget ' + WidgetManager.instance.resizingWidget);
 			dragWidget(event);
 		}
 	}
@@ -263,9 +267,15 @@ WidgetManager.prototype.determineResizeAction = function(widget, event) {
          }
          if(direction != '') {
             //log('direction: ' + direction);
+            if(typeof widget.suppressScrolling != 'undefined') {
+                widget.suppressScrolling();
+            }
          	document.body.style.cursor = direction + '-resize';
          	this.resizeDirection = direction;
          } else {
+            if(typeof widget.allowScrolling != 'undefined') {
+                widget.allowScrolling();
+            }
          	if(document.body.style.cursor != 'move' && this.resizingWidget == null) {
 				document.body.style.cursor = 'auto';
 			}
