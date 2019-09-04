@@ -23,12 +23,15 @@ public class MaintenanceAssembly extends ThreeTierAssembly {
     private Startable coreAssembly;
     private String port = "17691";
 
+    private MaintenanceServiceImpl maintenanceService;
+
     public MaintenanceAssembly(Properties properties, Component ssoAccessManager) {
         super(properties, ssoAccessManager);
     }
 
     public void setCoreAssembly(Startable coreAssembly) {
         this.coreAssembly = coreAssembly;
+        maintenanceService.setCoreAssembly(coreAssembly);
     }
 
     @Override
@@ -40,7 +43,8 @@ public class MaintenanceAssembly extends ThreeTierAssembly {
     @Override
     protected Cluster createServiceLayer() {
         Cluster serviceLayer = createCluster("ServiceLayer");
-        Component service = new StandardComponent(new MaintenanceServiceImpl());
+        maintenanceService = new MaintenanceServiceImpl();
+        Component service = new StandardComponent(maintenanceService);
         service.setProperties(properties);
         serviceLayer.connect("MaintenanceService", service, MaintenanceService.class);
         return serviceLayer;

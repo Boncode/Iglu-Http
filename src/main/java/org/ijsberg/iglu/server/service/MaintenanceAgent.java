@@ -35,4 +35,10 @@ public interface MaintenanceAgent {
             @RequestParameter(name = "fileName"),@RequestParameter(name = "propertiesAsText")})
     //can be used in HTML form with method:POST
     void saveProperties(String fileName, String propertiesAsText);
+
+    @RequestPath(inputType = VOID, path = "listAvailablePatches", method = GET, returnType = JSON)
+    FileList listAvailablePatches();
+
+    @RequestPath(inputType = VOID, path = "executePatch", method = GET, returnType = VOID)
+    void executePatch();
 }

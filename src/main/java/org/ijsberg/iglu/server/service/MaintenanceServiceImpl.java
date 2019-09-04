@@ -1,20 +1,38 @@
 package org.ijsberg.iglu.server.service;
 
+import org.ijsberg.iglu.access.AccessConstants;
+import org.ijsberg.iglu.access.User;
+import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.configuration.Startable;
+import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.service.model.PropertiesDto;
 import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.io.FSFileCollection;
+import org.ijsberg.iglu.util.io.FileCollection;
 import org.ijsberg.iglu.util.io.FileFilterRuleSet;
+import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.zip.ZipFile;
 
 public class MaintenanceServiceImpl implements MaintenanceService {
 
+    private Startable coreAssembly;
+    private RequestRegistry requestRegistry;
+
     private String editablePropertyFilesRootDir;
     private FSFileCollection editablePropertiesFileCollection;
+
+    public MaintenanceServiceImpl() {
+    }
+
+    public void setCoreAssembly(Startable coreAssembly) {
+        this.coreAssembly = coreAssembly;
+    }
+
 
     public void setProperties(Properties properties) {
         editablePropertyFilesRootDir = properties.getProperty("editablePropertyFilesRootDir");
@@ -24,9 +42,22 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         }
     }
 
+    public void setRequestRegistry(RequestRegistry registry) {
+        this.requestRegistry = registry;
+    }
+
     @Override
     public String test() {
-        return "Ok";
+        return "Ok\n" + "User:" + requestRegistry.getCurrentRequest().getUser();
+    }
+
+    @Override
+    public boolean hasAdminRights() {
+        User user = requestRegistry.getCurrentRequest().getUser();
+        if(user != null) {
+            System.out.println(new LogEntry("checking rights for " + user.getId() + (user.getGroup() != null ? " : " + user.getGroup().getName() : "")));
+        }
+        return user != null && user.getGroup() != null && AccessConstants.ADMIN_GROUP_NAME.equals(user.getGroup().getName());
     }
 
     @Override
@@ -82,4 +113,45 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         }
         return propertiesFile;
     }
+
+    @Override
+    public List<String> listAvailablePatches() {
+        List<String> retval = new ArrayList<>();
+        Map<Date,File> filesByDate = getPatchesByDate();
+        for(Date date : filesByDate.keySet()) {
+            File file = filesByDate.get(date);
+            retval.add(file.getPath() + " " + date);
+        }
+        return retval;
+    }
+
+    public TreeMap<Date, File> getPatchesByDate() {
+        TreeMap<Date,File> filesByDate = new TreeMap<>();
+        FileCollection files = new FSFileCollection(".", new FileFilterRuleSet().setIncludeFilesWithNameMask("*.patch"));
+        for(String fileName : files.getFileNames()) {
+            try {
+                File file = ((FSFileCollection) files).getActualFileByName(fileName);
+                filesByDate.put(new Date(file.lastModified()), file);
+            } catch (IOException e) {
+                throw new ResourceException("file " + fileName + " not found", e);
+            }
+        }
+        return filesByDate;
+    }
+
+    @Override
+    public void executePatch() {
+        TreeMap<Date,File> filesByDate = getPatchesByDate();
+        File chosenPatch;
+        if(!filesByDate.isEmpty()) {
+            chosenPatch = filesByDate.lastEntry().getValue();
+            try {
+                FileSupport.moveFile(chosenPatch.getPath(), "./patch.zip", true);
+            } catch (IOException e) {
+                throw new ResourceException("cannot move " + chosenPatch.getPath(), e);
+            }
+            coreAssembly.stop();
+        }
+    }
+
 }

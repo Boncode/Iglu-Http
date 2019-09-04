@@ -8,6 +8,8 @@ public interface MaintenanceService {
 
     String test();
 
+    boolean hasAdminRights();
+
     List<String> listEditablePropertyFiles();
 
     PropertiesDto getProperties(String fileName);
@@ -17,4 +19,8 @@ public interface MaintenanceService {
     void saveProperties(String fileName, String propertiesAsText);
 
     void saveProperties(String fileName, PropertiesDto propertiesDto);
+
+    List<String> listAvailablePatches();
+
+    void executePatch();
 }

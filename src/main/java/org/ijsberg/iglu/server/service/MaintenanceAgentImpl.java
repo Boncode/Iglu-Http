@@ -5,6 +5,7 @@ import org.ijsberg.iglu.access.BasicAgentFactory;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.rest.RequestParameter;
 import org.ijsberg.iglu.rest.RequestPath;
+import org.ijsberg.iglu.rest.RestException;
 import org.ijsberg.iglu.server.service.model.FileList;
 import org.ijsberg.iglu.server.service.model.PropertiesDto;
 
@@ -35,7 +36,7 @@ public class MaintenanceAgentImpl implements MaintenanceAgent {
     @Override
     @RequestPath(inputType = VOID, path = "test", method = GET, returnType = STRING)
     public String test() {
-        return maintenanceService.test();
+        return maintenanceService.test() + " admin ? " + maintenanceService.hasAdminRights();
     }
 
     @Override
@@ -49,6 +50,7 @@ public class MaintenanceAgentImpl implements MaintenanceAgent {
     @Override
     @RequestPath(inputType = VOID, path = "listEditablePropertyFiles", method = GET, returnType = JSON)
     public FileList listEditablePropertiesFiles() {
+        assertIsAdmin();
         return new FileList(maintenanceService.listEditablePropertyFiles());
     }
 
@@ -56,6 +58,7 @@ public class MaintenanceAgentImpl implements MaintenanceAgent {
     @RequestPath(inputType = MAPPED, path = "getProperties", method = GET, returnType = JSON, parameters = {
             @RequestParameter(name = "fileName")})
     public PropertiesDto getProperties(String fileName) {
+        assertIsAdmin();
         return maintenanceService.getProperties(fileName);
     }
 
@@ -63,12 +66,14 @@ public class MaintenanceAgentImpl implements MaintenanceAgent {
     @RequestPath(inputType = MAPPED, path = "getPropertiesAsText", method = GET, returnType = STRING, parameters = {
             @RequestParameter(name = "fileName")})
     public String getPropertiesAsText(String fileName) {
+        assertIsAdmin();
         return maintenanceService.getPropertiesAsText(fileName);
     }
 
     @Override
     @RequestPath(inputType = JSON, path = "saveProperties", method = POST, returnType = VOID)
     public void saveProperties(PropertiesDto propertiesDto) {
+        assertIsAdmin();
         maintenanceService.saveProperties(propertiesDto.getFileName(), propertiesDto);
     }
 
@@ -77,6 +82,28 @@ public class MaintenanceAgentImpl implements MaintenanceAgent {
             @RequestParameter(name = "fileName"),@RequestParameter(name = "propertiesAsText")})
     //can be used in HTML form with method:POST
     public void saveProperties(String fileName, String propertiesAsText) {
+        assertIsAdmin();
         maintenanceService.saveProperties(fileName, propertiesAsText);
+    }
+
+
+    private void assertIsAdmin() {
+        if(!maintenanceService.hasAdminRights()) {
+            throw new RestException("operation not allowed", 403);
+        }
+    }
+
+    @Override
+    @RequestPath(inputType = VOID, path = "listAvailablePatches", method = GET, returnType = JSON)
+    public FileList listAvailablePatches() {
+        assertIsAdmin();
+        return new FileList(maintenanceService.listAvailablePatches());
+    }
+
+    @Override
+    @RequestPath(inputType = VOID, path = "executePatch", method = GET, returnType = VOID)
+    public void executePatch() {
+        assertIsAdmin();
+        maintenanceService.executePatch();
     }
 }

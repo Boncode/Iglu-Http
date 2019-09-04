@@ -8,25 +8,19 @@ import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
-import org.ijsberg.iglu.configuration.module.ServerEnvironment;
-import org.ijsberg.iglu.configuration.module.StandardCluster;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.logging.Logger;
-import org.ijsberg.iglu.logging.module.StandardOutLogger;
 import org.ijsberg.iglu.server.http.module.SimpleJettyServletContext;
 
 import java.awt.*;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
  * Created by J Meetsma on 26-4-2017.
  */
 public class SimpleWebserverAssembly extends BasicAssembly {
-//    private Map<String, Cluster> clusters = new HashMap<String, Cluster>();
-//    private Cluster core;
+
     private static Logger logger;
 
     private static String resourceFilter = "*";
