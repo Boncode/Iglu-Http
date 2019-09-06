@@ -104,6 +104,8 @@ public class UploadAgentImpl implements UploadAgent {
 		isUploadCancelled = false;
 //		HttpServletRequest req = (HttpServletRequest)properties.get("servlet_request");
 
+		System.out.println(new LogEntry("about to read multipart upload, content-type: " + req.getContentType()));
+
 		if (req.getContentType() != null && req.getContentType().startsWith("multipart/form-data"))
 		{
 			//context is the container for all submitted data
