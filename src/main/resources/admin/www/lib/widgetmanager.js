@@ -223,7 +223,6 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
     	return false;
 	}
 
-
 	this.widgets[newWidget.getId()] = newWidget;
 	var element = container;
 
@@ -245,7 +244,6 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	//newWidget.draw();
 	newWidget.onDeploy();
 	log('widget "' + newWidget.getId() + '" deployed');
-//	alert('widget "' + newWidget.getId() + '" deployed ' + newWidget.onDeploy);
 
 	this.activateCurrentWidget(newWidget.id);
 	return true;
