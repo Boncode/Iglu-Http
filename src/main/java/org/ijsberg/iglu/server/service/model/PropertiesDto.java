@@ -1,6 +1,7 @@
 package org.ijsberg.iglu.server.service.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public class PropertiesDto {
 
 
     @JsonCreator
-    public PropertiesDto(String fileName, Map<String, String> properties) {
+    public PropertiesDto(@JsonProperty("fileName") String fileName, @JsonProperty("properties") Map<String, String> properties) {
         this.fileName = fileName;
         this.properties = properties;
     }
