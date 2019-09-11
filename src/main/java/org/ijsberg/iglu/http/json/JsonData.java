@@ -123,7 +123,11 @@ public class JsonData implements JsonDecorator {
 				out.print("]");
 //				out.print("[ " + CollectionSupport.format((Collection) value, ", ") + " ]");
 			} else if (value instanceof String) {
-				out.print("\"" + escapeWithLineContinuation(getStringAttribute(attrName)) + "\"");
+				if(((String) value).startsWith("\"")) {
+					out.print("\"" + escapeWithLineContinuation(getStringAttribute(attrName)) + "\"");
+				} else {
+					out.print(value);
+				}
 			} else if (value instanceof JsonData) {
 				((JsonData)value).print(out);
 			} else {
@@ -169,7 +173,7 @@ public class JsonData implements JsonDecorator {
 			//oattrName + "\" : ");
 			if(value instanceof String[]) {
 				line.append("[");
-				line.append(ArraySupport.format("\"", "\"", (String[])value, ", "));
+				line.append(ArraySupport.format((String[])value, ", "));
 				line.append("]");
 			} else if(value instanceof Collection) {
 				line.append("[");
@@ -177,10 +181,18 @@ public class JsonData implements JsonDecorator {
 				line.append("]");
 //				out.print("[ " + CollectionSupport.format((Collection) value, ", ") + " ]");
 			} else if (value instanceof String) {
-				line.append("\"" + escapeWithLineContinuation(getStringAttribute(attrName)) + "\"");
+				if(((String) value).startsWith("\"") || "".equals(value)) {
+					line.append(escapeWithLineContinuation(getStringAttribute(attrName)));
+				} else {
+					line.append(value);
+				}
 			} else if (value instanceof JsonData) {
 				((IgluProperties) properties).addSubsection(attrName, ((JsonData)value).toProperties());
 				continue;
+				//line.append((JsonData)value).print(out);
+			} else if (value instanceof JsonArray) {
+				line.append(((JsonArray)value).toPropertiesString());
+				//continue;
 				//line.append((JsonData)value).print(out);
 			} else {
 				line.append(value);

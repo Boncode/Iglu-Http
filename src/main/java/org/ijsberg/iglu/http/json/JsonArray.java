@@ -19,11 +19,13 @@
 
 package org.ijsberg.iglu.http.json;
 
+import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  */
@@ -33,9 +35,15 @@ public class JsonArray implements JsonDecorator {
 	private List contents = new ArrayList();
 
 	public JsonArray addStringValue(Object ... objects) {
-
 		for(Object object : objects) {
 			contents.add("\"" + object + "\"");
+		}
+		return this;
+	}
+
+	public JsonArray addHtmlEscapedStringValue(String ... strings) {
+		for(String string : strings) {
+			contents.add( "\"" + JsonData.formatHtmlEncodedWithLineContinuation(string) + "\"");
 		}
 		return this;
 	}
@@ -64,7 +72,7 @@ public class JsonArray implements JsonDecorator {
 	}
 
 	public String toString() {
-		return "[" + CollectionSupport.format(contents, " , ") + "]\n";
+		return "[" + CollectionSupport.format(contents, ", ") + "]\n";
 	}
 
 	public int length() {
@@ -83,7 +91,19 @@ public class JsonArray implements JsonDecorator {
 	@Override
 	public void print(PrintStream out) {
 		out.print("[");
-		CollectionSupport.print(contents, out, " , ");
+		CollectionSupport.print(contents, out, ", ");
 		out.println("]");
+	}
+
+	public String toPropertiesString() {
+		List<String> purgedList = new ArrayList<>();
+		for(int i = 0; i < contents.size(); i++) {
+			Object value = getValue(i);
+			if(value instanceof JsonDecorator) {
+				throw new ResourceException("cannot convert object of type " + value.getClass().getSimpleName() + ", contents:\n" + value.toString());
+			}
+			purgedList.add(value.toString());
+		}
+		return "[" + CollectionSupport.format(purgedList, ", ") + "]";
 	}
 }
