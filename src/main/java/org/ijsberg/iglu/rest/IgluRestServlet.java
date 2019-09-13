@@ -127,7 +127,7 @@ public class IgluRestServlet extends HttpServlet {
                 return new Object[]{obj};
             }
             if(methodData.requestPath.inputType() == PROPERTIES) {
-                Properties properties = ServletSupport.readURLEncodedPostData(request);
+                Properties properties = ServletSupport.convertUrlEncodedData(postData);
                 return new Object[]{properties};
             }
             if(methodData.requestPath.inputType() == MAPPED) {
@@ -198,6 +198,7 @@ public class IgluRestServlet extends HttpServlet {
             //TODO restMethodData:null leads to NPE
 
             ServletOutputStream out = response.getOutputStream();
+            //FIXME
             response.setContentType("text/html");
 
             if (errorResult != null) {
@@ -214,6 +215,7 @@ public class IgluRestServlet extends HttpServlet {
             if(e instanceof ServletException) {
                 throw e;
             } else {
+                e.printStackTrace();
                 System.out.println(new LogEntry(Level.CRITICAL, "unable to process request", e));
                 try {
                     ServletOutputStream out = response.getOutputStream();
