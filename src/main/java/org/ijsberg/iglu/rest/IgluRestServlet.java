@@ -121,8 +121,6 @@ public class IgluRestServlet extends HttpServlet {
 //            RequestParameter parameter = declaredParameters[0];
             if(methodData.requestPath.inputType() == JSON) {
                 ObjectMapper mapper = new ObjectMapper();
-//                System.out.println("--> " + postData);
-//                System.out.println("--> " + postData.length());
                 Object obj = mapper.readValue(postData, methodData.method.getParameterTypes()[0]);
                 return new Object[]{obj};
             }
@@ -139,6 +137,7 @@ public class IgluRestServlet extends HttpServlet {
                 }
                 return result;
             }
+            //STRING
             return new Object[]{postData};
         } else {
             if(methodData.requestPath.inputType() == PROPERTIES) {
@@ -146,6 +145,7 @@ public class IgluRestServlet extends HttpServlet {
                 return new Object[]{properties};
             }
         }
+        //MAPPED
         Object[] result = new Object[declaredParameters.length];
         for(int i = 0; i < declaredParameters.length; i++) {
             RequestParameter requestParameter = declaredParameters[i];
