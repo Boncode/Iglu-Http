@@ -22,6 +22,7 @@ package org.ijsberg.iglu.util.http;
 import org.ijsberg.iglu.util.misc.StringSupport;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 /**
@@ -49,7 +50,29 @@ public abstract class HttpEncodingSupport {
 			result = StringSupport.replaceAll(result, "<", "%3c");
 			result = StringSupport.replaceAll(result, ">", "%3e");
 			result = StringSupport.replaceAll(result, "\"", "%22");
-			result = StringSupport.replaceAll(result, " ", "+");
+			result = StringSupport.replaceAll(result, " ", "%20");
+			return result;
+		}
+	}
+
+	public static String urlDecode(String input)
+	{
+		if (input == null)
+		{
+			return "";
+		}
+		try
+		{
+			return URLDecoder.decode(input, "UTF-8");
+		}
+		catch (UnsupportedEncodingException uee)
+		{
+			String result = StringSupport.replaceAll(input, "%26", "&");
+			result = StringSupport.replaceAll(result, "%3c", "<");
+			result = StringSupport.replaceAll(result, "%3e", ">");
+			result = StringSupport.replaceAll(result, "%22", "\"");
+			result = StringSupport.replaceAll(result, "%20", " ");
+			result = StringSupport.replaceAll(result, "+", " ");
 			return result;
 		}
 	}

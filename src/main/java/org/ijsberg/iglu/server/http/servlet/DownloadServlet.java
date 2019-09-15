@@ -2,6 +2,7 @@ package org.ijsberg.iglu.server.http.servlet;
 
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.util.http.HttpEncodingSupport;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.mail.MimeTypeSupport;
@@ -41,6 +42,7 @@ public class DownloadServlet extends HttpServlet {
             }
             response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
 
+            resourcePath = HttpEncodingSupport.urlDecode(resourcePath);
             InputStream input = new FileInputStream(resourcePath);
             try {
                 StreamSupport.absorbInputStream(input, response.getOutputStream());
