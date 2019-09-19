@@ -121,13 +121,11 @@ public class IgluRestServlet extends HttpServlet {
 //            RequestParameter parameter = declaredParameters[0];
             if(methodData.requestPath.inputType() == JSON) {
                 ObjectMapper mapper = new ObjectMapper();
-//                System.out.println("--> " + postData);
-//                System.out.println("--> " + postData.length());
                 Object obj = mapper.readValue(postData, methodData.method.getParameterTypes()[0]);
                 return new Object[]{obj};
             }
             if(methodData.requestPath.inputType() == PROPERTIES) {
-                Properties properties = ServletSupport.readURLEncodedPostData(request);
+                Properties properties = ServletSupport.convertUrlEncodedData(postData);
                 return new Object[]{properties};
             }
             if(methodData.requestPath.inputType() == MAPPED) {
@@ -139,6 +137,7 @@ public class IgluRestServlet extends HttpServlet {
                 }
                 return result;
             }
+            //STRING
             return new Object[]{postData};
         } else {
             if(methodData.requestPath.inputType() == PROPERTIES) {
@@ -146,6 +145,7 @@ public class IgluRestServlet extends HttpServlet {
                 return new Object[]{properties};
             }
         }
+        //MAPPED
         Object[] result = new Object[declaredParameters.length];
         for(int i = 0; i < declaredParameters.length; i++) {
             RequestParameter requestParameter = declaredParameters[i];
@@ -198,6 +198,7 @@ public class IgluRestServlet extends HttpServlet {
             //TODO restMethodData:null leads to NPE
 
             ServletOutputStream out = response.getOutputStream();
+            //FIXME
             response.setContentType("text/html");
 
             if (errorResult != null) {
@@ -214,6 +215,7 @@ public class IgluRestServlet extends HttpServlet {
             if(e instanceof ServletException) {
                 throw e;
             } else {
+                e.printStackTrace();
                 System.out.println(new LogEntry(Level.CRITICAL, "unable to process request", e));
                 try {
                     ServletOutputStream out = response.getOutputStream();
