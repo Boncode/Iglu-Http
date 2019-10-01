@@ -494,17 +494,7 @@ FrameWidget.prototype.onDeploy = function() {
     if(this.onclick != null) {
         this.element.onclick = new Function(onclick);
     }
-//    log('adding onscroll for widget ' + this.id);
-    console.log('adding onscroll for widget ' + this.id + ' overflow: ' + getComputedStyle(this.element).overflow);
     this.element.style.overflow = null;
-/*    this.element.onmousemove = function(event) {
-  		log('1. onmousemove noticed for resizing for widget ' + WidgetManager.instance.resizingWidget);
-		if(WidgetManager.instance.resizingWidget != null) {
-    		log('2. onmousemove noticed for resizing for widget ' + WidgetManager.instance.resizingWidget);
-//			dragWidget(event);
-		}
-    }
-*/
 	this.display();
 };
 

@@ -1,5 +1,6 @@
 package org.ijsberg.iglu.server.http.servlet;
 
+import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.logging.Logger;
 import org.ijsberg.iglu.util.misc.StringSupport;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class LoggerServlet extends HttpServlet implements Logger {
 
+    private int logLevelOrdinal = Level.DEBUG.ordinal();
     private List<LogEntry> logEntryQueue = new ArrayList();
 
     private static final int MAX = 100;
@@ -26,6 +28,10 @@ public class LoggerServlet extends HttpServlet implements Logger {
      */
     public void init(ServletConfig conf) throws ServletException {
         super.init(conf);
+        String logLevel = conf.getInitParameter("log_level");
+        if(logLevel != null) {
+            logLevelOrdinal = Level.valueOf(logLevel).ordinal();
+        }
     }
 
     public void service(HttpServletRequest servletRequest, HttpServletResponse response) throws IOException {
@@ -43,10 +49,12 @@ public class LoggerServlet extends HttpServlet implements Logger {
 
     @Override
     public void log(LogEntry entry) {
-        if(logEntryQueue.size() > MAX) {
-            logEntryQueue.remove(0);
+        if (entry.getLevel().ordinal() >= logLevelOrdinal) {
+            if (logEntryQueue.size() > MAX) {
+                logEntryQueue.remove(0);
+            }
+            logEntryQueue.add(entry);
         }
-        logEntryQueue.add(entry);
     }
 
     @Override
