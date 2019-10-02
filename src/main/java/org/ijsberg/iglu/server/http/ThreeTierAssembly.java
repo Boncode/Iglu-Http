@@ -18,6 +18,7 @@ import java.util.Properties;
 public abstract class ThreeTierAssembly extends BasicAssembly {
 
     protected Component accessManager;
+    protected Component scheduler;
 
     protected Cluster infraLayer;
     protected Cluster dataLayer;
@@ -27,8 +28,20 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
 
 
     public ThreeTierAssembly(Properties properties) {
-
         super(properties);
+        createLayers(properties);
+    }
+
+    public ThreeTierAssembly(Properties properties, Component ssoAccessManager) {
+        super(properties);
+        accessManager = ssoAccessManager;
+        createLayers(properties);
+    }
+
+    public ThreeTierAssembly(Properties properties, Component ssoAccessManager, Component scheduler) {
+        super(properties);
+        accessManager = ssoAccessManager;
+        this.scheduler = scheduler;
         createLayers(properties);
     }
 
@@ -47,12 +60,6 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         presentationLayer.connect("ServiceCluster", serviceLayer);
     }
 
-    public ThreeTierAssembly(Properties properties, Component ssoAccessManager) {
-        super(properties);
-        accessManager = ssoAccessManager;
-        createLayers(properties);
-    }
-
     protected abstract Cluster createDataLayer();
 
     protected abstract Cluster createServiceLayer();
@@ -64,8 +71,10 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     protected Cluster createInfraLayer() {
 
         //super.createInfraLayer();
-        Component schedulerComponent = new StandardComponent(new StandardScheduler());
-        core.connect("Scheduler", schedulerComponent);
+        if(scheduler == null) {
+            scheduler = new StandardComponent(new StandardScheduler());
+        }
+        core.connect("Scheduler", scheduler);
 
         if(accessManager == null) {
             StandardAccessManager standardAccessManager = new StandardAccessManager();

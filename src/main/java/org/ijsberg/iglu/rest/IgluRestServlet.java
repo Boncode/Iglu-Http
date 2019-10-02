@@ -159,7 +159,7 @@ public class IgluRestServlet extends HttpServlet {
 
         long start = System.currentTimeMillis();
         try {
-            System.out.println(new LogEntry(this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo()));
+            System.out.println(new LogEntry(Level.TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo()));
 
             Object result = null;
 
@@ -227,7 +227,7 @@ public class IgluRestServlet extends HttpServlet {
                 }
             }
         }
-        System.out.println(new LogEntry(this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
+        System.out.println(new LogEntry(Level.TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
                 " finished in " + (System.currentTimeMillis() - start) + " ms"));
     }
 
