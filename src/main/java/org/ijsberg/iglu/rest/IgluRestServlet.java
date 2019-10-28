@@ -1,8 +1,8 @@
 package org.ijsberg.iglu.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ijsberg.iglu.access.AccessManager;
+import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.configuration.Assembly;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.ConfigurationException;
@@ -32,11 +32,19 @@ import java.util.Properties;
  */
 public class IgluRestServlet extends HttpServlet {
 
+    private AccessManager accessManager;
+
+    public void setAccessManager(AccessManager accessManager) {
+        this.accessManager = accessManager;
+    }
+
+
+
     private class RestMethodData {
 
         Method method;
         RequestPath requestPath;
-
+        String requiredRole;
 
         RestMethodData(RequestPath requestPath, Method method) {
             this.requestPath = requestPath;
@@ -61,6 +69,24 @@ public class IgluRestServlet extends HttpServlet {
                     throw new ConfigurationException("please define " + parameterTypes.length + " input parameters");
                 }
             }
+            AssertUserRole assertUserRole = method.getAnnotation(AssertUserRole.class);
+            if(assertUserRole != null) {
+                requiredRole = assertUserRole.role();
+            }
+        }
+
+        public void assertUserAuthorized() {
+            if(requiredRole != null) {
+                User user = accessManager.getCurrentRequest().getUser();
+                if (user != null) {
+                    System.out.println(new LogEntry("checking rights for " + user.getId() + (user.getGroup() != null ? " : " + user.getGroup().getName() : "")));
+                }
+                if (user == null) {
+                    throw new RestException("not authenticated for endpoint " + this.requestPath.path(), 401);
+                } else if (!user.hasRole(requiredRole)) {
+                    throw new RestException("not authorized for endpoint " + this.requestPath.path(), 403);
+                }
+            }
         }
     }
 
@@ -71,6 +97,7 @@ public class IgluRestServlet extends HttpServlet {
 
     public void setAssembly(Assembly assembly) {
         this.assembly = assembly;
+        accessManager = assembly.getCoreCluster().getFacade().getProxy("AccessManager", AccessManager.class);
     }
 
     public void setAgentType(String agentName, Class agentClass) {
@@ -178,6 +205,7 @@ public class IgluRestServlet extends HttpServlet {
             String path = trimPath(pathInfo);
             RestMethodData restMethodData = invokeableMethods.get(path);
             if (restMethodData != null) {
+                restMethodData.assertUserAuthorized();
                 try {
                     result = agentComponent.invoke(restMethodData.method.getName(), getParameters(servletRequest, restMethodData));
                 } catch (InvocationTargetException e) {
@@ -215,13 +243,17 @@ public class IgluRestServlet extends HttpServlet {
             if(e instanceof ServletException) {
                 throw e;
             } else {
-                e.printStackTrace();
                 System.out.println(new LogEntry(Level.CRITICAL, "unable to process request", e));
                 try {
                     ServletOutputStream out = response.getOutputStream();
                     response.setContentType("text/html");
-                    response.setStatus(500);
-                    out.println("unexpected error");
+                    if(e instanceof RestException) {
+                        response.setStatus(((RestException)e).getHttpStatusCode());
+                        out.println(e.getMessage());
+                    } else {
+                        response.setStatus(500);
+                        out.println("unexpected error");
+                    }
                 } catch (Exception ignore) {
 
                 }
