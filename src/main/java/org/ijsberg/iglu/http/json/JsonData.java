@@ -206,5 +206,9 @@ public class JsonData implements JsonDecorator {
 //		out.print(" }\n");
 		return properties;
 	}
+
+	public void removeAttribute(String key) {
+		attributes.remove(key);
+	}
 }
 

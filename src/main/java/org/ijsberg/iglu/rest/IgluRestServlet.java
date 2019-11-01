@@ -1,6 +1,7 @@
 package org.ijsberg.iglu.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ijsberg.iglu.FatalException;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.configuration.Assembly;
@@ -45,10 +46,26 @@ public class IgluRestServlet extends HttpServlet {
         Method method;
         RequestPath requestPath;
         String requiredRole;
+        //rest method can either be invoked on:
+        Component serviceComponent;
+        //or by retrieving stateful agent by:
+        String agentName;
 
-        RestMethodData(RequestPath requestPath, Method method) {
+        RestMethodData(RequestPath requestPath, Method method, String agentName) {
             this.requestPath = requestPath;
             this.method = method;
+            this.agentName = agentName;
+            configure(requestPath, method);
+        }
+
+        RestMethodData(RequestPath requestPath, Method method, Component serviceComponent) {
+            this.requestPath = requestPath;
+            this.method = method;
+            this.serviceComponent = serviceComponent;
+            configure(requestPath, method);
+        }
+
+        private void configure(RequestPath requestPath, Method method) {
             Class<?>[] parameterTypes = method.getParameterTypes();
             Class<?> returnType = method.getReturnType();
             if(requestPath.inputType() == VOID) {
@@ -88,6 +105,17 @@ public class IgluRestServlet extends HttpServlet {
                 }
             }
         }
+
+        public Component getComponent() {
+            if(serviceComponent != null) {
+                return serviceComponent;
+            } else {
+                return assembly.getCoreCluster().getInternalComponents().
+                        get("AccessManager").getProxy(AccessManager.class).
+                        getCurrentRequest().getSession(true).
+                        getAgent(agentName);
+            }
+        }
     }
 
     private Assembly assembly;
@@ -109,9 +137,28 @@ public class IgluRestServlet extends HttpServlet {
             RequestPath requestPath = method.getAnnotation(RequestPath.class);
             if(requestPath != null) {
                 String path = trimPath(requestPath.path());
-                invokeableMethods.put(path, new RestMethodData(requestPath, method));
+                addInvokeableMethod(path, new RestMethodData(requestPath, method, agentName));
             }
         }
+    }
+
+    public void setServiceComponent(Component serviceComponent, Class serviceClass) {
+        Method[] methods = serviceClass.getDeclaredMethods();
+
+        for(Method method : methods) {
+            RequestPath requestPath = method.getAnnotation(RequestPath.class);
+            if(requestPath != null) {
+                String path = trimPath(requestPath.path());
+                addInvokeableMethod(path, new RestMethodData(requestPath, method, serviceComponent));
+            }
+        }
+    }
+
+    private void addInvokeableMethod(String path, RestMethodData restMethodData) {
+        if(invokeableMethods.containsKey(path)) {
+            throw new ConfigurationException("endpoint " + path + " not unique");
+        }
+        invokeableMethods.put(path, restMethodData);
     }
 
     private static String readPostData(HttpServletRequest request) throws IOException {
@@ -171,6 +218,13 @@ public class IgluRestServlet extends HttpServlet {
                 Properties properties = ServletSupport.getPropertiesFromRequest(request);
                 return new Object[]{properties};
             }
+            if(methodData.requestPath.inputType() == STRING) {
+                Properties properties = ServletSupport.getPropertiesFromRequest(request);
+                if(properties.size() > 0) {
+                    return new Object[]{properties.getProperty(properties.stringPropertyNames().iterator().next())};
+                }
+                return new Object[]{null};
+            }
         }
         //MAPPED
         Object[] result = new Object[declaredParameters.length];
@@ -190,10 +244,6 @@ public class IgluRestServlet extends HttpServlet {
 
             Object result = null;
 
-            Component agentComponent = assembly.getCoreCluster().getInternalComponents().
-                    get("AccessManager").getProxy(AccessManager.class).
-                    getCurrentRequest().getSession(true).
-                    getAgent(agentName);
 
             String pathInfo = servletRequest.getPathInfo();
             if (pathInfo == null) {
@@ -204,20 +254,22 @@ public class IgluRestServlet extends HttpServlet {
 
             String path = trimPath(pathInfo);
             RestMethodData restMethodData = invokeableMethods.get(path);
+
+
             if (restMethodData != null) {
                 restMethodData.assertUserAuthorized();
                 try {
-                    result = agentComponent.invoke(restMethodData.method.getName(), getParameters(servletRequest, restMethodData));
+                    result = restMethodData.getComponent().invoke(restMethodData.method.getName(), getParameters(servletRequest, restMethodData));
                 } catch (InvocationTargetException e) {
                     System.out.println(new LogEntry(Level.CRITICAL, "unable to invoke method " + restMethodData.method.getName(), e.getCause()));
                     if (e.getCause() instanceof RestException) {
                         errorResult = createErrorResponse((RestException) e.getCause());
                     } else {
-                        throw new ServletException("unable to invoke method " + restMethodData.method.getName(), e);
+                        throw new FatalException("unable to invoke method " + restMethodData.method.getName(), e);
                     }
                 } catch (NoSuchMethodException e) {
                     System.out.println(new LogEntry(Level.CRITICAL, "unable to invoke method " + restMethodData.method.getName(), e));
-                    throw new ServletException("unable to invoke method " + restMethodData.method.getName(), e);
+                    throw new FatalException("unable to invoke method " + restMethodData.method.getName(), e);
                 }
             } else {
                 errorResult = RestSupport.createResponse(404, "no endpoint found for path " + path);
@@ -241,6 +293,7 @@ public class IgluRestServlet extends HttpServlet {
                     (restMethodData.requestPath.returnType() == VOID ? "" : "null"));
         } catch(Exception e) {
             if(e instanceof ServletException) {
+                //TODO controlled response
                 throw e;
             } else {
                 System.out.println(new LogEntry(Level.CRITICAL, "unable to process request", e));
