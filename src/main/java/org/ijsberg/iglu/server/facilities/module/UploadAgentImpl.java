@@ -29,9 +29,11 @@ import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
+import org.ijsberg.iglu.util.execution.Executable;
 import org.ijsberg.iglu.util.http.MultiPartReader;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
+import org.ijsberg.iglu.util.mail.EMail;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -54,10 +56,12 @@ public class UploadAgentImpl implements UploadAgent {
 	private RequestRegistry requestRegistry;
 	private Properties properties;
 	private String targetDir;
+	private boolean sendEmail = false;
 
 	public UploadAgentImpl(Properties agentProperties) {
 		this.properties = agentProperties;
 		targetDir = properties.getProperty("target_dir");
+		sendEmail = Boolean.parseBoolean(properties.getProperty("send_email", "" + sendEmail));
 	}
 
 
@@ -149,9 +153,9 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	private void postProcess() {
+		File uploadedFile = reader.getUploadFile();
+		FileData fileData = new FileData(uploadedFile.getPath());
 		if(targetDir != null) {
-			File uploadedFile = reader.getUploadFile();
-			FileData fileData = new FileData(uploadedFile.getPath());
 			String tmpFileName = targetDir + "/ignore.tmp";
 			String permanentFileName = targetDir + "/" + fileData.getFileName();
 			try {
@@ -163,6 +167,27 @@ public class UploadAgentImpl implements UploadAgent {
 				System.out.println(new LogEntry(Level.CRITICAL, "cannot copy file to target dir", e));
 			}
 		}
+		if(sendEmail) {
+			notifyAsync(fileData);
+		}
+	}
+
+	private void notifyAsync(FileData fileData) {
+
+		String message = fileData.getFileName() + " has been uploaded to " + getUserDir();
+
+		new Executable() {
+			@Override
+			protected Object execute() throws Throwable {
+				try {
+					new EMail("BONcat Upload Server", "bls@service.bon-code.nl", "bls@bon-code.nl", "file upload notification",
+							message);
+				} catch (Exception e) {
+					System.out.println(new LogEntry(Level.CRITICAL,"sending notification failed", e));
+				}
+				return null;
+			}
+		}.executeAsync();
 	}
 
 	@Override
