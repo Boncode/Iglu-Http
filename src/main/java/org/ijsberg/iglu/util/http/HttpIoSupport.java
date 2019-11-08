@@ -37,11 +37,12 @@ public class HttpIoSupport {
 
 	public static String getDataByHttp(String urlStr) {
 
+		String urlEncodedStr = urlStr.replace(" ", "%20");
 		StringBuffer result = new StringBuffer();
 		URL url = null;
 		URLConnection yc = null;
 		try {
-			url = new URL(urlStr);
+			url = new URL(urlEncodedStr);
 			System.out.println(new LogEntry("opening connection to " + urlStr));
 			yc = url.openConnection();
 			yc.setConnectTimeout(60 * 1000);
