@@ -164,7 +164,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
 		cookie.setMaxAge(-1);//expire when browser closes
-		((HttpServletResponse) response).addCookie(cookie);
+		((HttpServletResponse)response).addCookie(cookie);
 	}
 
     /**

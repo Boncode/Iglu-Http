@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class MenuItem extends JsonData {
 
-	private List<JsonData> links = new ArrayList<JsonData>();
+	private List<JsonData> links = new ArrayList<>();
 
 	public MenuItem(String id, String label) {
 		addAttribute("expertMode", false);
