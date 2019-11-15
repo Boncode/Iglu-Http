@@ -169,19 +169,21 @@ public class UploadAgentImpl implements UploadAgent {
 		}
 		if(sendEmail) {
 			notifyAsync(fileData);
+		} else {
+			System.out.println(new LogEntry("notification disabled"));
 		}
 	}
 
 	private void notifyAsync(FileData fileData) {
 
 		String message = fileData.getFileName() + " has been uploaded to " + getUserDir();
-
+		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
 		new Executable() {
 			@Override
 			protected Object execute() throws Throwable {
 				try {
 					new EMail("BONcat Upload Server", "bls@service.bon-code.nl", "bls@bon-code.nl", "file upload notification",
-							message);
+							message).mail();
 				} catch (Exception e) {
 					System.out.println(new LogEntry(Level.CRITICAL,"sending notification failed", e));
 				}
