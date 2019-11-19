@@ -137,7 +137,6 @@ public class UploadAgentImpl implements UploadAgent {
 
 			}
 
-			readingUpload = false;
 
 			Enumeration e = req.getAttributeNames();
 			while (e.hasMoreElements())
@@ -149,6 +148,7 @@ public class UploadAgentImpl implements UploadAgent {
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
 		postProcess();
+		readingUpload = false;
 		return "DONE";
 	}
 
@@ -233,6 +233,12 @@ public class UploadAgentImpl implements UploadAgent {
 	@Override
 	public boolean isUploadCancelled() {
 		return isUploadCancelled;
+
+	}
+
+	@Override
+	public boolean isUploadInProgress() {
+		return readingUpload;
 
 	}
 

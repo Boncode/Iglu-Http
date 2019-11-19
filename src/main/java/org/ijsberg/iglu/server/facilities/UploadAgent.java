@@ -39,7 +39,9 @@ public interface UploadAgent {
 
 	boolean isUploadCancelled();
 
-	void reset();
+    boolean isUploadInProgress();
+
+    void reset();
 
 	String getProgress(String jsFunction);
 }
