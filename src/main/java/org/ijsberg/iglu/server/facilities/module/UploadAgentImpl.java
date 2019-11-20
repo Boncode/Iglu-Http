@@ -147,7 +147,11 @@ public class UploadAgentImpl implements UploadAgent {
 			}
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
-		postProcess();
+		if(reader != null && reader.getUploadFile() == null) {
+			postProcess();
+		} else {
+			System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? "file: " + reader.getUploadFile() : "[ERROR:reader:null]" ) + " FAILED"));
+		}
 		readingUpload = false;
 		return "DONE";
 	}
@@ -175,7 +179,7 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	private void notifyAsync(FileData fileData) {
-
+		//TODO make configurable
 		String message = fileData.getFileName() + " has been uploaded to " + getUserDir();
 		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
 		new Executable() {
