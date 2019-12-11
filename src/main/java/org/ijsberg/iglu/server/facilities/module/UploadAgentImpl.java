@@ -147,7 +147,7 @@ public class UploadAgentImpl implements UploadAgent {
 			}
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
-		if(reader != null && reader.getUploadFile() == null) {
+		if(reader != null && reader.getUploadFile() != null) {
 			postProcess();
 		} else {
 			System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? "file: " + reader.getUploadFile() : "[ERROR:reader:null]" ) + " FAILED"));
