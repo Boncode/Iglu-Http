@@ -1,0 +1,845 @@
+{
+  "id": 42,
+  "name": "test_solution_new_management_LINKIT",
+  "title": "test_solution_new_management_LINKIT",
+  "isPublic": true,
+  "ownerUserId": null,
+  "type": "DashboardFrameWidget",
+  "settings": {
+    "id": "dashboard_frame",
+    "cssClassName": "multi_frame",
+    "resetMode": "reload",
+    "stretchToWindowBottom": true,
+    "dashboardType": "portfolio",
+    "top": 36,
+    "left": 56,
+    "height": 685,
+    "width": 1480,
+    "paddingLeft": 10,
+    "paddingRight": 10,
+    "paddingTop": 10,
+    "paddingBottom": 5,
+    "rowSettings": {
+      "cssClassName": "dashboard_row",
+      "top": 0,
+      "left": 0,
+      "height": 200,
+      "width": 0
+    },
+    "cellSettings": {
+      "cssClassName": "dashboard_cell_empty",
+      "top": 0,
+      "left": 0,
+      "height": 0,
+      "width": 0
+    }
+  },
+  "gridSetup": [
+    {
+      "id": "dashboard_frame.row_0.multicell_row",
+      "outerFrameId": "dashboard_frame.row_0",
+      "nrofSlots": 2,
+      "orientation": "row",
+      "division": [
+        50,
+        50
+      ],
+      "height": 228.31615912216822
+    },
+    {
+      "id": "dashboard_frame.row_0.multicell_row.cell_0.inner_row",
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_0",
+      "nrofSlots": 2,
+      "orientation": "row",
+      "division": [
+        50,
+        50
+      ],
+      "height": 218.3161591221682
+    },
+    {
+      "id": "dashboard_frame.row_0.multicell_row.cell_0.inner_row.cell_0.inner_row",
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_0.inner_row.cell_0",
+      "nrofSlots": 2,
+      "orientation": "row",
+      "division": [
+        50,
+        50
+      ],
+      "height": 218.3161591221682
+    },
+    {
+      "id": "dashboard_frame.row_0.multicell_row.cell_1.inner_row",
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_1",
+      "nrofSlots": 2,
+      "orientation": "row",
+      "division": [
+        50,
+        50
+      ],
+      "height": 218.3161591221682
+    },
+    {
+      "id": "dashboard_frame.row_0.multicell_row.cell_1.inner_row.cell_0.inner_row",
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_1.inner_row.cell_0",
+      "nrofSlots": 2,
+      "orientation": "column",
+      "division": null,
+      "height": 218.3161591221682
+    },
+    {
+      "id": "dashboard_frame.row_1.multicell_row",
+      "outerFrameId": "dashboard_frame.row_1",
+      "nrofSlots": 3,
+      "orientation": "row",
+      "division": [
+        50,
+        50
+      ],
+      "height": 220.57052572425627
+    },
+    {
+      "id": "dashboard_frame.row_2.multicell_row",
+      "outerFrameId": "dashboard_frame.row_2",
+      "nrofSlots": 3,
+      "orientation": "row",
+      "division": [
+        50,
+        50
+      ],
+      "height": 222.11331515357554
+    }
+  ],
+  "chartSetup": [
+    {
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_0.inner_row.cell_0.inner_row.cell_0",
+      "settings": {
+        "id": "dashboard_frame.row_0.multicell_row.cell_0.inner_row.cell_0.inner_row.cell_0.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "single_value_chart",
+        "title": "Solution Score",
+        "height": 163.3161591221682,
+        "width": 163.75,
+        "dataSource": "/hub/get_metric_value_from_component/LINKIT/LINKIT Solution/LINKIT Solution/outsystems/1?metric_id=WEIGHTED_QUALITY_RATING",
+        "subtitle": "General",
+        "templatePath": "/get_metric_value_from_component/{organisation}/{project}/{component}/{language}/{number_of_results}",
+        "type": "number",
+        "orientation": "row",
+        "division": null,
+        "thresholds": [
+          40,
+          50,
+          60,
+          70,
+          80
+        ],
+        "datasetLabels": [
+          "not maintainable",
+          "poor",
+          "adequate",
+          "good",
+          "gold-plated"
+        ],
+        "datasetValueLabels": [
+          "value"
+        ],
+        "datasetColors": null,
+        "datasetColorsDistributed": false,
+        "categoryColors": [
+          "#FF1200",
+          "#FF8000",
+          "#FFCC00",
+          "#58AB21",
+          "#0B9C30"
+        ],
+        "categoryColorsDistributed": true,
+        "chartOptions": {
+          "blockFormat": true,
+          "onclick": "",
+          "customCall": "DataHubProxy.getDistribution('${moduleDir}',['SOLUTION_SCORE'])"
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_0.inner_row.cell_0.inner_row.cell_1",
+      "settings": {
+        "id": "dashboard_frame.row_0.multicell_row.cell_0.inner_row.cell_0.inner_row.cell_1.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "pie_chart",
+        "title": "Solution Score",
+        "height": 163.3161591221682,
+        "width": 163.75,
+        "dataSource": "/hub/get_metric_value_from_component/LINKIT/LINKIT Solution/LINKIT Solution/outsystems/1?metric_id=[DECOMPOSITION_SCORE_CONTRIBUTION,ARCHITECTURE_SCORE_CONTRIBUTION,VOLUME_SCORE_CONTRIBUTION,SCORE_REMAINDER]",
+        "subtitle": "Contribution",
+        "templatePath": "/get_metric_value_from_component/{organisation}/{project}/{component}/{language}/{number_of_results}",
+        "type": "pie",
+        "orientation": "column",
+        "division": null,
+        "thresholds": [
+          0,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90
+        ],
+        "datasetLabels": [
+          "value"
+        ],
+        "datasetValueLabels": [
+          "decomposition",
+          "architecture",
+          "volume",
+          "unacquired"
+        ],
+        "datasetColorsDistributed": false,
+        "categoryColors": [
+          "rgba(8, 0, 71, 1)",
+          "rgba(21, 0, 179, 1)",
+          "rgba(97, 77, 255, 1)",
+          "rgba(196, 189, 255, 1)"
+        ],
+        "categoryColorsDistributed": false,
+        "chartOptions": {
+          "customCall": "DataHubProxy.getDistribution('${moduleDir}',['DECOMPOSITION_SCORE_CONTRIBUTION','ARCHITECTURE_SCORE_CONTRIBUTION','VOLUME_SCORE_CONTRIBUTION','SCORE_REMAINDER'])"
+        },
+        "chartJSOptions": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "legend": {
+            "position": "top",
+            "labels": {
+              "padding": 5,
+              "fontSize": 10,
+              "boxWidth": 10
+            }
+          }
+        },
+        "chartJSDatasetOptions": {
+          "borderWidth": 1
+        },
+        "customContent": null,
+        "name": null,
+        "datasetColors": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_0.inner_row.cell_1",
+      "settings": {
+        "id": "dashboard_frame.row_0.multicell_row.cell_0.inner_row.cell_1.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "time_line_chart",
+        "title": "Solution Score ",
+        "height": 163.3161591221682,
+        "width": 347.5,
+        "dataSource": "/hub/get_metric_trend_from_component/LINKIT/LINKIT Solution/LINKIT Solution/outsystems?metric_id=WEIGHTED_QUALITY_RATING",
+        "subtitle": "Trend",
+        "templatePath": "/get_metric_trend_from_component/{organisation}/{project}/{component}/{language}",
+        "type": "line",
+        "orientation": "row",
+        "division": null,
+        "thresholds": null,
+        "datasetLabels": [
+          "score",
+          "snapshot"
+        ],
+        "datasetValueLabels": [
+          "snapshot_timestamp",
+          "value"
+        ],
+        "datasetColors": [
+          "rgba(0,161,205,1)",
+          "rgba(0,88,184,1)",
+          "rgba(175,203,5,1)",
+          "rgba(83,163,29,1)",
+          "rgba(243,146,0,1)",
+          "rgba(175,14,128,1)",
+          "rgba(255,204,0,1)",
+          "rgba(233,76,10,1)"
+        ],
+        "datasetColorsDistributed": false,
+        "categoryColors": null,
+        "categoryColorsDistributed": false,
+        "chartOptions": {
+          "customCall": "DataHubProxy.getMetricTrend('${moduleDir}',['SOLUTION_SCORE'])"
+        },
+        "chartJSOptions": {
+          "legend": {
+            "display": false,
+            "position": "bottom",
+            "labels": {
+              "fontSize": 10,
+              "boxWidth": 20
+            }
+          },
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "scales": {
+            "yAxes": [
+              {
+                "ticks": {
+                  "beginAtZero": false
+                }
+              }
+            ],
+            "xAxes": [
+              {
+                "type": "time",
+                "time": {
+                  "parser": "YYYY-MM-DD hh:mm"
+                },
+                "distribution": "linear",
+                "ticks": {
+                  "beginAtZero": false
+                }
+              }
+            ]
+          }
+        },
+        "chartJSDatasetOptions": {
+          "borderWidth": 2,
+          "fill": false
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_1.inner_row.cell_0.inner_row.cell_0",
+      "settings": {
+        "id": "dashboard_frame.row_0.multicell_row.cell_1.inner_row.cell_0.inner_row.cell_0.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "application_monitor",
+        "title": "Solution Score",
+        "height": 49.158079561084094,
+        "width": 347.5,
+        "dataSource": "/hub/get_metric_trend_last_2_plus_metric_type_from_component/LINKIT/LINKIT Solution/LINKIT Solution/outsystems?metric_id=[DECOMPOSITION_SCORE]",
+        "subtitle": "Decomposition Score",
+        "templatePath": "/get_metric_trend_last_2_plus_metric_type_from_component/{organisation}/{project}/{component}/{language}",
+        "type": "application_monitor",
+        "orientation": "row",
+        "division": null,
+        "thresholds": null,
+        "datasetLabels": [
+          "component_name",
+          "snapshot_timestamp",
+          "metric_label",
+          "value",
+          "metric_type"
+        ],
+        "datasetValueLabels": [
+          "component_name",
+          "snapshot_timestamp",
+          "metric_label",
+          "value",
+          "metric_type"
+        ],
+        "datasetColors": null,
+        "datasetColorsDistributed": false,
+        "categoryColors": null,
+        "categoryColorsDistributed": false,
+        "chartOptions": {
+          "customCall": "DataHubProxy.getMetricList('${moduleDir}',['DECOMPOSITION_SCORE','FOUR_LAYER_CANVAS_SCORE','CYCLIC_REFERENCES_SCORE','EMBEDDED_CODE_SCORE','ESPACE_SIZE_SCORE','DUPLICATION_SCORE'])",
+          "showValue": true,
+          "deltaReflectsQuality": true,
+          "onclick": "",
+          "bold": false,
+          "rowOptions": {}
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_1.inner_row.cell_0.inner_row.cell_1",
+      "settings": {
+        "id": "dashboard_frame.row_0.multicell_row.cell_1.inner_row.cell_0.inner_row.cell_1.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "application_monitor",
+        "title": "Solution Score",
+        "height": 49.158079561084094,
+        "width": 347.5,
+        "dataSource": "/hub/get_metric_trend_last_2_plus_metric_type_from_component/LINKIT/LINKIT Solution/LINKIT Solution/outsystems?metric_id=[FOUR_LAYER_CANVAS_SCORE,CYCLIC_REFERENCES_SCORE]",
+        "subtitle": "Architecture Scores",
+        "templatePath": "/get_metric_trend_last_2_plus_metric_type_from_component/{organisation}/{project}/{component}/{language}",
+        "type": "application_monitor",
+        "orientation": "row",
+        "division": null,
+        "thresholds": null,
+        "datasetLabels": [
+          "component_name",
+          "snapshot_timestamp",
+          "metric_label",
+          "value",
+          "metric_type"
+        ],
+        "datasetValueLabels": [
+          "component_name",
+          "snapshot_timestamp",
+          "metric_label",
+          "value",
+          "metric_type"
+        ],
+        "datasetColors": null,
+        "datasetColorsDistributed": false,
+        "categoryColors": null,
+        "categoryColorsDistributed": false,
+        "chartOptions": {
+          "customCall": "DataHubProxy.getMetricList('${moduleDir}',['DECOMPOSITION_SCORE','FOUR_LAYER_CANVAS_SCORE','CYCLIC_REFERENCES_SCORE','EMBEDDED_CODE_SCORE','ESPACE_SIZE_SCORE','DUPLICATION_SCORE'])",
+          "showValue": true,
+          "deltaReflectsQuality": true,
+          "onclick": "",
+          "bold": false,
+          "rowOptions": {}
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_0.multicell_row.cell_1.inner_row.cell_1",
+      "settings": {
+        "id": "dashboard_frame.row_0.multicell_row.cell_1.inner_row.cell_1.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "application_monitor",
+        "title": "Solution Score",
+        "height": 163.3161591221682,
+        "width": 347.5,
+        "dataSource": "/hub/get_metric_trend_last_2_plus_metric_type_from_component/LINKIT/LINKIT Solution/LINKIT Solution/outsystems?metric_id=[EMBEDDED_CODE_SCORE,ESPACE_SIZE_SCORE,DUPLICATION_SCORE]",
+        "subtitle": "Volume Scores",
+        "templatePath": "/get_metric_trend_last_2_plus_metric_type_from_component/{organisation}/{project}/{component}/{language}",
+        "type": "application_monitor",
+        "orientation": "row",
+        "division": null,
+        "thresholds": null,
+        "datasetLabels": [
+          "component_name",
+          "snapshot_timestamp",
+          "metric_label",
+          "value",
+          "metric_type"
+        ],
+        "datasetValueLabels": [
+          "component_name",
+          "snapshot_timestamp",
+          "metric_label",
+          "value",
+          "metric_type"
+        ],
+        "datasetColors": null,
+        "datasetColorsDistributed": false,
+        "categoryColors": null,
+        "categoryColorsDistributed": false,
+        "chartOptions": {
+          "customCall": "DataHubProxy.getMetricList('${moduleDir}',['DECOMPOSITION_SCORE','FOUR_LAYER_CANVAS_SCORE','CYCLIC_REFERENCES_SCORE','EMBEDDED_CODE_SCORE','ESPACE_SIZE_SCORE','DUPLICATION_SCORE'])",
+          "showValue": true,
+          "deltaReflectsQuality": true,
+          "onclick": "",
+          "bold": false,
+          "rowOptions": {}
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_1.multicell_row.cell_0",
+      "settings": {
+        "id": "dashboard_frame.row_1.multicell_row.cell_0.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "single_value_chart",
+        "title": "MyLINKIT Score",
+        "height": 155.5705257242563,
+        "width": 470,
+        "dataSource": "/hub/get_metric_value_from_component/LINKIT/LINKIT Solution/LINKIT Solution.MyLINKIT/outsystems/1?metric_id=WEIGHTED_QUALITY_RATING",
+        "subtitle": "General",
+        "templatePath": "/get_metric_value_from_component/{organisation}/{project}/{component}/{language}/{number_of_results}",
+        "type": "number",
+        "orientation": "row",
+        "division": null,
+        "thresholds": [
+          40,
+          50,
+          60,
+          70,
+          80
+        ],
+        "datasetLabels": [
+          "not maintainable",
+          "poor",
+          "adequate",
+          "good",
+          "gold-plated"
+        ],
+        "datasetValueLabels": [
+          "value"
+        ],
+        "datasetColors": null,
+        "datasetColorsDistributed": false,
+        "categoryColors": [
+          "#FF1200",
+          "#FF8000",
+          "#FFCC00",
+          "#58AB21",
+          "#0B9C30"
+        ],
+        "categoryColorsDistributed": true,
+        "chartOptions": {
+          "onclick": "openDashboardFullScreenByTemplateName('test_application_new_management', 'LINKIT', 'LINKIT Solution', 'LINKIT Solution.MyLINKIT', 'outsystems')",
+          "customCall": "DataHubProxy.getDistribution('${moduleDir}',['SOLUTION_SCORE'])"
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_1.multicell_row.cell_1",
+      "settings": {
+        "id": "dashboard_frame.row_1.multicell_row.cell_1.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "single_value_chart",
+        "title": "LINKIT Loyalty Score",
+        "height": 155.5705257242563,
+        "width": 470,
+        "dataSource": "/hub/get_metric_value_from_component/LINKIT/LINKIT Solution/LINKIT Solution.LINKIT Loyalty/outsystems/1?metric_id=WEIGHTED_QUALITY_RATING",
+        "subtitle": "General",
+        "templatePath": "/get_metric_value_from_component/{organisation}/{project}/{component}/{language}/{number_of_results}",
+        "type": "number",
+        "orientation": "row",
+        "division": null,
+        "thresholds": [
+          40,
+          50,
+          60,
+          70,
+          80
+        ],
+        "datasetLabels": [
+          "not maintainable",
+          "poor",
+          "adequate",
+          "good",
+          "gold-plated"
+        ],
+        "datasetValueLabels": [
+          "value"
+        ],
+        "datasetColors": null,
+        "datasetColorsDistributed": false,
+        "categoryColors": [
+          "#FF1200",
+          "#FF8000",
+          "#FFCC00",
+          "#58AB21",
+          "#0B9C30"
+        ],
+        "categoryColorsDistributed": true,
+        "chartOptions": {
+          "onclick": "openDashboardFullScreenByTemplateName('test_application_new_management', 'LINKIT', 'LINKIT Solution', 'LINKIT Solution.LINKIT Loyalty', 'outsystems')",
+          "customCall": "DataHubProxy.getDistribution('${moduleDir}',['SOLUTION_SCORE'])"
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_1.multicell_row.cell_2",
+      "settings": {
+        "id": "dashboard_frame.row_1.multicell_row.cell_2.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "single_value_chart",
+        "title": "Loyalty Back Office Score",
+        "height": 155.5705257242563,
+        "width": 470,
+        "dataSource": "/hub/get_metric_value_from_component/LINKIT/LINKIT Solution/LINKIT Solution.Loyalty Back Office/outsystems/1?metric_id=WEIGHTED_QUALITY_RATING",
+        "subtitle": "General",
+        "templatePath": "/get_metric_value_from_component/{organisation}/{project}/{component}/{language}/{number_of_results}",
+        "type": "number",
+        "orientation": "row",
+        "division": null,
+        "thresholds": [
+          40,
+          50,
+          60,
+          70,
+          80
+        ],
+        "datasetLabels": [
+          "not maintainable",
+          "poor",
+          "adequate",
+          "good",
+          "gold-plated"
+        ],
+        "datasetValueLabels": [
+          "value"
+        ],
+        "datasetColors": null,
+        "datasetColorsDistributed": false,
+        "categoryColors": [
+          "#FF1200",
+          "#FF8000",
+          "#FFCC00",
+          "#58AB21",
+          "#0B9C30"
+        ],
+        "categoryColorsDistributed": true,
+        "chartOptions": {
+          "onclick": "openDashboardFullScreenByTemplateName('test_application_new_management', 'LINKIT', 'LINKIT Solution', 'LINKIT Solution.Loyalty Back Office', 'outsystems')",
+          "customCall": "DataHubProxy.getDistribution('${moduleDir}',['SOLUTION_SCORE'])"
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_2.multicell_row.cell_0",
+      "settings": {
+        "id": "dashboard_frame.row_2.multicell_row.cell_0.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "time_line_chart",
+        "title": "MyLINKIT Score ",
+        "height": 157.1133151535755,
+        "width": 470,
+        "dataSource": "/hub/get_metric_trend_from_component/LINKIT/LINKIT Solution/LINKIT Solution.MyLINKIT/outsystems?metric_id=WEIGHTED_QUALITY_RATING",
+        "subtitle": "Trend",
+        "templatePath": "/get_metric_trend_from_component/{organisation}/{project}/{component}/{language}",
+        "type": "line",
+        "orientation": "row",
+        "division": null,
+        "thresholds": null,
+        "datasetLabels": [
+          "score",
+          "value"
+        ],
+        "datasetValueLabels": [
+          "snapshot_timestamp",
+          "value"
+        ],
+        "datasetColors": [
+          "rgba(0,161,205,1)",
+          "rgba(0,88,184,1)",
+          "rgba(175,203,5,1)",
+          "rgba(83,163,29,1)",
+          "rgba(243,146,0,1)",
+          "rgba(175,14,128,1)",
+          "rgba(255,204,0,1)",
+          "rgba(233,76,10,1)"
+        ],
+        "datasetColorsDistributed": false,
+        "categoryColors": null,
+        "categoryColorsDistributed": false,
+        "chartOptions": {
+          "customCall": "DataHubProxy.getMetricTrend('${moduleDir}',['SOLUTION_SCORE'])"
+        },
+        "chartJSOptions": {
+          "legend": {
+            "display": false,
+            "position": "bottom",
+            "labels": {
+              "fontSize": 10,
+              "boxWidth": 20
+            }
+          },
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "scales": {
+            "yAxes": [
+              {
+                "ticks": {
+                  "beginAtZero": false
+                }
+              }
+            ],
+            "xAxes": [
+              {
+                "type": "time",
+                "time": {
+                  "parser": "YYYY-MM-DD hh:mm"
+                },
+                "distribution": "linear",
+                "ticks": {
+                  "beginAtZero": false
+                }
+              }
+            ]
+          }
+        },
+        "chartJSDatasetOptions": {
+          "borderWidth": 2,
+          "fill": false
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_2.multicell_row.cell_1",
+      "settings": {
+        "id": "dashboard_frame.row_2.multicell_row.cell_1.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "time_line_chart",
+        "title": "LINKIT Loyalty Score ",
+        "height": 157.1133151535755,
+        "width": 470,
+        "dataSource": "/hub/get_metric_trend_from_component/LINKIT/LINKIT Solution/LINKIT Solution.LINKIT Loyalty/outsystems?metric_id=WEIGHTED_QUALITY_RATING",
+        "subtitle": "Trend",
+        "templatePath": "/get_metric_trend_from_component/{organisation}/{project}/{component}/{language}",
+        "type": "line",
+        "orientation": "row",
+        "division": null,
+        "thresholds": null,
+        "datasetLabels": [
+          "score",
+          "value"
+        ],
+        "datasetValueLabels": [
+          "snapshot_timestamp",
+          "value"
+        ],
+        "datasetColors": [
+          "rgba(0,161,205,1)",
+          "rgba(0,88,184,1)",
+          "rgba(175,203,5,1)",
+          "rgba(83,163,29,1)",
+          "rgba(243,146,0,1)",
+          "rgba(175,14,128,1)",
+          "rgba(255,204,0,1)",
+          "rgba(233,76,10,1)"
+        ],
+        "datasetColorsDistributed": false,
+        "categoryColors": null,
+        "categoryColorsDistributed": false,
+        "chartOptions": {
+          "customCall": "DataHubProxy.getMetricTrend('${moduleDir}',['SOLUTION_SCORE'])"
+        },
+        "chartJSOptions": {
+          "legend": {
+            "display": false,
+            "position": "bottom",
+            "labels": {
+              "fontSize": 10,
+              "boxWidth": 20
+            }
+          },
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "scales": {
+            "yAxes": [
+              {
+                "ticks": {
+                  "beginAtZero": false
+                }
+              }
+            ],
+            "xAxes": [
+              {
+                "type": "time",
+                "time": {
+                  "parser": "YYYY-MM-DD hh:mm"
+                },
+                "distribution": "linear",
+                "ticks": {
+                  "beginAtZero": false
+                }
+              }
+            ]
+          }
+        },
+        "chartJSDatasetOptions": {
+          "borderWidth": 2,
+          "fill": false
+        },
+        "customContent": null,
+        "name": null
+      }
+    },
+    {
+      "outerFrameId": "dashboard_frame.row_2.multicell_row.cell_2",
+      "settings": {
+        "id": "dashboard_frame.row_2.multicell_row.cell_2.chart",
+        "cssClassName": "panelcontents",
+        "constructionType": "time_line_chart",
+        "title": "Loyalty Back Office Score ",
+        "height": 157.1133151535755,
+        "width": 470,
+        "dataSource": "/hub/get_metric_trend_from_component/LINKIT/LINKIT Solution/LINKIT Solution.Loyalty Back Office/outsystems?metric_id=WEIGHTED_QUALITY_RATING",
+        "subtitle": "Trend",
+        "templatePath": "/get_metric_trend_from_component/{organisation}/{project}/{component}/{language}",
+        "type": "line",
+        "orientation": "row",
+        "division": null,
+        "thresholds": null,
+        "datasetLabels": [
+          "score",
+          "value"
+        ],
+        "datasetValueLabels": [
+          "snapshot_timestamp",
+          "value"
+        ],
+        "datasetColors": [
+          "rgba(0,161,205,1)",
+          "rgba(0,88,184,1)",
+          "rgba(175,203,5,1)",
+          "rgba(83,163,29,1)",
+          "rgba(243,146,0,1)",
+          "rgba(175,14,128,1)",
+          "rgba(255,204,0,1)",
+          "rgba(233,76,10,1)"
+        ],
+        "datasetColorsDistributed": false,
+        "categoryColors": null,
+        "categoryColorsDistributed": false,
+        "chartOptions": {
+          "customCall": "DataHubProxy.getMetricTrend('${moduleDir}',['SOLUTION_SCORE'])"
+        },
+        "chartJSOptions": {
+          "legend": {
+            "display": false,
+            "position": "bottom",
+            "labels": {
+              "fontSize": 10,
+              "boxWidth": 20
+            }
+          },
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "scales": {
+            "yAxes": [
+              {
+                "ticks": {
+                  "beginAtZero": false
+                }
+              }
+            ],
+            "xAxes": [
+              {
+                "type": "time",
+                "time": {
+                  "parser": "YYYY-MM-DD hh:mm"
+                },
+                "distribution": "linear",
+                "ticks": {
+                  "beginAtZero": false
+                }
+              }
+            ]
+          }
+        },
+        "chartJSDatasetOptions": {
+          "borderWidth": 2,
+          "fill": false
+        },
+        "customContent": null,
+        "name": null
+      }
+    }
+  ]
+}

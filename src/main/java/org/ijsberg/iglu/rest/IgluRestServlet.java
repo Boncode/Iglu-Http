@@ -2,6 +2,7 @@ package org.ijsberg.iglu.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ijsberg.iglu.FatalException;
+import org.ijsberg.iglu.access.AccessConstants;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.configuration.Assembly;
@@ -89,6 +90,11 @@ public class IgluRestServlet extends HttpServlet {
             AssertUserRole assertUserRole = method.getAnnotation(AssertUserRole.class);
             if(assertUserRole != null) {
                 requiredRole = assertUserRole.role();
+            } else {
+                AllowPublicAccess allowPublicAccess = method.getAnnotation(AllowPublicAccess.class);
+                if(allowPublicAccess == null) {
+                    requiredRole = AccessConstants.ADMIN_ROLE_NAME;
+                }
             }
         }
 
@@ -97,11 +103,11 @@ public class IgluRestServlet extends HttpServlet {
                 User user = accessManager.getCurrentRequest().getUser();
                 if (user != null) {
                     System.out.println(new LogEntry("checking rights for " + user.getId() + (user.getGroup() != null ? " : " + user.getGroup().getName() : "")));
-                }
-                if (user == null) {
+                    if (!user.hasRole(requiredRole)) {
+                        throw new RestException("not authorized for endpoint " + this.requestPath.path(), 403);
+                    }
+                } else {
                     throw new RestException("not authenticated for endpoint " + this.requestPath.path(), 401);
-                } else if (!user.hasRole(requiredRole)) {
-                    throw new RestException("not authorized for endpoint " + this.requestPath.path(), 403);
                 }
             }
         }
