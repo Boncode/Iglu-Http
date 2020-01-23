@@ -25,6 +25,7 @@ import org.ijsberg.iglu.access.AuthenticationException;
 import org.ijsberg.iglu.access.Base64EncodedCredentials;
 import org.ijsberg.iglu.access.Request;
 import org.ijsberg.iglu.access.User;
+import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
@@ -751,6 +752,16 @@ public abstract class ServletSupport extends HttpEncodingSupport
 				"</html>";
 	}
 
+	public static String getUserDir(RequestRegistry requestRegistry) {
+		String retval;
+		User user = requestRegistry.getCurrentRequest().getUser();
+		if(user.getGroup() != null) {
+			retval = user.getGroup().getName();
+		} else {
+			retval = user.getId();
+		}
+		return retval;
+	}
 
 
 }

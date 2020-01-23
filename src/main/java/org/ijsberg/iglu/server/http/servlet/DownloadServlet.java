@@ -7,26 +7,16 @@ import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.mail.MimeTypeSupport;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class DownloadServlet extends HttpServlet {
+public abstract class DownloadServlet extends HttpServlet {
 
-    protected String resourceDir;
-
-    public void init(ServletConfig conf) throws ServletException {
-        super.init(conf);
-
-        resourceDir = conf.getInitParameter("resource_dir");
-        if(resourceDir == null) {
-            resourceDir = "";
-        }
-    }
+    abstract String getResourceDir();
 
     public void service(HttpServletRequest request, HttpServletResponse response) {
 
@@ -36,13 +26,16 @@ public class DownloadServlet extends HttpServlet {
             pathInfo = "";
         }
         try {
-            resourcePath = FileSupport.convertToUnixStylePath(resourceDir + '/' + pathInfo);
+            resourcePath = FileSupport.convertToUnixStylePath(getResourceDir() + '/' + pathInfo);
             if(resourcePath.startsWith("/")) {
                 resourcePath = resourcePath.substring(1);
             }
+            resourcePath = HttpEncodingSupport.urlDecode(resourcePath);
+
             response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
 
-            resourcePath = HttpEncodingSupport.urlDecode(resourcePath);
+            File downloadable = new File(resourcePath);
+            response.setContentLength((int)downloadable.length());
             InputStream input = new FileInputStream(resourcePath);
             try {
                 StreamSupport.absorbInputStream(input, response.getOutputStream());
@@ -54,15 +47,5 @@ public class DownloadServlet extends HttpServlet {
             response.setStatus(500);
         }
     }
-
-/*	private void writeStats(HttpServletResponse response) throws IOException {
-		response.setContentType("text/plain");
-		PrintWriter out = response.getWriter();
-		for(String requestedResource : requestedResources) {
-			out.println(requestedResource);
-		}
-	}
-*/
-
 
 }

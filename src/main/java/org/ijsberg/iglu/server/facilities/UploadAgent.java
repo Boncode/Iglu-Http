@@ -21,15 +21,18 @@ package org.ijsberg.iglu.server.facilities;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 /**
  */
 public interface UploadAgent {
 
+	List<String> getDownloadableFileNames();
+
 	String readMultiPartUpload(HttpServletRequest request, Properties properties, String fileName) throws IOException;
 
-	String readMultiPartUpload(HttpServletRequest request, Properties properties) throws IOException;
+	//String readMultiPartUpload(HttpServletRequest request, Properties properties) throws IOException;
 
 	long getBytesRead();
 

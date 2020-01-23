@@ -31,6 +31,8 @@ import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.execution.Executable;
 import org.ijsberg.iglu.util.http.MultiPartReader;
+import org.ijsberg.iglu.util.http.ServletSupport;
+import org.ijsberg.iglu.util.io.FSFileCollection;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.mail.EMail;
@@ -39,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -55,12 +58,18 @@ public class UploadAgentImpl implements UploadAgent {
 	private boolean isUploadCancelled = false;
 	private RequestRegistry requestRegistry;
 	private Properties properties;
+	//directory to move file to after upload finished
 	private String targetDir;
+	private String uploadRootDir = "uploads";
+	private String downloadSubDir = "downloads";
+
 	private boolean sendEmail = false;
 
 	public UploadAgentImpl(Properties agentProperties) {
 		this.properties = agentProperties;
 		targetDir = properties.getProperty("target_dir");
+		downloadSubDir = properties.getProperty("download_sub_dir", downloadSubDir);
+		uploadRootDir = properties.getProperty("upload_root_dir", uploadRootDir);
 		sendEmail = Boolean.parseBoolean(properties.getProperty("send_email", "" + sendEmail));
 	}
 
@@ -70,7 +79,6 @@ public class UploadAgentImpl implements UploadAgent {
 
 	public void setRequestRegistry(RequestRegistry requestRegistry) {
 		this.requestRegistry = requestRegistry;
-
 	}
 
 
@@ -83,30 +91,33 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 
-	@Override
+/*	@Override
 	public String readMultiPartUpload(HttpServletRequest request, Properties properties) throws IOException {
 		return readMultiPartUpload(request, properties, null);
 	}
+*/
 
+	private String getUserDir() {
+		return ServletSupport.getUserDir(requestRegistry);
+	}
 
-	public String getUserDir() {
-		String retval = "";
-		User user = requestRegistry.getCurrentRequest().getUser();
-		if(user.getGroup() != null) {
-			retval = user.getGroup().getName();
-		} else {
-			retval = user.getId();
-		}
-		return retval;
+	private String getDownloadDir() {
+		return uploadRootDir + "/" + ServletSupport.getUserDir(requestRegistry) + "/" + downloadSubDir;
+	}
+
+	@Override
+	public List<String> getDownloadableFileNames() {
+		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
+		System.out.println("getDownloadDir(): " + getDownloadDir());
+		return fileCollection.getFileNames();
 	}
 
 
-
+	//TODO reconsider "synchronized" : should probably be confined to code starting with: if(readingUpload) {
 	@Override
-	public synchronized String readMultiPartUpload(HttpServletRequest req, Properties properties, String directoryName) throws IOException {
+	public synchronized String readMultiPartUpload(HttpServletRequest req, Properties properties, String directoryName) {
 
 		isUploadCancelled = false;
-//		HttpServletRequest req = (HttpServletRequest)properties.get("servlet_request");
 
 		System.out.println(new LogEntry("about to read multipart upload, content-type: " + req.getContentType()));
 
@@ -211,7 +222,6 @@ public class UploadAgentImpl implements UploadAgent {
 		}
 		return 0;
 	}
-
 
 	@Override
 	public String getProgress(String jsFunction) {
