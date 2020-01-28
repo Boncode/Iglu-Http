@@ -91,10 +91,10 @@ public class MultiPartReader {
 
 
 		bytesReadAsLine = input.readLine(line, 0, BUFFER_SIZE);
-		if (bytesReadAsLine <= 2)
+/*		if (bytesReadAsLine <= 2)
 		{
 			return 0;
-		}
+		}*/
 
 		bytesRead = bytesReadAsLine;
 

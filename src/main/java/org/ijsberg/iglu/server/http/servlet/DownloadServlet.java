@@ -2,6 +2,7 @@ package org.ijsberg.iglu.server.http.servlet;
 
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.http.HttpEncodingSupport;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
@@ -31,6 +32,9 @@ public abstract class DownloadServlet extends HttpServlet {
                 resourcePath = resourcePath.substring(1);
             }
             resourcePath = HttpEncodingSupport.urlDecode(resourcePath);
+            if(resourcePath.contains("..")) {
+                throw new ResourceException("resource path contains suspicious content");
+            }
 
             response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
 

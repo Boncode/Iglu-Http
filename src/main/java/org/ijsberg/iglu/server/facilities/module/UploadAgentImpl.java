@@ -161,6 +161,7 @@ public class UploadAgentImpl implements UploadAgent {
 		if(reader != null && reader.getUploadFile() != null) {
 			postProcess();
 		} else {
+			isUploadCancelled = true; //TODO distinguish between failed and cancelled
 			System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? "file: " + reader.getUploadFile() : "[ERROR:reader:null]" ) + " FAILED"));
 		}
 		readingUpload = false;
