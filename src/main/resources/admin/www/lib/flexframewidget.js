@@ -19,46 +19,47 @@
 
 
 
-function FrameWidget(settings, enclosedWidget) {
-	this.constructFrameWidget(settings, enclosedWidget);
+function FlexFrameWidget(settings, enclosedWidget) {
+	this.constructFlexFrameWidget(settings, enclosedWidget);
 }
 
-FrameWidget.MINIMUM_FRAME_WIDTH = 100;
-FrameWidget.MINIMUM_FRAME_HEIGHT = 20;
+FlexFrameWidget.MINIMUM_FRAME_WIDTH = 100;
+FlexFrameWidget.MINIMUM_FRAME_HEIGHT = 20;
 
-subclass(FrameWidget, Widget);
+subclass(FlexFrameWidget, Widget);
 
-FrameWidget.prototype.constructFrameWidget = function(settings, enclosedWidget) {
+FlexFrameWidget.prototype.constructFlexFrameWidget = function(settings, enclosedWidget) {
 
 	//TODO a frame may not exceed the limits of the master frame
 
 	//declare attributes
-	this.width = null;
+/*	this.width = null;
 	this.height = null;
 	this.top = null;
 	this.left = null;
-
+*/
 	this.innerContainer;
-
+/*
 	this.offsetOverFlowLeft = 0;
 	this.offsetOverFlowTop = 0;
 	this.offsetOverFlowRight = 0;
 	this.offsetOverFlowBottom = 0;
-
+*/
 	this.content = null;//TODO enclosedWidget
 
+/*
 	this.ignoresPageScroll = false;
 	this.resizeDirections = '';
-
+*/
    	//other widgets may resize or move if current widget resizes or moves
-   	this.sizeAndPositionListeners = new Object();
+  /* 	this.sizeAndPositionListeners = new Object();
 
 	this.positionListener = null;
-
+*/
 	this.subWidgets = new Object();
 	if(enclosedWidget != null && typeof enclosedWidget != 'undefined') {
 	 	if(!enclosedWidget.onDeploy) {
-			throw 'content with id ' + enclosedWidget.id + 'must be of type widget, not of type ' + typeof enclosedWidget;
+			throw 'content with id ' + enclosedWidget.id + ' must be of type widget, not of type ' + typeof enclosedWidget;
 		}
 		//this.addSubWidget(this.id, enclosedWidget);
 		enclosedWidget.outerWidget = this;
@@ -68,6 +69,7 @@ FrameWidget.prototype.constructFrameWidget = function(settings, enclosedWidget) 
 	//invoke super
 	this.constructWidget(settings, enclosedWidget);
 
+/*
     var scrollPos = getScrollOffset();
 	if(this.top != null && this.ignoresPageScroll) { //TODO display: fixed
         this.top = this.top + scrollPos.y;
@@ -78,10 +80,11 @@ FrameWidget.prototype.constructFrameWidget = function(settings, enclosedWidget) 
 
 	this.outerWidgetsToStretchTo = new Object();
 	this.outerWidgetsToAlignWith = new Object();
-
+*/
 };
 
-FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
+/*
+FlexFrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
 	var listenerData = this.sizeAndPositionListeners[widget.id];
 	if(typeof listenerData == 'undefined' || listenerData == null) {
 		listenerData = new Object();
@@ -94,8 +97,9 @@ FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
 	}
 	this.sizeAndPositionListeners[widget.id] = listenerData;
 };
-
-FrameWidget.prototype.removeResizeListener = function(widget, direction) {
+*/
+/*
+FlexFrameWidget.prototype.removeResizeListener = function(widget, direction) {
 	var listenerData = this.sizeAndPositionListeners[widget.id];
 	if(typeof listenerData != 'undefined' && listenerData != null) {
 	    delete listenerData.actionsByDirection[direction];
@@ -104,9 +108,10 @@ FrameWidget.prototype.removeResizeListener = function(widget, direction) {
 	//listenerData.actionsByDirection[direction] = null;
 	//this.sizeAndPositionListeners[widget.id] = listenerData;
 };
+*/
 
-FrameWidget.prototype.notifyWidgetDestroyed = function(destroyedWidget) {
-   delete this.sizeAndPositionListeners[destroyedWidget.id];
+FlexFrameWidget.prototype.notifyWidgetDestroyed = function(destroyedWidget) {
+//   delete this.sizeAndPositionListeners[destroyedWidget.id];
 };
 
 
@@ -115,9 +120,11 @@ event: [move,resize]
 direction: [e,w,n,s] / [h,v]
 offSet: float
 */
-FrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSet) {
 
-//	console.log('FrameWidget.prototype.notifySizeAndPositionListeners');
+/*
+FlexFrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSet) {
+
+//	console.log('FlexFrameWidget.prototype.notifySizeAndPositionListeners');
 
     var offsetOverFlow = 0;
 
@@ -140,53 +147,55 @@ FrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSe
 	return offsetOverFlow;
 };
 
-FrameWidget.prototype.addWidgetToAlignTo = function(widget) {
+FlexFrameWidget.prototype.addWidgetToAlignTo = function(widget) {
 //	return this.resizeDirections.indexOf(direction) != -1;
 };
 
-FrameWidget.prototype.allowsResize = function(direction) {
+FlexFrameWidget.prototype.allowsResize = function(direction) {
 	var result = this.resizeDirections.indexOf(direction) != -1;
 	//log(this.id + ' direction: ' + direction + ' : ' + result);
 	return result;
 };
 
-FrameWidget.prototype.allowHorizontalResize = function() {
+FlexFrameWidget.prototype.allowHorizontalResize = function() {
 	if(this.resizeDirections.indexOf('e') == -1) {
 		this.resizeDirections += 'e';
 	}
 };
 
-FrameWidget.prototype.disallowHorizontalResize = function() {
+FlexFrameWidget.prototype.disallowHorizontalResize = function() {
 	if(this.resizeDirections.indexOf('e') != -1) {
 		this.resizeDirections.split('e').join('');
 	}
 };
 
-FrameWidget.prototype.allowVerticalResize = function() {
+FlexFrameWidget.prototype.allowVerticalResize = function() {
 	if(this.resizeDirections.indexOf('s') == -1) {
 		this.resizeDirections += 's';
 	}
 };
 
-FrameWidget.prototype.getHeight = function() {
+FlexFrameWidget.prototype.getHeight = function() {
 	return this.height;
 };
 
-FrameWidget.prototype.getWidth = function() {
+FlexFrameWidget.prototype.getWidth = function() {
 	return this.width;
 };
+*/
 
-FrameWidget.prototype.draw = function() {
+FlexFrameWidget.prototype.draw = function() {
 	if(this.element != null) {
 		this.element.style.visibility = 'hidden';
 		this.element.className = this.cssClassName;
-		this.setSizeAndPosition();
+//		this.setSizeAndPosition();
 		this.writeHTML();
 		this.element.style.visibility = 'visible';
 	}
 };
 
-FrameWidget.prototype.setSizeAndPosition = function() {
+/*
+FlexFrameWidget.prototype.setSizeAndPosition = function() {
 	if(this.top != null) {
 		this.element.style.top = this.top + 'px';
 	}
@@ -205,14 +214,14 @@ FrameWidget.prototype.setSizeAndPosition = function() {
 	}
 };
 
-FrameWidget.prototype.setPosition = function(left, top) {
+FlexFrameWidget.prototype.setPosition = function(left, top) {
 	//TODO calculate offsets
 	this.top = top;
 	this.left = left;
 	this.setSizeAndPosition();
 }
 
-FrameWidget.prototype.moveVertical = function(offset) {
+FlexFrameWidget.prototype.moveVertical = function(offset) {
     //log('' + this.id + ' moving vertical ' + offset);
 	this.top += offset;
 	this.setSizeAndPosition();
@@ -220,31 +229,31 @@ FrameWidget.prototype.moveVertical = function(offset) {
 	//this.notifySizeAndPositionListeners('n', offset);
 }
 
-FrameWidget.prototype.moveHorizontal = function(offset) {
+FlexFrameWidget.prototype.moveHorizontal = function(offset) {
 	this.left += offset;
 	this.setSizeAndPosition();
 	this.notifySizeAndPositionListeners('h', offset);
 	//this.notifySizeAndPositionListeners('w', offset);
 }
 
-FrameWidget.prototype.resizeEastAndMoveHorizontal = function(offset) {
+FlexFrameWidget.prototype.resizeEastAndMoveHorizontal = function(offset) {
     this.resizeEast(offset);
     this.moveHorizontal;
 }
 
 
-FrameWidget.prototype.move = function(left, top) {
+FlexFrameWidget.prototype.move = function(left, top) {
 	this.top += top;
 	this.left += left;
 	this.setSizeAndPosition();
 }
 
-FrameWidget.prototype.resizeNorth = function(offset) {
+FlexFrameWidget.prototype.resizeNorth = function(offset) {
 	var calcOffset = offset + this.offsetOverFlowTop;
 	var newHeight = calcOffset + this.height;
-	if(newHeight < FrameWidget.MINIMUM_FRAME_HEIGHT) {
-		this.top = this.top + this.height - FrameWidget.MINIMUM_FRAME_HEIGHT;
-		this.height = FrameWidget.MINIMUM_FRAME_HEIGHT;
+	if(newHeight < FlexFrameWidget.MINIMUM_FRAME_HEIGHT) {
+		this.top = this.top + this.height - FlexFrameWidget.MINIMUM_FRAME_HEIGHT;
+		this.height = FlexFrameWidget.MINIMUM_FRAME_HEIGHT;
 		this.offsetOverFlowTop = newHeight - this.height;
 	} else {
 		this.top = this.top + this.height - newHeight;
@@ -256,7 +265,7 @@ FrameWidget.prototype.resizeNorth = function(offset) {
 	return 0;
 };
 
-FrameWidget.prototype.resizeEast = function(offset) {
+FlexFrameWidget.prototype.resizeEast = function(offset) {
 
 	//log('' + this.id + ' OFL: ' + this.offsetOverFlowLeft);
 	var maxOverFlowOfListeners = 0;
@@ -266,13 +275,13 @@ FrameWidget.prototype.resizeEast = function(offset) {
 	var calcOffset = offset + this.offsetOverFlowLeft + this.offsetOverFlowRight;
 
 	var newWidth = calcOffset + this.width;
-	if(newWidth < FrameWidget.MINIMUM_FRAME_WIDTH) {
-		this.notifySizeAndPositionListeners('e', FrameWidget.MINIMUM_FRAME_WIDTH - this.width);
-		this.width = FrameWidget.MINIMUM_FRAME_WIDTH;
+	if(newWidth < FlexFrameWidget.MINIMUM_FRAME_WIDTH) {
+		this.notifySizeAndPositionListeners('e', FlexFrameWidget.MINIMUM_FRAME_WIDTH - this.width);
+		this.width = FlexFrameWidget.MINIMUM_FRAME_WIDTH;
 		this.offsetOverFlowLeft = newWidth - this.width;
 		this.offsetOverFlowRight = 0;
 		//log(offset + ' - ' + this.offsetOverFlowLeft + ' = ' + (offset - this.offsetOverFlowLeft));
-	} else if(newWidth > FrameWidget.MINIMUM_FRAME_WIDTH){
+	} else if(newWidth > FlexFrameWidget.MINIMUM_FRAME_WIDTH){
 	    maxOverFlowOfListeners = this.notifySizeAndPositionListeners('e', offset);
 		this.width = offset + this.offsetOverFlowRight + maxOverFlowOfListeners + this.width;
 		this.offsetOverFlowRight = -maxOverFlowOfListeners;
@@ -282,17 +291,18 @@ FrameWidget.prototype.resizeEast = function(offset) {
 //	return this.width - oldWidth;
     return this.offsetOverFlowLeft;
 };
+*/
 
-FrameWidget.prototype.resizeWest = function(offset) {
+FlexFrameWidget.prototype.resizeWest = function(offset) {
 
     //log('resize west ' + this.id + ' offset: ' + offset);
 	//log('offset: ' + offset + ' ---> 1111 OffsOL: ' + this.offsetOverFlowLeft);
 	var calcOffset = offset + this.offsetOverFlowLeft;
     //log('RW:' + calcOffset)
 	var newWidth = calcOffset + this.width;
-	if(newWidth < FrameWidget.MINIMUM_FRAME_WIDTH) {
-		this.left = this.left + this.width - FrameWidget.MINIMUM_FRAME_WIDTH;
-		this.width = FrameWidget.MINIMUM_FRAME_WIDTH;
+	if(newWidth < FlexFrameWidget.MINIMUM_FRAME_WIDTH) {
+		this.left = this.left + this.width - FlexFrameWidget.MINIMUM_FRAME_WIDTH;
+		this.width = FlexFrameWidget.MINIMUM_FRAME_WIDTH;
 		this.offsetOverFlowLeft = newWidth - this.width;
         //offsetOverflow = newWidth - this.width;
 		//log('offset: ' + offset + ' ---> OffsOL: ' + this.offsetOverFlowLeft);
@@ -306,12 +316,12 @@ FrameWidget.prototype.resizeWest = function(offset) {
 	return this.offsetOverFlowLeft;
 };
 
-FrameWidget.prototype.resizeSouth = function(offset) {
+FlexFrameWidget.prototype.resizeSouth = function(offset) {
 	var calcOffset = offset + this.offsetOverFlowTop;
 
 	var newHeight = calcOffset + this.height;
-	if(newHeight < FrameWidget.MINIMUM_FRAME_HEIGHT) {
-		this.height = FrameWidget.MINIMUM_FRAME_HEIGHT;
+	if(newHeight < FlexFrameWidget.MINIMUM_FRAME_HEIGHT) {
+		this.height = FlexFrameWidget.MINIMUM_FRAME_HEIGHT;
 		this.offsetOverFlowTop = newHeight - this.height;
 	} else {
 		this.height = newHeight;
@@ -322,7 +332,7 @@ FrameWidget.prototype.resizeSouth = function(offset) {
 	return 0;
 };
 
-FrameWidget.prototype.onDestroy = function() {
+FlexFrameWidget.prototype.onDestroy = function() {
 	//save state
 	for(containerId in this.subWidgets) {
 		//alert('CONTAINER ID: ' + containerId);
@@ -341,18 +351,18 @@ FrameWidget.prototype.onDestroy = function() {
 	}
 };
 
-FrameWidget.prototype.setPositionFromPage = function() {
+FlexFrameWidget.prototype.setPositionFromPage = function() {
 //	var elementPosition = getElementPositionInPage(this.element);
 //	this.top = elementPosition.y;
 //	this.left = elementPosition.x;
 }
 
-FrameWidget.prototype.setDOMElement = function(element) {
+FlexFrameWidget.prototype.setDOMElement = function(element) {
 	this.element = element;
 	if(this.cssClassName != null) {
 		element.className = this.cssClassName;
 	}
-	if(this.top != null) {
+/*	if(this.top != null) {
 		element.style.top = this.top;
 	}
 	if(this.left != null) {
@@ -364,9 +374,10 @@ FrameWidget.prototype.setDOMElement = function(element) {
 	if(this.height != null) {
 		element.style.height = this.height;
 	}
+	*/
 };
-
-FrameWidget.prototype.stretchToOuterWidget = function(outerWidget, directionMap) {
+/*
+FlexFrameWidget.prototype.stretchToOuterWidget = function(outerWidget, directionMap) {
 
 	var currentDirectionMap = this.outerWidgetsToStretchTo[outerWidget.id];
 	if(typeof currentDirectionMap == 'undefined') {
@@ -388,7 +399,7 @@ FrameWidget.prototype.stretchToOuterWidget = function(outerWidget, directionMap)
 }
 
 
-FrameWidget.prototype.alignWithOuterWidget = function(outerWidget, directionMap) {
+FlexFrameWidget.prototype.alignWithOuterWidget = function(outerWidget, directionMap) {
 
 	var currentDirectionMap = this.outerWidgetsToAlignWith[outerWidget.id];
 	if(typeof currentDirectionMap == 'undefined') {
@@ -410,8 +421,10 @@ FrameWidget.prototype.alignWithOuterWidget = function(outerWidget, directionMap)
 		currentDirectionMap['v'] = directionMap['v'];
 	}
 }
+*/
 
-FrameWidget.prototype.doAlignWithOuterWidget = function(outerWidget, directionMap) {
+/*
+FlexFrameWidget.prototype.doAlignWithOuterWidget = function(outerWidget, directionMap) {
 
 	for(var outerWidgetId in this.outerWidgetsToAlignWith) {
 
@@ -439,13 +452,14 @@ FrameWidget.prototype.doAlignWithOuterWidget = function(outerWidget, directionMa
 		}
 	}
 }
-
-FrameWidget.prototype.centerInOuterWidget = function(outerWidget) {
+*/
+/*
+FlexFrameWidget.prototype.centerInOuterWidget = function(outerWidget) {
 	this.left = outerWidget.left + parseInt((outerWidget.width - this.width) / 2);
 	this.top = outerWidget.top + parseInt((outerWidget.height - this.height) / 2);
 }
-
-FrameWidget.prototype.addSubWidget = function(containerId, subWidget) {
+*/
+FlexFrameWidget.prototype.addSubWidget = function(containerId, subWidget) {
 	var subWidgetArray = this.subWidgets[containerId];
 	if(subWidgetArray == null || typeof subWidgetArray == 'undefined') {
 		var subWidgetArray = new Array();
@@ -454,10 +468,10 @@ FrameWidget.prototype.addSubWidget = function(containerId, subWidget) {
 	subWidgetArray.push(subWidget);
 }
 
-FrameWidget.prototype.onDeploy = function() {
+FlexFrameWidget.prototype.onDeploy = function() {
 
 	this.draw();
-	this.doStretchToOuterWidget();
+/*	this.doStretchToOuterWidget();
 	this.doAlignWithOuterWidget();
 	this.setSizeAndPosition();
 
@@ -475,7 +489,7 @@ FrameWidget.prototype.onDeploy = function() {
     if(this.resizeDirections.length > 0) {
 		WidgetManager.instance.registerResizeableWidget(this, this.resizeDirections);
 	}
-
+*/
 	for(var containerId in this.subWidgets) {
 		var definedSubWidgets = this.subWidgets[containerId];
 		if(definedSubWidgets.length) {
@@ -498,8 +512,8 @@ FrameWidget.prototype.onDeploy = function() {
 	this.display();
 };
 
-
-FrameWidget.prototype.doStretchToOuterWidget = function() {
+/*
+FlexFrameWidget.prototype.doStretchToOuterWidget = function() {
 
 	for(var outerWidgetId in this.outerWidgetsToStretchTo) {
 
@@ -536,29 +550,29 @@ FrameWidget.prototype.doStretchToOuterWidget = function() {
 		}
 	}
 }
-
-
-FrameWidget.prototype.adjustWidth = function(proposedWidth) {
-	if(proposedWidth < FrameWidget.MINIMUM_FRAME_WIDTH) {
-		this.width = FrameWidget.MINIMUM_FRAME_WIDTH;
+*/
+/*
+FlexFrameWidget.prototype.adjustWidth = function(proposedWidth) {
+	if(proposedWidth < FlexFrameWidget.MINIMUM_FRAME_WIDTH) {
+		this.width = FlexFrameWidget.MINIMUM_FRAME_WIDTH;
 		this.offsetOverFlowLeft = proposedWidth - this.width;
 	} else {
 		this.width = proposedWidth;
 	}
 };
 
-FrameWidget.prototype.adjustHeight = function(proposedHeight) {
-	if(proposedHeight < FrameWidget.MINIMUM_FRAME_HEIGHT) {
-		this.height = FrameWidget.MINIMUM_FRAME_HEIGHT;
+FlexFrameWidget.prototype.adjustHeight = function(proposedHeight) {
+	if(proposedHeight < FlexFrameWidget.MINIMUM_FRAME_HEIGHT) {
+		this.height = FlexFrameWidget.MINIMUM_FRAME_HEIGHT;
 		this.offsetOverFlowTop = proposedHeight - this.height;
 	} else {
 		this.height = proposedHeight;
 	}
 };
+*/
 
 
-
-FrameWidget.prototype.refresh = function() {
+FlexFrameWidget.prototype.refresh = function() {
 /*	//load state
 	if(this.source != null) {
 		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
@@ -572,12 +586,12 @@ FrameWidget.prototype.refresh = function() {
 
 //todo rename to activate / deactivate
 
-FrameWidget.prototype.writeHTML = function() {
+FlexFrameWidget.prototype.writeHTML = function() {
 };
 
-FrameWidget.prototype.onFocus = function() {
+FlexFrameWidget.prototype.onFocus = function() {
 };
 
-FrameWidget.prototype.onBlur = function() {
+FlexFrameWidget.prototype.onBlur = function() {
 };
 
