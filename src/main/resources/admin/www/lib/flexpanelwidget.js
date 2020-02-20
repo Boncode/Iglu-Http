@@ -111,14 +111,14 @@ FlexPanelWidget.prototype.writeHTML = function() {
         this.setHeaderContent();
 	}
 
-	var contentFrame = new FrameWidget({
+	var contentFrame = new FlexFrameWidget({
         id : this.id + '_frame',
         cssClassName : 'flexpanelcontentframe',
         //todo margin
-        top: (this.hasHeader ? 45 : 0),
+       /* top: (this.hasHeader ? 45 : 0),
         left: 0,
         width: (this.width),
-        height: (this.hasHeader ? (this.height - 45) : (this.height - 0))
+        height: (this.hasHeader ? (this.height - 45) : (this.height - 0))*/
 	}, this.content);
 /*	contentFrame.stretchToOuterWidget(this, {'e':{'offset':0}});
 	contentFrame.stretchToOuterWidget(this, {'s':{'offset':0}});
