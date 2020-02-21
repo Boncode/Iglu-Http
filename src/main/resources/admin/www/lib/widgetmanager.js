@@ -249,6 +249,40 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	return true;
 }
 
+WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget, oldWidget) {
+
+    //TODO handle proper destruction, notifying etc.
+	var widget = this.widgets[newWidget.getId()];
+/*	if(widget != null) {
+		log('widget "' + widget.getId() + '" already exists');
+		this.activateCurrentWidget(widget.id);
+    	return false;
+	}
+*/
+	this.widgets[newWidget.getId()] = newWidget;
+	var newElement = container;
+
+	newWidget.hasCreatedElement = false;
+
+	if(newWidget.getId() != container.id) {
+		var oldElement = document.getElementById(oldWidget.getId());
+        newElement = document.createElement('div');
+        //is this necessary?
+        //use prefix 'widget_'
+        newWidget.hasCreatedElement = true;
+        newElement.setAttribute('id', newWidget.getId());
+        container.replaceChild(newElement, oldElement);
+	}
+	newWidget.containerElement = container;
+	console.log('setting DOM element ' + newElement)
+	newWidget.setDOMElement(newElement);
+	//newWidget.draw();
+	newWidget.onDeploy();
+	log('widget "' + newWidget.getId() + '" deployed');
+
+	this.activateCurrentWidget(newWidget.id);
+	return true;
+}
 
 WidgetManager.prototype.destroyWidget = function(widgetId) {
 	var widget = this.widgets[widgetId];
