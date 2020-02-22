@@ -208,7 +208,7 @@ WidgetManager.prototype.deployWidget = function(newWidget, x, y) {
 WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget, x, y) {
 
 	if(typeof container == 'undefined' || container == null) {
-		throw 'container is ' + container + ' while deploying widget ' + newWidget.getId();
+		throw new Error('container is ' + container + ' while deploying widget ' + newWidget.getId());
 	}
 
 	if(newWidget.constructor.name == 'MasterFrameWidget') {
@@ -218,7 +218,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	var widget = this.widgets[newWidget.getId()];
 
 	if(widget != null) {
-		log('widget "' + widget.getId() + '" already exists');
+		console.log('widget "' + widget.getId() + '" already exists');
 		this.activateCurrentWidget(widget.id);
     	return false;
 	}
@@ -243,7 +243,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	newWidget.setDOMElement(element);
 	//newWidget.draw();
 	newWidget.onDeploy();
-	log('widget "' + newWidget.getId() + '" deployed');
+	console.log('widget "' + newWidget.getId() + '" deployed, DOMElement: ' + newWidget.getDOMElement());
 
 	this.activateCurrentWidget(newWidget.id);
 	return true;
