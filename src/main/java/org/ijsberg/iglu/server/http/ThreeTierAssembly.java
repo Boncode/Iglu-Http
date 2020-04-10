@@ -85,7 +85,6 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         }
 
         //Component requestManagerComponent = new StandardComponent(accessManager);
-        //System.out.println("==============> " + ArraySupport.format(requestManagerComponent.getInterfaces(),","));
         core.connect("AccessManager", accessManager, RequestRegistry.class, AccessManager.class);
         core.connect("RequestRegistry", accessManager, RequestRegistry.class);
 

@@ -80,8 +80,6 @@ public class JsonArray implements JsonDecorator {
 	}
 
 	public int indexOf(Object value) {
-		//System.out.println("+++++   ======> " + contents);
-
 		if(value instanceof String) {
 			return contents.indexOf("\"" + value + "\"");
 		}
