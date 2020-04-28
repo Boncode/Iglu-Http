@@ -293,11 +293,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 			if(loginRequired) {
 				User user = appRequest.getUser();
-				System.out.println(new LogEntry("user:" + user));
 				String servletPath = ((HttpServletRequest)servletRequest).getServletPath();
-				System.out.println(new LogEntry("servletPath: " + servletPath));
 				String pathInfo = ((HttpServletRequest) servletRequest).getPathInfo();
-				System.out.println(new LogEntry("pathInfo: " + pathInfo));
 				if(pathInfo == null) {
 					pathInfo = servletPath;
 				}
