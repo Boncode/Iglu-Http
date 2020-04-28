@@ -79,7 +79,9 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         if(accessManager == null) {
             StandardAccessManager standardAccessManager = new StandardAccessManager();
             Properties accessManProps = new Properties();
-            accessManProps.setProperty("session_timeout", "" + (60 * 60 * 24));
+            accessManProps.setProperty("session_timeout", "" + Integer.parseInt(properties.getProperty("sessionTimeout", "60")));
+            accessManProps.setProperty("session_timeout_logged_in", "" + Integer.parseInt(properties.getProperty("sessionTimeoutLoggedIn", "1800")));
+//            accessManProps.setProperty("session_timeout", "" + (60 * 60 * 24));
             standardAccessManager.setProperties(accessManProps);
             accessManager = new StandardComponent(standardAccessManager);
         }

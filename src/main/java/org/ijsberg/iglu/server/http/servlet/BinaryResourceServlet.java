@@ -70,15 +70,24 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 				writeStats(response);
 				return;
 			}
-*/			ServletOutputStream out = response.getOutputStream();
-            response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
+*/
+			ServletOutputStream out = response.getOutputStream();
+			response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
+
+
+			byte[] responseData =  getResource(resourcePath);
+			if(responseData == null) {
+				response.setStatus(404);
+				return;
+			}
+
 			//resourcePath = HttpEncodingSupport.urlDecode(resourcePath);
 			System.out.println(new LogEntry(Level.TRACE, "resource path: " + resourcePath));
-			out.write(getResource(resourcePath));
+			out.write(responseData);
 //			requestedResources.add(resourcePath);
 		} catch (Exception e) {
-			System.out.println(new LogEntry(Level.CRITICAL, "BinaryResourceServlet: unable to obtain resource", e));
-			response.setStatus(500);
+			System.out.println(new LogEntry(Level.CRITICAL, "BinaryResourceServlet: unable to obtain resource " + pathInfo, e));
+			response.setStatus(404);
 		}
 	}
 
