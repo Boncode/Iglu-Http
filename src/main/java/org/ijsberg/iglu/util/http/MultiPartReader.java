@@ -96,6 +96,14 @@ public class MultiPartReader {
 			return 0;
 		}*/
 
+		if(bytesReadAsLine == -1) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) {
+			}
+			bytesReadAsLine = input.readLine(line, 0, BUFFER_SIZE);
+		}
+
 		bytesRead = bytesReadAsLine;
 
 

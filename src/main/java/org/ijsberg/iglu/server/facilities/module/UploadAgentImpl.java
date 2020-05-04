@@ -123,6 +123,7 @@ public class UploadAgentImpl implements UploadAgent {
 
 		if (req.getContentType() != null && req.getContentType().startsWith("multipart/form-data"))
 		{
+			//TODO content type contains boundary
 			//context is the container for all submitted data
 			//read the multipart uploadstream
 			//data and files are set as attributes

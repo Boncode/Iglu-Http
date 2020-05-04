@@ -38,13 +38,15 @@ public class LoggerServlet extends HttpServlet implements Logger {
         PrintWriter out = response.getWriter();
         response.setContentType("text/html");
 
+        out.println("<div style=\"display: flex; flex-direction: column;\">");
         List<LogEntry> logEntries = new ArrayList<>(logEntryQueue);
         for(LogEntry logEntry : logEntries) {
             String entryString = logEntry.toString();
             entryString = StringSupport.replaceAll(entryString, "\n", "<br>");
-            out.println("<span class=\"LogEntry\">" + entryString + "</span><br>");
+            out.println("<span class=\"LogEntry\">" + entryString + "</span>");
         }
         out.println("<div id=\"end_of_log\"></div>");
+        out.println("</div>");
     }
 
     @Override
