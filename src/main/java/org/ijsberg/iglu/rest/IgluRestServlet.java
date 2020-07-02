@@ -1,5 +1,6 @@
 package org.ijsberg.iglu.rest;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ijsberg.iglu.FatalException;
 import org.ijsberg.iglu.access.AccessConstants;
@@ -201,7 +202,12 @@ public class IgluRestServlet extends HttpServlet {
 //            RequestParameter parameter = declaredParameters[0];
             if(methodData.requestPath.inputType() == JSON) {
                 ObjectMapper mapper = new ObjectMapper();
-                Object obj = mapper.readValue(postData, methodData.method.getParameterTypes()[0]);
+                Object obj = null;
+                try {
+                    obj = mapper.readValue(postData, methodData.method.getParameterTypes()[0]);
+                } catch(IOException e) {
+                    throw new FatalException("unable to read post data '" + postData + "' for parameter type " + methodData.method.getParameterTypes()[0], e);
+                }
                 return new Object[]{obj};
             }
             if(methodData.requestPath.inputType() == PROPERTIES) {
