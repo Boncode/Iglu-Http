@@ -206,7 +206,7 @@ public class IgluRestServlet extends HttpServlet {
                 try {
                     obj = mapper.readValue(postData, methodData.method.getParameterTypes()[0]);
                 } catch(IOException e) {
-                    throw new FatalException("unable to read post data '" + postData + "' for parameter type " + methodData.method.getParameterTypes()[0], e);
+                    throw new FatalException("unable to read post data '" + postData + "' for parameter type " + methodData.method.getParameterTypes()[0] + " while invoking " + methodData.requestPath, e);
                 }
                 return new Object[]{obj};
             }
