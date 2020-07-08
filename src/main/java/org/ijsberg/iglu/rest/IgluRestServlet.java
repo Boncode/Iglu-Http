@@ -287,6 +287,12 @@ public class IgluRestServlet extends HttpServlet {
                 errorResult = RestSupport.createResponse(404, "no endpoint found for path " + path);
             }
 
+            result = purgeResponse(result);
+
+
+
+            //filterResult
+
             //TODO restMethodData:null leads to NPE
 
             ServletOutputStream out = response.getOutputStream();
@@ -326,6 +332,12 @@ public class IgluRestServlet extends HttpServlet {
         }
         System.out.println(new LogEntry(Level.TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
                 " finished in " + (System.currentTimeMillis() - start) + " ms"));
+    }
+
+    private Object purgeResponse(Object result) {
+        //User user = accessManager.getCurrentRequest().getUser();
+
+        return result;
     }
 
 
