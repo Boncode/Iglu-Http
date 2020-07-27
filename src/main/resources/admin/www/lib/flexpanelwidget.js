@@ -77,7 +77,7 @@ FlexPanelWidget.prototype.createEmptyHeader = function() {
 FlexPanelWidget.prototype.setHeaderContent = function() {
     var menuHTML = ""
     if(this.hasMenu) {
-        menuHTML = '<div id = "' + this.id + '_hamburgermenu" class = "hamburger_fancy" onclick = "handleHamburgerMenu()"><span></span></div><div id="hamburger_menu" style="float:right"></div>';
+        menuHTML = '<div id = "' + this.id + '_hamburger_menu" class = "hamburger_fancy" onclick = "handleHamburgerMenu()"><img src="/img/search.png" /></div><div id="hamburger_menu" style="float:right"></div>';
 
     }
 
