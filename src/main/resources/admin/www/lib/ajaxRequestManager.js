@@ -295,7 +295,7 @@ function loadPageHtml(contents, callbackInput) {
 
 	var panelHeader = document.getElementById(callbackInput.target + '_header');
 	if(panelHeader != null) {
-		panelHeader.innerHTML = callbackInput.title;
+		panelHeader.getElementsByClassName('panelheadertitle')[0].innerHTML = callbackInput.title;
 	} else {
 		log('WARNING: cannot find element ' + callbackInput.target + '_header');
 	}
