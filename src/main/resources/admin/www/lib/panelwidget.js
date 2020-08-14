@@ -76,7 +76,8 @@ PanelWidget.prototype.createEmptyHeader = function() {
 PanelWidget.prototype.setHeaderContent = function() {
     var menuHTML = ""
     if(this.hasMenu) {
-        menuHTML = '<div id = "' + this.id + '_hamburger_menu" class = "hamburger_menu_metrics" onclick = "handleHamburgerMenu()"><img src="/img/search.png" /></div><div id="hamburger_menu" style="float:right"></div>';
+//FIXME too specific stuff low level
+        menuHTML = '<div id = "' + this.id + '_hamburger_menu" class = "hamburger_menu_metrics" onclick = "handleHamburgerMenu()"><img src="img/search.png" /></div><div id="hamburger_menu" style="float:right"></div>';
     }
 
     var subtitleString = this.content.subtitle;
