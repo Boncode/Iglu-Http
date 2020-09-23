@@ -26,7 +26,7 @@ public class PropertiesServlet extends HttpServlet {
         super.init(conf);
         String propertiesFile = getInitParameter("properties_file");
         Properties properties = IgluProperties.loadProperties(propertiesFile);
-        jsonProperties = new JsonHierarchicalPropertiesObject(properties);
+        jsonProperties = new JsonHierarchicalPropertiesObject(properties, false);
         enrich();
     }
 

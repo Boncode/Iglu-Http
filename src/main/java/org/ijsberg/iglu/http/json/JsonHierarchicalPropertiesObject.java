@@ -9,12 +9,15 @@ import java.util.*;
  */
 public class JsonHierarchicalPropertiesObject extends JsonData {
 
-	public JsonHierarchicalPropertiesObject(Properties properties) {
+	private boolean doHtmlEscape = false;
+
+	public JsonHierarchicalPropertiesObject(Properties properties, boolean doHtmlEscape) {
 		addAttributes(IgluProperties.copy(properties));
+		this.doHtmlEscape = doHtmlEscape;
 	}
 
 
-	public void addAttributes(IgluProperties properties) {
+	private void addAttributes(IgluProperties properties) {
 		Set<String> rootKeys = properties.getRootKeys();
 		for(String rootKey : rootKeys) {
 			addProperty(properties, rootKey);
@@ -23,7 +26,7 @@ public class JsonHierarchicalPropertiesObject extends JsonData {
 		for(String subsectionKey : subsectionKeys) {
 			addAttribute(subsectionKey,
 					new JsonHierarchicalPropertiesObject(
-							IgluProperties.getSubsection(properties, subsectionKey)));
+							IgluProperties.getSubsection(properties, subsectionKey), false));
 		}
 	}
 
@@ -36,7 +39,11 @@ public class JsonHierarchicalPropertiesObject extends JsonData {
 				if(containsOnlyPrimitives) {
 					array.addValue(arrayValue);
 				} else {
-					array.addHtmlEscapedStringValue(arrayValue);
+					if(doHtmlEscape) {
+						array.addHtmlEscapedStringValue(arrayValue);
+					} else {
+						array.addStringValue(arrayValue);
+					}
 				}
 			}
 			addAttribute(key, array);
@@ -45,7 +52,11 @@ public class JsonHierarchicalPropertiesObject extends JsonData {
 			if(StringSupport.isNumeric(value) || StringSupport.isBoolean(value)) {
 				addAttribute(key, value);
 			} else {
-				addHtmlEscapedStringAttribute(key, value);
+				if(doHtmlEscape) {
+					addHtmlEscapedStringAttribute(key, value);
+				} else {
+					addStringAttribute(key, value);
+				}
 			}
 		}
 	}

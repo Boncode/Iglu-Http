@@ -28,7 +28,7 @@ public class JsonHierarchicalPropertiesObjectTest {
 
 	@Test
 	public void testConstructor() throws Exception {
-		JsonHierarchicalPropertiesObject object = new JsonHierarchicalPropertiesObject(testProperties);
+		JsonHierarchicalPropertiesObject object = new JsonHierarchicalPropertiesObject(testProperties, false);
         // better is to unparse the generated json-object and parse it again, and assert original object with the reparsed object.
         // JSON is not order-dependent, while the string comparison may fail on order changes.
 		System.out.println(object.toString());
