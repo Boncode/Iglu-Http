@@ -161,9 +161,9 @@ public class JsonData implements JsonDecorator {
 		return attributes.keySet();
 	}
 
-	public Properties toProperties() {
+	public IgluProperties toProperties() {
 		String usedPrefix = "";
-		Properties properties = new IgluProperties();
+		IgluProperties properties = new IgluProperties();
 		//out.print("{\n ");
 		int i = 0;
 		for(String attrName : attributes.keySet()) {
