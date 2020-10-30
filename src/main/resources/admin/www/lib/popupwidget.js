@@ -22,7 +22,7 @@ subclass(PopupWidget, FrameWidget);
 PopupWidget.prototype.constructPopupWidget = function(settings, content, triggerElement) {
 
 	this.triggerElement = null;
-	this.timeout = 1000;
+	this.timeout = 0; //1000;
 
 	if(typeof triggerElement != 'undefined') {
 		var elementId = '' + triggerElement.id;
