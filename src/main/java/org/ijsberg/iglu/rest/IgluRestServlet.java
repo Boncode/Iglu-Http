@@ -1,6 +1,5 @@
 package org.ijsberg.iglu.rest;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ijsberg.iglu.FatalException;
 import org.ijsberg.iglu.access.AccessConstants;
@@ -12,6 +11,7 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.usermanagement.multitenancy.model.TenantAwareInput;
 import org.ijsberg.iglu.util.http.RestSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
 
@@ -271,7 +271,9 @@ public class IgluRestServlet extends HttpServlet {
             if (restMethodData != null) {
                 restMethodData.assertUserAuthorized();
                 try {
-                    result = restMethodData.getComponent().invoke(restMethodData.method.getName(), getParameters(servletRequest, restMethodData));
+                    Object[] parameters = getParameters(servletRequest, restMethodData);
+                    checkInput(parameters);
+                    result = restMethodData.getComponent().invoke(restMethodData.method.getName(), parameters);
                 } catch (InvocationTargetException e) {
                     System.out.println(new LogEntry(Level.CRITICAL, "unable to invoke method " + restMethodData.method.getName(), e.getCause()));
                     if (e.getCause() instanceof RestException) {
@@ -334,12 +336,22 @@ public class IgluRestServlet extends HttpServlet {
                 " finished in " + (System.currentTimeMillis() - start) + " ms"));
     }
 
-    private Object purgeResponse(Object result) {
-        //User user = accessManager.getCurrentRequest().getUser();
-
-        return result;
+    private void checkInput(Object[] parameters) {
+/*        for(Object parameter : parameters) {
+            if(parameter instanceof TenantAwareInput) {
+                System.out.println(new LogEntry("Found TenantAwareInput, tenant: " + ((TenantAwareInput)parameter).getTenantId()));
+            }
+        }*/
     }
 
+    private Object purgeResponse(Object result) {
+/*        User user = accessManager.getCurrentRequest().getUser();
+        if(user != null) {
+            System.out.println(new LogEntry("purging result for user " + user.getId() + " : " + user.getGroup()));
+        }
+*/
+        return result;
+    }
 
     public JsonData createErrorResponse(RestException e) {
         return RestSupport.createResponse(e.getHttpStatusCode(), e.getMessage(), e);

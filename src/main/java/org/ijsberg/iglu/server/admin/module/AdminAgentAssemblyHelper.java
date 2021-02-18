@@ -38,6 +38,7 @@ import org.ijsberg.iglu.server.http.filter.WebAppEntryPoint;
 import org.ijsberg.iglu.server.http.module.SimpleJettyServletContext;
 import org.ijsberg.iglu.usermanagement.UserManager;
 import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
+import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -61,7 +62,7 @@ public class AdminAgentAssemblyHelper {
 		}
 		admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, loadProperties("admin/config/upload_agent.properties"))));
 
-		StandardAccessManager adminAccessManager = new StandardAccessManager();
+		StandardAccessManager adminAccessManager = new StandardAccessManager(MultiTenantAwareComponent.class);
 
 		Component requestManagerComponent = new StandardComponent(adminAccessManager);
 		admin.connect("AdminAccessManager", requestManagerComponent, RequestRegistry.class);

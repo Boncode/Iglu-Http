@@ -19,6 +19,7 @@
 
 package org.ijsberg.iglu.server.http.servlet;
 
+import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.http.HttpEncodingSupport;

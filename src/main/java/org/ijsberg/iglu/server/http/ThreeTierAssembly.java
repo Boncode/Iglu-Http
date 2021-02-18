@@ -8,6 +8,7 @@ import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
+import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
 import org.ijsberg.iglu.util.collection.ArraySupport;
 
 import java.util.Properties;
@@ -77,7 +78,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         core.connect("Scheduler", scheduler);
 
         if(accessManager == null) {
-            StandardAccessManager standardAccessManager = new StandardAccessManager();
+            StandardAccessManager standardAccessManager = new StandardAccessManager(MultiTenantAwareComponent.class);
             Properties accessManProps = new Properties();
             accessManProps.setProperty("session_timeout", "" + Integer.parseInt(properties.getProperty("sessionTimeout", "60")));
             accessManProps.setProperty("session_timeout_logged_in", "" + Integer.parseInt(properties.getProperty("sessionTimeoutLoggedIn", "1800")));
