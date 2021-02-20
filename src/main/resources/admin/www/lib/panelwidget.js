@@ -80,16 +80,11 @@ PanelWidget.prototype.setHeaderContent = function() {
         menuHTML = '<div id = "' + this.id + '_hamburger_menu" class = "hamburger_menu_metrics" onclick = "handleHamburgerMenu()"><img src="img/search.png" /></div><div id="hamburger_menu" style="float:right"></div>';
     }
 
-    var subtitleString = this.content.subtitle;
-    if(this.content.subtitle == null) {
-        subtitleString = '';
-    }
-
     if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div>' + this.content.title + '</div><div class="subtitle">' + subtitleString.toUpperCase() + '</div></div>'+ this.createTitleBarFunctionHtml() + menuHTML;
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div class="title">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml() + menuHTML;
     } else {
         if(this.title != null) {
-            this.header.innerHTML = this.title + this.createTitleBarFunctionHtml() + menuHTML;
+            this.header.innerHTML = '<div class="title">' + this.title + '</div>' + this.createTitleBarFunctionHtml() + menuHTML;
         }
     }
 }
@@ -114,10 +109,10 @@ PanelWidget.prototype.writeHTML = function() {
         id : this.id + '_frame',
         cssClassName : 'panelcontentframe',
         //todo margin
-        top: (this.hasHeader ? 46 : 0),
+        top: (this.hasHeader ? 24 : 0),
         left: 0,
         width: (this.width),
-        height: (this.hasHeader ? (this.height - 46) : (this.height - 0))
+        height: (this.hasHeader ? (this.height - 24) : (this.height - 0))
 	}, this.content);
 	contentFrame.stretchToOuterWidget(this, {'e':{'offset':0}});
 	contentFrame.stretchToOuterWidget(this, {'s':{'offset':0}});
