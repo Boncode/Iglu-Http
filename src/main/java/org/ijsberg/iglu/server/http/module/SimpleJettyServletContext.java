@@ -20,12 +20,14 @@
 package org.ijsberg.iglu.server.http.module;
 
 
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.Holder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.MultiException;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
 import org.ijsberg.iglu.util.execution.Executable;
@@ -146,7 +148,8 @@ public class SimpleJettyServletContext implements Startable {
 		}
 
 		server = new Server(port);
-
+////////////////////
+/////////////////////////
 		//server.setAttribute("org.mortbay.jetty.Request.maxFormContentSize", -1);
 		//server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", -1);
 
@@ -189,6 +192,8 @@ public class SimpleJettyServletContext implements Startable {
 
 			ctx.setMaxFormContentSize(10000000);
 		}
+
+		xxx();
 	}
 
 	public void log(Object message) {
@@ -340,5 +345,27 @@ public class SimpleJettyServletContext implements Startable {
 
 	public List<Filter> getFilters() {
 		return filters;
+	}
+
+
+	private String keyStorePath = "C:\\tmp\\jetty_https\\boncat.jks";
+	private String keyStorePassword = "pollewop";
+	public void xxx() {
+		//this works!
+/*
+		HttpConfiguration httpConfiguration = new HttpConfiguration();
+		httpConfiguration.setSecureScheme("https");
+
+
+		final SslContextFactory sslContextFactory = new SslContextFactory(keyStorePath);
+		sslContextFactory.setKeyStorePassword(keyStorePassword);
+		final HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
+		httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
+		final ServerConnector httpsConnector = new ServerConnector(server,
+				new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+				new HttpConnectionFactory(httpsConfiguration));
+		httpsConnector.setPort(port + 1000);
+		server.addConnector(httpsConnector);
+*/
 	}
 }
