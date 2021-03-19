@@ -30,7 +30,9 @@ import org.eclipse.jetty.util.MultiException;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
+import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.execution.Executable;
+import org.ijsberg.iglu.util.misc.EncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 import org.ijsberg.iglu.util.reflection.ReflectionSupport;
@@ -60,8 +62,19 @@ public class SimpleJettyServletContext implements Startable {
 	private List<Servlet> servlets = new ArrayList<Servlet>();
 	private List<Filter> filters = new ArrayList<Filter>();
 
-	private Properties section;
+	private Properties properties;
 
+	private String xorKey;
+	private String keystoreLocation;
+	private String keystorePassword;
+	private boolean sslEnabled = false;
+
+	public SimpleJettyServletContext() {
+	}
+
+	public SimpleJettyServletContext(String xorKey) {
+		this.xorKey = xorKey;
+	}
 
 	public String getReport() {
 		if (server != null && server.isStarted()) {
@@ -134,26 +147,27 @@ public class SimpleJettyServletContext implements Startable {
 	 */
 	public void setProperties(Properties properties) {
 
-		this.section = properties;
-		section.getProperty("xmlConfigurationFileName", "./conf/jetty.xml");
+		this.properties = properties;
+		this.properties.getProperty("xmlConfigurationFileName", "./conf/jetty.xml");
 		//try to obtain a reference to a specific Jetty XML configuration (jetty.xml)
-		String xmlConfig = section.getProperty("xmlConfigurationFileName");
+		String xmlConfig = this.properties.getProperty("xmlConfigurationFileName");
 		if (xmlConfig == null) {
-			contextPath = section.getProperty("context_path", contextPath);
-			documentRoot = section.getProperty("document_root", documentRoot);
-			minimumThreads = Integer.valueOf(section.getProperty("minimum_threads", "" + minimumThreads));
-			maximumThreads = Integer.valueOf(section.getProperty("maximum_threads", "" + maximumThreads));
-			sessionTimeout = Integer.valueOf(section.getProperty("session_timeout", "" + sessionTimeout));
-			port = Integer.valueOf(section.getProperty("port", "" + port));
-		}
 
-		server = new Server(port);
-////////////////////
-/////////////////////////
-		//server.setAttribute("org.mortbay.jetty.Request.maxFormContentSize", -1);
-		//server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", -1);
+			setPropertiesFromIgluConfig();
 
-		if (xmlConfig != null) {
+			server = new Server();
+			ctx = new ServletContextHandler(server, contextPath, ServletContextHandler.SESSIONS);
+
+			initializeContext(properties);
+
+			if(sslEnabled) {
+				configureForHttps();
+			} else {
+				configureForHttp();
+			}
+			//xxx();
+
+		} else {
 			File file = new File(xmlConfig);
 			log("configuring Jetty using xml configuration '" + file.getAbsolutePath() + '\'');
 			if (!file.exists()) {
@@ -166,40 +180,56 @@ public class SimpleJettyServletContext implements Startable {
 			catch (Exception e) {
 				throw new ConfigurationException("web environment can not be initialized", e);
 			}
-		} else {
-			log("configuring Jetty using Iglu configuration");
+		}
+	}
 
-/*
+	public void initializeContext(Properties properties) {
+		setInitParameters(ctx, IgluProperties.getSubsection(properties, "initparam"));
+		//ctx.setInitParams(PropertiesSupport.getSubsection(properties, "initparam"));
+
+		ctx.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeout);
+		//set root directory
+		ctx.setResourceBase(documentRoot);
+//			addInitParameters(ctx.getInitParams(), section);
+
+		addServlets(ctx, this.properties);
+		addFilters(ctx, this.properties);
+		addListeners(ctx, this.properties);
+
+			/*
 			BoundedThreadPool pool = new BoundedThreadPool();
 			pool.setMinThreads(minimumThreads);
 			pool.setMaxThreads(maximumThreads);
 			server.setThreadPool(pool);
-*/
+			*/
 
-			ctx = new ServletContextHandler(server, contextPath, ServletContextHandler.SESSIONS);
+		ctx.setMaxFormContentSize(10000000);
+	}
 
-			setInitParameters(ctx, IgluProperties.getSubsection(properties, "initparam"));
-			//ctx.setInitParams(PropertiesSupport.getSubsection(properties, "initparam"));
+	public void setPropertiesFromIgluConfig() {
+		log("configuring Jetty using Iglu configuration");
+		contextPath = properties.getProperty("context_path", contextPath);
+		documentRoot = properties.getProperty("document_root", documentRoot);
+		minimumThreads = Integer.valueOf(properties.getProperty("minimum_threads", "" + minimumThreads));
+		maximumThreads = Integer.valueOf(properties.getProperty("maximum_threads", "" + maximumThreads));
+		sessionTimeout = Integer.valueOf(properties.getProperty("session_timeout", "" + sessionTimeout));
+		port = Integer.valueOf(properties.getProperty("port", "" + port));
 
-			ctx.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeout);
-			//set root directory
-			ctx.setResourceBase(documentRoot);
-//			addInitParameters(ctx.getInitParams(), section);
-
-			addServlets(ctx, section);
-			addFilters(ctx, section);
-			addListeners(ctx, section);
-
-			ctx.setMaxFormContentSize(10000000);
+		sslEnabled = Boolean.valueOf(properties.getProperty("ssl.enabled", "" + sslEnabled));
+		if(sslEnabled) {
+			IgluProperties.throwIfKeysMissing(properties, "ssl.keystore_location", "ssl.keystore_password");
+			keystoreLocation = properties.getProperty("ssl.keystore_location");
+			keystorePassword = properties.getProperty("ssl.keystore_password");
 		}
-
-		xxx();
 	}
 
-	public void log(Object message) {
-		System.out.println(message);
+	public void log(String message) {
+		System.out.println(new LogEntry(message));
 	}
 
+	public void log(Throwable t) {
+		System.out.println(new LogEntry(t.getMessage(), t));
+	}
 
 	public void setInitParameters(ServletContextHandler ctx, Properties section) {
 		for(String key : section.stringPropertyNames()) {
@@ -348,24 +378,44 @@ public class SimpleJettyServletContext implements Startable {
 	}
 
 
-	private String keyStorePath = "C:\\tmp\\jetty_https\\boncat.jks";
-	private String keyStorePassword = "pollewop";
-	public void xxx() {
-		//this works!
-/*
+	public void configureForHttps() {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration.setSecureScheme("https");
 
+		SslContextFactory sslContextFactory = new SslContextFactory(keystoreLocation);
+		sslContextFactory.setKeyStorePassword(getKeystorePassword());
+		HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
+		httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
+		ServerConnector httpsConnector = new ServerConnector(server,
+				new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+				new HttpConnectionFactory(httpsConfiguration));
+		httpsConnector.setPort(port);
+		server.addConnector(httpsConnector);
+	}
 
-		final SslContextFactory sslContextFactory = new SslContextFactory(keyStorePath);
-		sslContextFactory.setKeyStorePassword(keyStorePassword);
+
+	public void configureForHttp() {
+		HttpConfiguration httpConfiguration = new HttpConfiguration();
+		//httpConfiguration.setSecureScheme("https");
+
+
+		//final SslContextFactory sslContextFactory = new SslContextFactory(keyStorePath);
+		//sslContextFactory.setKeyStorePassword(keyStorePassword);
 		final HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
 		httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
 		final ServerConnector httpsConnector = new ServerConnector(server,
-				new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+//				new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
 				new HttpConnectionFactory(httpsConfiguration));
-		httpsConnector.setPort(port + 1000);
+		httpsConnector.setPort(port);
 		server.addConnector(httpsConnector);
-*/
+
 	}
+
+	protected String getKeystorePassword() {
+		if(xorKey != null) {
+			return EncodingSupport.decodeXor(keystorePassword, xorKey);
+		}
+		return keystorePassword;
+	}
+
 }
