@@ -17,7 +17,8 @@ public @interface RequestPath {
 		JSON,
 		STRING,
 		PROPERTIES,
-		MAPPED
+		MAPPED,
+		FROM_PATH
 	}
 
 	enum RequestMethod {

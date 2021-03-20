@@ -1,6 +1,7 @@
 package org.ijsberg.iglu.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.jetty.util.StringUtil;
 import org.ijsberg.iglu.FatalException;
 import org.ijsberg.iglu.access.AccessConstants;
 import org.ijsberg.iglu.access.AccessManager;
@@ -12,9 +13,12 @@ import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.usermanagement.multitenancy.model.TenantAwareInput;
+import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.RestSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
+import org.ijsberg.iglu.util.misc.StringSupport;
 
+import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.*;
 import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
 import javax.servlet.ServletException;
@@ -27,6 +31,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -73,7 +78,7 @@ public class IgluRestServlet extends HttpServlet {
             if(requestPath.inputType() == VOID) {
 
             }
-            else if(requestPath.inputType() != MAPPED) {
+            else if(requestPath.inputType() != MAPPED && requestPath.inputType() != FROM_PATH) {
                 if(parameterTypes.length != 1) {
                     throw new ConfigurationException("input type " + requestPath.inputType() + " requires 1 parameter");
                 }
@@ -123,6 +128,11 @@ public class IgluRestServlet extends HttpServlet {
                         getAgent(agentName);
             }
         }
+
+        public String toString() {
+            return requestPath.path() + " mapped to " + method.getName();
+        }
+
     }
 
     private Assembly assembly;
@@ -179,7 +189,7 @@ public class IgluRestServlet extends HttpServlet {
         return buffer.toString();
     }
 
-    private String trimPath(String inputPath) {
+    private static String trimPath(String inputPath) {
         String path = inputPath;
         if(path.startsWith("/")) {
             path = path.substring(1);
@@ -226,6 +236,12 @@ public class IgluRestServlet extends HttpServlet {
             //STRING
             return new Object[]{postData};
         } else {
+            if(methodData.requestPath.inputType() == FROM_PATH) {
+                String path = trimPath(request.getPathInfo()).substring(methodData.requestPath.path().length());
+                path = trimPath(path);
+                //System.out.println("PATH: " + path);
+                return path.split("/");
+            }
             if(methodData.requestPath.inputType() == PROPERTIES) {
                 Properties properties = ServletSupport.getPropertiesFromRequest(request);
                 return new Object[]{properties};
@@ -252,7 +268,7 @@ public class IgluRestServlet extends HttpServlet {
 
         long start = System.currentTimeMillis();
         try {
-            System.out.println(new LogEntry(Level.TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo()));
+            System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo()));
 
             Object result = null;
 
@@ -265,7 +281,7 @@ public class IgluRestServlet extends HttpServlet {
             JsonData errorResult = null;
 
             String path = trimPath(pathInfo);
-            RestMethodData restMethodData = invokeableMethods.get(path);
+            RestMethodData restMethodData = getRestMethodData(path);
 
 
             if (restMethodData != null) {
@@ -332,8 +348,22 @@ public class IgluRestServlet extends HttpServlet {
                 }
             }
         }
-        System.out.println(new LogEntry(Level.TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
+        System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
                 " finished in " + (System.currentTimeMillis() - start) + " ms"));
+    }
+
+    public RestMethodData getRestMethodData(String path) {
+        RestMethodData returnValue = invokeableMethods.get(path);
+        if(returnValue == null) {
+            List<String> pathParts = StringSupport.split(path, "/");
+            while(returnValue == null && pathParts.size() > 1) {
+                pathParts.remove(pathParts.size() - 1);
+//                System.out.println("trying " + CollectionSupport.format(pathParts, "/"));
+                returnValue = invokeableMethods.get(CollectionSupport.format(pathParts, "/"));
+            }
+        }
+//        System.out.println(new LogEntry(TRACE, "found " + returnValue));
+        return returnValue;
     }
 
     private void checkInput(Object[] parameters) {
