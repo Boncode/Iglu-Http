@@ -20,12 +20,15 @@
 package org.ijsberg.iglu.server.http.filter;
 
 import org.ijsberg.iglu.access.*;
+import org.ijsberg.iglu.configuration.ConfigurationException;
+import org.ijsberg.iglu.http.client.AuthorizationBearer;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
+import org.ijsberg.iglu.util.misc.EncodingSupport;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -57,6 +60,8 @@ import java.util.*;
  */
 public class WebAppEntryPoint implements Filter, EntryPoint
 {
+	private String xorKey;
+
 	private AccessManager accessManager;
 
 	public static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
@@ -105,6 +110,10 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		this.accessManager = accessManager;
 	}
 
+	public void setXorKey(String xorKey) {
+		//System.out.println("setting XOR " + xorKey);
+		this.xorKey = xorKey;
+	}
 
 	/**
      *
@@ -272,8 +281,15 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			}
  			//if(accessManager != null) {
 				appRequest = accessManager.bindRequest(this);
-				Session session = appRequest.resolveSession(sessionToken, userId);
 			//}
+
+			//TODO in progress; alternative way of obtaining user
+			if(sessionToken != null) {
+				Session session = appRequest.resolveSession(sessionToken, userId);
+			} else {
+				getAccessByToken((HttpServletRequest) servletRequest, appRequest);
+			}
+
 /*
 			if (this.syncUserPrefs && appRequest.getTimesEntered() == 0) {
 				//pass user preferences here
@@ -337,6 +353,45 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			}
 		}
 	}
+
+	private void getAccessByToken(HttpServletRequest servletRequest, Request request) {
+		AuthorizationBearer authorizationBearer = AuthorizationBearer.getHttpHeader(servletRequest);
+		if(authorizationBearer != null) {
+			Credentials credentials = decodeCredentials(authorizationBearer.getToken());
+			Session session = request.resolveSession(authorizationBearer.getToken(), credentials.getUserId());
+			if(session == null) {
+				accessManager.createSession(authorizationBearer.getToken(), new Properties());
+				session = request.resolveSession(authorizationBearer.getToken(), credentials.getUserId());
+				User user = session.login(credentials);
+				System.out.println(new LogEntry(Level.TRACE, "session created " + user));
+			} else {
+				System.out.println(new LogEntry(Level.TRACE, "session resolved " + session.getUser()));
+			}
+		}
+	}
+
+	private Credentials decodeCredentials(String encodedCredentials) {
+		String decodedCredentials = decodeString(encodedCredentials);
+//		System.out.println(new LogEntry("decodedCredentials " + decodedCredentials));
+		int colonIndex = decodedCredentials.indexOf(':');
+		if (colonIndex == -1) {
+			throw new IllegalArgumentException("wrong format of encoded credentials: colon separator not found");
+		}
+		String userId = decodedCredentials.substring(0, colonIndex);
+		String password = decodedCredentials.substring(colonIndex + 1);
+
+		Credentials credentials = new SimpleCredentials(userId, password);
+		return credentials;
+	}
+
+	protected String decodeString(String encodedString) {
+		//System.out.println("XOR " + xorKey);
+		if(xorKey != null) {
+			return EncodingSupport.decodeXor(encodedString, xorKey);
+		}
+		throw new ConfigurationException("XOR key unavailable");
+	}
+
 
 	private boolean contentNotPublic(String servletPath) {
 		return (publicContentRegExp == null || !PatternMatchingSupport.valueMatchesRegularExpression(servletPath, publicContentRegExp));
