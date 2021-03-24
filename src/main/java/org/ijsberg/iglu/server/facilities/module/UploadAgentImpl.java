@@ -45,8 +45,6 @@ import java.util.List;
 import java.util.Properties;
 
 
-
-
 /**
  */
 public class UploadAgentImpl implements UploadAgent {
