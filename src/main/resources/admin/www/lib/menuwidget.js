@@ -106,10 +106,15 @@ MenuWidget.prototype.addItem = function(item, container) {
 	var itemId = container.id + '.' + item.id;
 	var itemLabel = item.label;
 	if(typeof(item.link) != 'undefined' || typeof(item.onclick) != 'undefined') {
-		itemLabel = createLink(item);
+		if(item.label !== ""){
+		    itemLabel = createLink(item);
+		} else {
+		    itemLabel = createLinkWithIcon(item);
+		}
 	}
 	//TODO if item can be toggled
 	var itemDiv = document.createElement('div');
+
 	if(typeof(item.item_class_name) != 'undefined') {
 		itemDiv.className = item.item_class_name;
 	}
@@ -129,6 +134,10 @@ MenuWidget.prototype.addItem = function(item, container) {
 		}
 
 		itemDiv.innerHTML = itemLabel;
+        if(item.label !== ""){
+            itemDiv.innerHTML += getSubMenuChevronDownHTML();
+        }
+
 		itemDiv.appendChild(branchDiv);
 		this.createTree(item.submenu, branchDiv);
 	} else {
@@ -137,6 +146,17 @@ MenuWidget.prototype.addItem = function(item, container) {
 	}
 }
 
+function createLinkWithIcon(item) {
+    if(typeof(item.link) != 'undefined') {
+        return '<a class="' + item.iconClass + '" onclick="' + item.link + ';"></a>';
+    } else if(typeof(item.onclick) != 'undefined') {
+        return '<a class="' + item.iconClass + '" onclick="' + item.onclick + ';"></a>';
+    }
+}
+
+function getSubMenuChevronDownHTML() {
+    return '<i class="bi bi-chevron-down"></i>';
+}
 
 
 function showSubmenu(branchId) {
