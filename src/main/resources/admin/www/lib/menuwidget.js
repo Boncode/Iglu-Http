@@ -222,6 +222,7 @@ MenuWidget.prototype.load = function(contents, menuWidget) {
 
 
 MenuWidget.prototype.onDeploy = function() {
+	console.log('deploying menu with source ' + this.source);
 	if(this.source != null) {
 		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
 	}
