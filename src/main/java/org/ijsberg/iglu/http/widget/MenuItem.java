@@ -88,4 +88,9 @@ public class MenuItem extends JsonData {
 		addHtmlEscapedStringAttribute("toggleProperty_off", offValue);
 		return this;
 	}
+
+	public MenuItem addCssIconClassName(String iconClassName) {
+		addHtmlEscapedStringAttribute("iconClass", iconClassName);
+		return this;
+	}
 }

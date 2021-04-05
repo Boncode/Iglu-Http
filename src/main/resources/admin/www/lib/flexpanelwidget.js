@@ -40,16 +40,16 @@ FlexPanelWidget.prototype.constructFlexPanelWidget = function(settings, content)
 
 // + '<div class="close_icon" onclick="widgetmanager.destroyWidget(\'' + this.getId() + '\')"></div>'
 
-FlexPanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString, tooltip) {
-    this.titleBarFunctions.push({className: className, onclickFunctionAsString: onclickFunctionAsString, tooltip: tooltip});
+FlexPanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString, tooltip, label) {
+    this.titleBarFunctions.push({className: className, onclickFunctionAsString: onclickFunctionAsString, tooltip: tooltip, label: label});
 };
 
 FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
-    var html = (this.titleBarFunctions.length == 0 ? '' : '<div class = "panelheadericons">');
+    var html = (this.titleBarFunctions.length == 0 ? '' : '<div>');
     for(var i in this.titleBarFunctions) {
         html += '<div class="' + this.titleBarFunctions[i].className + '"' +
         (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' title="' + this.titleBarFunctions[i].tooltip + '"' : '') +
-        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)"></div>';
+        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + (typeof(this.titleBarFunctions[i].label) != 'undefined' ? this.titleBarFunctions[i].label : '') + '</di>';
     }
     html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
 
@@ -75,17 +75,11 @@ FlexPanelWidget.prototype.createEmptyHeader = function() {
 }
 
 FlexPanelWidget.prototype.setHeaderContent = function() {
-    var menuHTML = ""
-    if(this.hasMenu) {
-        menuHTML = '<div id = "' + this.id + '_hamburger_menu" class = "hamburger_fancy" onclick = "handleHamburgerMenu()"><img src="/img/search.png" /></div><div id="hamburger_menu" style="float:right"></div>';
-
-    }
-
     if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div class="title">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml() + menuHTML;
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div class="title">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml();
     } else {
         if(this.title != null) {
-            this.header.innerHTML = this.title + this.createTitleBarFunctionHtml() + menuHTML;
+            this.header.innerHTML = this.title + this.createTitleBarFunctionHtml();
         }
     }
 }

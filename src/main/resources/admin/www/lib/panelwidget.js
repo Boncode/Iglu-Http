@@ -39,16 +39,16 @@ PanelWidget.prototype.constructPanelWidget = function(settings, content) {
 
 // + '<div class="close_icon" onclick="widgetmanager.destroyWidget(\'' + this.getId() + '\')"></div>'
 
-PanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString, tooltip) {
-    this.titleBarFunctions.push({className: className, onclickFunctionAsString: onclickFunctionAsString, tooltip: tooltip});
+PanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString, tooltip, label) {
+    this.titleBarFunctions.push({className: className, onclickFunctionAsString: onclickFunctionAsString, tooltip: tooltip, label: label});
 };
 
 PanelWidget.prototype.createTitleBarFunctionHtml = function() {
-    var html = (this.titleBarFunctions.length == 0 ? '' : '<div class = "panelheadericons">');
+    var html = (this.titleBarFunctions.length == 0 ? '' : '<div>');
     for(var i in this.titleBarFunctions) {
         html += '<div class="' + this.titleBarFunctions[i].className + '"' +
         (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' title="' + this.titleBarFunctions[i].tooltip + '"' : '') +
-        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)"></div>';
+        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + (typeof(this.titleBarFunctions[i].label) != 'undefined' ? this.titleBarFunctions[i].label : '') + '</div>';
     }
     html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
 
@@ -74,17 +74,11 @@ PanelWidget.prototype.createEmptyHeader = function() {
 }
 
 PanelWidget.prototype.setHeaderContent = function() {
-    var menuHTML = ""
-    if(this.hasMenu) {
-//FIXME too specific stuff low level
-        menuHTML = '<div id = "' + this.id + '_hamburger_menu" class = "hamburger_menu_metrics" onclick = "handleHamburgerMenu()"><img src="img/search.png" /></div><div id="hamburger_menu" style="float:right"></div>';
-    }
-
     if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div class="title">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml() + menuHTML;
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div class="title">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml();
     } else {
         if(this.title != null) {
-            this.header.innerHTML = '<div class="title">' + this.title + '</div>' + this.createTitleBarFunctionHtml() + menuHTML;
+            this.header.innerHTML = '<div class="title">' + this.title + '</div>' + this.createTitleBarFunctionHtml();
         }
     }
 }

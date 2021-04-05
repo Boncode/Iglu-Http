@@ -105,7 +105,7 @@ MenuWidget.prototype.addItem = function(item, container) {
 
 	var itemId = container.id + '.' + item.id;
 	var itemLabel = item.label;
-	if(typeof(item.link) != 'undefined' || typeof(item.onclick) != 'undefined') {
+	if((typeof(item.link) != 'undefined' && item.link.length > 0) || typeof(item.onclick) != 'undefined') {
 		if(item.label !== ""){
 		    itemLabel = createLink(item);
 		} else {
@@ -147,7 +147,7 @@ MenuWidget.prototype.addItem = function(item, container) {
 }
 
 function createLinkWithIcon(item) {
-    if(typeof(item.link) != 'undefined') {
+    if(typeof(item.link) != 'undefined' && item.link.length > 0) {
         return '<a class="' + item.iconClass + '" onclick="' + item.link + ';"></a>';
     } else if(typeof(item.onclick) != 'undefined') {
         return '<a class="' + item.iconClass + '" onclick="' + item.onclick + ';"></a>';
