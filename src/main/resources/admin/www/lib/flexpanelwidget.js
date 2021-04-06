@@ -49,7 +49,7 @@ FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
     for(var i in this.titleBarFunctions) {
         html += '<div class="' + this.titleBarFunctions[i].className + '"' +
         (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' title="' + this.titleBarFunctions[i].tooltip + '"' : '') +
-        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + (typeof(this.titleBarFunctions[i].label) != 'undefined' ? this.titleBarFunctions[i].label : '') + '</di>';
+        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + (typeof(this.titleBarFunctions[i].label) != 'undefined' ? this.titleBarFunctions[i].label : '') + '</div>';
     }
     html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
 
