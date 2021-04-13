@@ -1,5 +1,7 @@
 package org.ijsberg.iglu.rest;
 
+import org.ijsberg.iglu.util.mail.WebContentType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,7 +16,7 @@ public @interface RequestPath {
 
 	enum ParameterType {
 		VOID,
-		JSON,
+		JSON_POST,
 		STRING,
 		PROPERTIES,
 		MAPPED,
@@ -47,9 +49,9 @@ public @interface RequestPath {
 
 	RequestMethod method();
 
-	ParameterType returnType() default ParameterType.STRING;
+	WebContentType returnType() default WebContentType.TXT;
 
-	ResponseContentType responseContentType() default ResponseContentType.TEXT_PLAIN;
+//	ResponseContentType responseContentType() default ResponseContentType.TEXT_PLAIN;
 
 	RequestParameter[] parameters() default {};
 }

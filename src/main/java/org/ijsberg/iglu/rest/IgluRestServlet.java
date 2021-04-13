@@ -1,7 +1,6 @@
 package org.ijsberg.iglu.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.jetty.util.StringUtil;
 import org.ijsberg.iglu.FatalException;
 import org.ijsberg.iglu.access.AccessConstants;
 import org.ijsberg.iglu.access.AccessManager;
@@ -12,7 +11,6 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
-import org.ijsberg.iglu.usermanagement.multitenancy.model.TenantAwareInput;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.RestSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
@@ -22,12 +20,13 @@ import org.ijsberg.iglu.util.misc.StringSupport;
 import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.*;
 import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
+import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -75,7 +74,8 @@ public class IgluRestServlet extends HttpServlet {
         }
 
         private String getResponseContentType() {
-            return requestPath.responseContentType().responseTypeValue;
+//            requestPath.returnType()
+            return requestPath.returnType().getContentType();
         }
 
         private void configure(RequestPath requestPath, Method method) {
@@ -103,7 +103,7 @@ public class IgluRestServlet extends HttpServlet {
                 if(requestPath.inputType() == PROPERTIES && !Properties.class.isAssignableFrom(parameterTypes[0])) {
                     throw new ConfigurationException("input type " + requestPath.inputType() + " requires 1 parameter of type Properties");
                 }
-                if(requestPath.inputType() == JSON && requestPath.method() != POST) {
+                if(requestPath.inputType() == JSON_POST && requestPath.method() != POST) {
                     throw new ConfigurationException("input type " + requestPath.inputType() + " requires invocation by method " + POST);
                 }
             }
@@ -196,14 +196,6 @@ public class IgluRestServlet extends HttpServlet {
 
         byte[] postData = StreamSupport.absorbInputStream(request.getInputStream());
         return postData;
-
-/*        StringBuilder buffer = new StringBuilder();
-        BufferedReader reader = request.getReader();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            buffer.append(line);
-        }
-        return buffer.toString();*/
     }
 
     private static String trimPath(String inputPath) {
@@ -228,7 +220,7 @@ public class IgluRestServlet extends HttpServlet {
             byte[] postData = readPostData(request);
  //           RequestParameter parameter = declaredParameters[0];
 
-            if(methodData.requestPath.inputType() == JSON) {
+            if(methodData.requestPath.inputType() == JSON_POST) {
                 ObjectMapper mapper = new ObjectMapper();
                 Object obj = null;
                 try {
@@ -306,6 +298,7 @@ public class IgluRestServlet extends HttpServlet {
     public void service(HttpServletRequest servletRequest, HttpServletResponse response) throws IOException, ServletException {
 
         long start = System.currentTimeMillis();
+        RestMethodData restMethodData = null;
         try {
             System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo()));
 
@@ -320,7 +313,7 @@ public class IgluRestServlet extends HttpServlet {
             JsonData errorResult = null;
 
             String path = trimPath(pathInfo);
-            RestMethodData restMethodData = getRestMethodData(path);
+            restMethodData = getRestMethodData(path);
 
             String contentType = "text/html";
 
@@ -360,36 +353,48 @@ public class IgluRestServlet extends HttpServlet {
             if (errorResult != null) {
                 result = errorResult.toString();
                 response.setStatus((Integer) errorResult.getAttribute("status"));
-            } else if (restMethodData.requestPath.returnType() == JSON) {
+            } else if (!(result instanceof String) && restMethodData.requestPath.returnType() == JSON) {
                 ObjectMapper mapper = new ObjectMapper();
                 result = mapper.writeValueAsString(result);
             }
 
-            out.println(result != null ? result.toString() :
-                    (restMethodData.requestPath.returnType() == VOID ? "" : "null"));
+            out.println(result != null ? result.toString() : "");
+                    //TODO return type JSON
+                    //(restMethodData.requestPath.returnType() == VOID ? "" : "null"));
         } catch(Exception e) {
-            if(e instanceof ServletException) {
-                //TODO controlled response
-                throw e;
-            } else {
-                System.out.println(new LogEntry(Level.CRITICAL, "unable to process request", e));
-                try {
-                    ServletOutputStream out = response.getOutputStream();
-                    response.setContentType("text/plain");
-                    if(e instanceof RestException) {
-                        response.setStatus(((RestException)e).getHttpStatusCode());
-                        out.println(e.getMessage());
-                    } else {
-                        response.setStatus(500);
-                        out.println("unexpected error");
-                    }
-                } catch (Exception ignore) {
-
-                }
-            }
+            handleException(restMethodData, response, e);
         }
         System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
                 " finished in " + (System.currentTimeMillis() - start) + " ms"));
+    }
+
+    public void handleException(RestMethodData restMethodData, HttpServletResponse response, Exception e) throws IOException {
+        System.out.println(new LogEntry(Level.CRITICAL, "unable to process request", e));
+        try {
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("text/plain");
+            if(e instanceof RestException) {
+//                response.setStatus(((RestException) e).getHttpStatusCode());
+                respondWithError(response, restMethodData, ((RestException) e).getHttpStatusCode(), e.getMessage());
+//                out.println(e.getMessage());
+            } else {
+//                response.setStatus(500);
+                respondWithError(response, restMethodData, 500, "unexpected error");
+//                out.println("unexpected error");
+            }
+        } catch (Exception excHandlingException) {
+            System.out.println(new LogEntry(Level.CRITICAL, "exception handling failed", excHandlingException));
+        }
+    }
+
+    private void respondWithError(HttpServletResponse response, RestMethodData restMethodData, int httpStatusCode, String message) throws IOException {
+        ServletOutputStream out = response.getOutputStream();
+        response.setStatus(httpStatusCode);
+        if(restMethodData != null) {
+            //if(restMethodData.getResponseContentType())
+        }
+        out.print(message);
+
     }
 
     public RestMethodData getRestMethodData(String path) {
