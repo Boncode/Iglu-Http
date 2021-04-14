@@ -15,6 +15,7 @@ import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.RestSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
+import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.misc.StringSupport;
 
 import static org.ijsberg.iglu.logging.Level.TRACE;
@@ -73,9 +74,9 @@ public class IgluRestServlet extends HttpServlet {
             configure(requestPath, method);
         }
 
-        private String getResponseContentType() {
+        private WebContentType getResponseContentType() {
 //            requestPath.returnType()
-            return requestPath.returnType().getContentType();
+            return requestPath.returnType();
         }
 
         private void configure(RequestPath requestPath, Method method) {
@@ -318,7 +319,7 @@ public class IgluRestServlet extends HttpServlet {
             String contentType = "text/html";
 
             if (restMethodData != null) {
-                contentType = restMethodData.getResponseContentType();
+                contentType = restMethodData.getResponseContentType().getContentType();
                 restMethodData.assertUserAuthorized();
                 try {
                     Object[] parameters = getParameters(servletRequest, restMethodData);
@@ -358,7 +359,7 @@ public class IgluRestServlet extends HttpServlet {
                 result = mapper.writeValueAsString(result);
             }
 
-            out.println(result != null ? result.toString() : "");
+            out.print(result != null ? result.toString() : "");
                     //TODO return type JSON
                     //(restMethodData.requestPath.returnType() == VOID ? "" : "null"));
         } catch(Exception e) {
@@ -390,10 +391,11 @@ public class IgluRestServlet extends HttpServlet {
     private void respondWithError(HttpServletResponse response, RestMethodData restMethodData, int httpStatusCode, String message) throws IOException {
         ServletOutputStream out = response.getOutputStream();
         response.setStatus(httpStatusCode);
-        if(restMethodData != null) {
-            //if(restMethodData.getResponseContentType())
+        if(restMethodData != null && restMethodData.getResponseContentType() == JSON) {
+            out.print(RestSupport.createResponse(httpStatusCode, message).toString());
+        } else {
+            out.print(message);
         }
-        out.print(message);
 
     }
 
