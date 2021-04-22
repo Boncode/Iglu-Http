@@ -45,7 +45,7 @@ FlexPanelWidget.prototype.addTitleBarFunction = function(className, onclickFunct
 };
 
 FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
-    var html = (this.titleBarFunctions.length == 0 ? '' : '<div>');
+    var html = (this.titleBarFunctions.length == 0 ? '' : '<div class="widget_titlebar_container">');
     for(var i in this.titleBarFunctions) {
         html += '<div class="' + this.titleBarFunctions[i].className + '"' +
         (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' title="' + this.titleBarFunctions[i].tooltip + '"' : '') +
