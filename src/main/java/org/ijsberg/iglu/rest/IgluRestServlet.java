@@ -11,6 +11,7 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.util.collection.ArraySupport;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.RestSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
@@ -82,9 +83,10 @@ public class IgluRestServlet extends HttpServlet {
         private void configure(RequestPath requestPath, Method method) {
             Class<?>[] parameterTypes = method.getParameterTypes();
             Class<?> returnType = method.getReturnType();
-            if(requestPath.inputType() == VOID) {
+            RequestPath.ParameterType inputType = requestPath.inputType();
+            if(inputType == VOID) {
 
-            } else if(requestPath.inputType() == RAW) {
+            } else if(inputType == RAW) {
                 //TODO validation not exhaustive
                 //RAW (icw PUT or POST) allows for additional parameters past
                 if(requestPath.secondInputType() == MAPPED || requestPath.secondInputType() == FROM_PATH) {
@@ -93,19 +95,22 @@ public class IgluRestServlet extends HttpServlet {
                     }
                 }
             }
-            else if(requestPath.inputType() == MAPPED || requestPath.inputType() == FROM_PATH) {
+            else if(inputType == FROM_PATH) {
+                //
+            }
+            else if(inputType == MAPPED) {
                 if(requestPath.parameters().length != parameterTypes.length) {
                     throw new ConfigurationException("please define " + parameterTypes.length + " input parameters");
                 }
             } else {
                 if(parameterTypes.length != 1) {
-                    throw new ConfigurationException("input type " + requestPath.inputType() + " requires exactly 1 parameter");
+                    throw new ConfigurationException("input type " + inputType + " requires exactly 1 parameter");
                 }
-                if(requestPath.inputType() == PROPERTIES && !Properties.class.isAssignableFrom(parameterTypes[0])) {
-                    throw new ConfigurationException("input type " + requestPath.inputType() + " requires 1 parameter of type Properties");
+                if(inputType == PROPERTIES && !Properties.class.isAssignableFrom(parameterTypes[0])) {
+                    throw new ConfigurationException("input type " + inputType + " requires 1 parameter of type Properties");
                 }
-                if(requestPath.inputType() == JSON_POST && requestPath.method() != POST) {
-                    throw new ConfigurationException("input type " + requestPath.inputType() + " requires invocation by method " + POST);
+                if(inputType == JSON_POST && requestPath.method() != POST) {
+                    throw new ConfigurationException("input type " + inputType + " requires invocation by method " + POST);
                 }
             }
             AssertUserRole assertUserRole = method.getAnnotation(AssertUserRole.class);
@@ -246,19 +251,34 @@ public class IgluRestServlet extends HttpServlet {
                 return new Object[]{new String(postData)};
             }
             if(methodData.requestPath.inputType() == MAPPED) {
-                Properties properties = ServletSupport.convertUrlEncodedData(new String(postData));
-                Object[] result = new Object[declaredParameters.length];
-                for(int i = 0; i < declaredParameters.length; i++) {
-                    RequestParameter requestParameter = declaredParameters[i];
-                    result[i] = properties.getProperty(requestParameter.name());
-                }
+                Object[] result = getObjectsFromQueryString(declaredParameters, new String(postData));
                 return result;
             }
             //STRING
             return new Object[]{new String(postData)};
-        } else {
-            return getInputObjectsFromRequest(request, methodData, methodData.requestPath.inputType());
+        } else { //GET
+            Object[] result = getInputObjectsFromRequest(request, methodData, methodData.requestPath.inputType());
+            System.out.println("initial input: " + ArraySupport.format(result, ","));
+            if(methodData.requestPath.secondInputType() != null) {
+
+                Object[] additionalInput = getInputObjectsFromRequest(request, methodData, methodData.requestPath.secondInputType());
+                System.out.println("additional input: " + ArraySupport.format(additionalInput, ","));
+
+                result = ArraySupport.join(result, additionalInput);
+                System.out.println("result input: " + ArraySupport.format(result, ","));
+            }
+            return result;
         }
+    }
+
+    private static Object[] getObjectsFromQueryString(RequestParameter[] declaredParameters, String queryString) throws UnsupportedEncodingException {
+        Properties properties = ServletSupport.convertUrlEncodedData(queryString);
+        Object[] result = new Object[declaredParameters.length];
+        for(int i = 0; i < declaredParameters.length; i++) {
+            RequestParameter requestParameter = declaredParameters[i];
+            result[i] = properties.getProperty(requestParameter.name());
+        }
+        return result;
     }
 
     private static Object[] getInputObjectsFromRequest(HttpServletRequest request, RestMethodData methodData, RequestPath.ParameterType parameterType) throws UnsupportedEncodingException {
@@ -282,12 +302,7 @@ public class IgluRestServlet extends HttpServlet {
         if(parameterType == MAPPED) {
             if(request.getQueryString() != null) {
                 RequestParameter[] declaredParameters = methodData.requestPath.parameters();
-                Properties properties = ServletSupport.convertUrlEncodedData(request.getQueryString());
-                Object[] result = new Object[declaredParameters.length];
-                for (int i = 0; i < declaredParameters.length; i++) {
-                    RequestParameter requestParameter = declaredParameters[i];
-                    result[i] = properties.getProperty(requestParameter.name());
-                }
+                Object[] result = getObjectsFromQueryString(declaredParameters, request.getQueryString());
                 return result;
             }
         }
