@@ -261,6 +261,9 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 */
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
 
+		//TODO IP addresses can be obtained when request is passed by Apache (reverse proxy) from header X-Forwarded-For
+		//TODO IP blocking should be added
+
 		if(accessControlAllowOrigin != null) {
 			((HttpServletResponse)servletResponse).addHeader("Access-Control-Allow-Origin", accessControlAllowOrigin);
 		}
@@ -282,14 +285,15 @@ public class WebAppEntryPoint implements Filter, EntryPoint
  			//if(accessManager != null) {
 				appRequest = accessManager.bindRequest(this);
 			//}
-
-			//TODO in progress; alternative way of obtaining user
+			Session session;
 			if(sessionToken != null) {
-				Session session = appRequest.resolveSession(sessionToken, userId);
+				session = appRequest.resolveSession(sessionToken, userId);
 			} else {
-				getAccessByToken((HttpServletRequest) servletRequest, appRequest);
+				session = getAccessByToken((HttpServletRequest) servletRequest, appRequest);
 			}
-
+			if(session == null) {
+				System.out.println(new LogEntry(Level.VERBOSE, "no session yet for IP " + ((HttpServletRequest)servletRequest).getHeader("X-Forwarded-For")));
+			}
 /*
 			if (this.syncUserPrefs && appRequest.getTimesEntered() == 0) {
 				//pass user preferences here
@@ -354,11 +358,12 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		}
 	}
 
-	private void getAccessByToken(HttpServletRequest servletRequest, Request request) {
+	private Session getAccessByToken(HttpServletRequest servletRequest, Request request) {
 		AuthorizationBearer authorizationBearer = AuthorizationBearer.getHttpHeader(servletRequest);
+		Session session = null;
 		if(authorizationBearer != null) {
 			Credentials credentials = decodeCredentials(authorizationBearer.getToken());
-			Session session = request.resolveSession(authorizationBearer.getToken(), credentials.getUserId());
+			session = request.resolveSession(authorizationBearer.getToken(), credentials.getUserId());
 			if(session == null) {
 				accessManager.createSession(authorizationBearer.getToken(), new Properties());
 				session = request.resolveSession(authorizationBearer.getToken(), credentials.getUserId());
@@ -368,6 +373,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				System.out.println(new LogEntry(Level.TRACE, "session resolved " + session.getUser()));
 			}
 		}
+		return session;
 	}
 
 	private Credentials decodeCredentials(String encodedCredentials) {
