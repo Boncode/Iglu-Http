@@ -19,9 +19,7 @@
 
 package org.ijsberg.iglu.server.facilities.module;
 
-import org.ijsberg.iglu.access.AgentFactory;
-import org.ijsberg.iglu.access.BasicAgentFactory;
-import org.ijsberg.iglu.access.User;
+import org.ijsberg.iglu.access.*;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.http.json.JsonData;
@@ -36,6 +34,7 @@ import org.ijsberg.iglu.util.io.FSFileCollection;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.mail.EMail;
+import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -178,8 +177,17 @@ public class UploadAgentImpl implements UploadAgent {
 				File file = new File(tmpFileName);
 				//make file appear as atomic as possible
 				file.renameTo(new File(permanentFileName));
+				User user = requestRegistry.getCurrentRequest().getUser();
+				IgluProperties metadata = new IgluProperties();
+				metadata.setProperty("userId", user.getId());
+				if(user.getGroup() != null) {
+					metadata.setProperty("group", user.getGroup().getName());
+				}
+				metadata.setProperty("isAdmin", "" + user.hasRole(AccessConstants.ADMIN_ROLE_NAME));
+				IgluProperties.saveProperties(metadata, permanentFileName + ".metadata.properties");
+				uploadedFile.delete();
 			} catch (IOException e) {
-				System.out.println(new LogEntry(Level.CRITICAL, "cannot copy file to target dir", e));
+				System.out.println(new LogEntry(Level.CRITICAL, "cannot move file (or metadata) to target dir", e));
 			}
 		}
 		if(sendEmail) {
@@ -187,6 +195,7 @@ public class UploadAgentImpl implements UploadAgent {
 		} else {
 			System.out.println(new LogEntry("notification disabled"));
 		}
+		requestRegistry.dropMessageToCurrentUser(new UserMessage(fileData.getFileName() + " was successfully uploaded"));
 	}
 
 	private void notifyAsync(FileData fileData) {

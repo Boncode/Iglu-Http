@@ -269,6 +269,7 @@ public class SimpleJettyServletContext implements Startable {
 						servletHolder.setName(servletName);
 						addInitParameters(servletHolder, subSection);
 						servletHolder.setInitOrder(initOrder++);
+						servletHolder.setAsyncSupported(true);
 
 
 						for (String urlPattern : urlPatterns) {

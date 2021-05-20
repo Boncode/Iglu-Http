@@ -21,7 +21,8 @@ public @interface RequestPath {
 		PROPERTIES,
 		MAPPED,
 		FROM_PATH,
-		RAW
+		RAW,
+		REQUEST_RESPONSE
 	}
 
 	enum ResponseContentType {

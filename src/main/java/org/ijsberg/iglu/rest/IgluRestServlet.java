@@ -22,7 +22,7 @@ import org.ijsberg.iglu.util.misc.StringSupport;
 import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.*;
 import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
-import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
+import static org.ijsberg.iglu.util.mail.WebContentType.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -76,7 +76,6 @@ public class IgluRestServlet extends HttpServlet {
         }
 
         private WebContentType getResponseContentType() {
-//            requestPath.returnType()
             return requestPath.returnType();
         }
 
@@ -102,6 +101,8 @@ public class IgluRestServlet extends HttpServlet {
                 if(requestPath.parameters().length != parameterTypes.length) {
                     throw new ConfigurationException("please define " + parameterTypes.length + " input parameters");
                 }
+            } else if(inputType == REQUEST_RESPONSE) {
+                // it's up to the component to handle everything
             } else {
                 if(parameterTypes.length != 1) {
                     throw new ConfigurationException("input type " + inputType + " requires exactly 1 parameter");
@@ -311,7 +312,7 @@ public class IgluRestServlet extends HttpServlet {
     }
 
 
-    public void service(HttpServletRequest servletRequest, HttpServletResponse response) throws IOException, ServletException {
+    public void service(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException {
 
         long start = System.currentTimeMillis();
         RestMethodData restMethodData = null;
@@ -331,15 +332,20 @@ public class IgluRestServlet extends HttpServlet {
             String path = trimPath(pathInfo);
             restMethodData = getRestMethodData(path);
 
-            String contentType = "text/html";
+            WebContentType contentType = HTML;
 
             if (restMethodData != null) {
-                contentType = restMethodData.getResponseContentType().getContentType();
+                contentType = restMethodData.getResponseContentType();
                 restMethodData.assertUserAuthorized();
                 try {
-                    Object[] parameters = getParameters(servletRequest, restMethodData);
-                    checkInput(parameters);
-                    result = restMethodData.getComponent().invoke(restMethodData.method.getName(), parameters);
+                    if(contentType == EVENT_STREAM) {
+                        result = restMethodData.getComponent().invoke(restMethodData.method.getName(), servletRequest, servletResponse);
+                        return;
+                    } else {
+                        Object[] parameters = getParameters(servletRequest, restMethodData);
+                        checkInput(parameters);
+                        result = restMethodData.getComponent().invoke(restMethodData.method.getName(), parameters);
+                    }
                 } catch (InvocationTargetException e) {
                     System.out.println(new LogEntry(Level.CRITICAL, "unable to invoke method " + restMethodData.method.getName(), e.getCause()));
                     if (e.getCause() instanceof RestException) {
@@ -363,12 +369,12 @@ public class IgluRestServlet extends HttpServlet {
 
             //TODO restMethodData:null leads to NPE
 
-            ServletOutputStream out = response.getOutputStream();
-            response.setContentType(contentType);
+            ServletOutputStream out = servletResponse.getOutputStream();
+            servletResponse.setContentType(contentType.getContentType());
 
             if (errorResult != null) {
                 result = errorResult.toString();
-                response.setStatus((Integer) errorResult.getAttribute("status"));
+                servletResponse.setStatus((Integer) errorResult.getAttribute("status"));
             } else if (!(result instanceof String) && restMethodData.requestPath.returnType() == JSON) {
                 ObjectMapper mapper = new ObjectMapper();
                 result = mapper.writeValueAsString(result);
@@ -378,7 +384,7 @@ public class IgluRestServlet extends HttpServlet {
                     //TODO return type JSON
                     //(restMethodData.requestPath.returnType() == VOID ? "" : "null"));
         } catch(Exception e) {
-            handleException(restMethodData, response, e);
+            handleException(restMethodData, servletResponse, e);
         }
         System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
                 " finished in " + (System.currentTimeMillis() - start) + " ms"));

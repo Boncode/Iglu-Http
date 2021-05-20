@@ -445,6 +445,12 @@ FrameWidget.prototype.centerInOuterWidget = function(outerWidget) {
 	this.top = outerWidget.top + parseInt((outerWidget.height - this.height) / 2);
 }
 
+FrameWidget.prototype.centerInWindow = function() {
+	this.left = parseInt((window.innerWidth - this.width) / 2);
+    console.log('(' + window.innerWidth + ' - ' + this.width + ') / 2 = ' + this.left);
+	this.top = parseInt((window.innerHeight - this.height) / 2);
+}
+
 FrameWidget.prototype.addSubWidget = function(containerId, subWidget) {
 	var subWidgetArray = this.subWidgets[containerId];
 	if(subWidgetArray == null || typeof subWidgetArray == 'undefined') {
