@@ -22,6 +22,7 @@ import org.ijsberg.iglu.util.misc.StringSupport;
 import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.*;
 import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
+import static org.ijsberg.iglu.util.http.HttpEncodingSupport.urlEncode;
 import static org.ijsberg.iglu.util.mail.WebContentType.*;
 
 import javax.servlet.ServletException;
@@ -329,7 +330,7 @@ public class IgluRestServlet extends HttpServlet {
 
             JsonData errorResult = null;
 
-            String path = trimPath(pathInfo);
+            String path = urlEncode(trimPath(pathInfo));
             restMethodData = getRestMethodData(path);
 
             WebContentType contentType = HTML;
