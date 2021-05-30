@@ -1,6 +1,5 @@
 package org.ijsberg.iglu.util.http;
 
-import com.sun.net.ssl.HttpsURLConnection;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 

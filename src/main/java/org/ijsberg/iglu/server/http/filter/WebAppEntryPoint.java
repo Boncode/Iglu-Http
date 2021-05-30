@@ -29,6 +29,7 @@ import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
+import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -91,7 +92,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 	private String publicContentRegExp;
 
-	private String accessControlAllowOrigin;
+	//private String accessControlAllowOrigin;
+	private IgluProperties additionalHeaders = new IgluProperties();
 
 
 	private static class ExceptionHandlingSettings {
@@ -202,9 +204,15 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false);
 		loginPath = conf.getInitParameter("login_path");
 
-		accessControlAllowOrigin = conf.getInitParameter("header.Access-Control-Allow-Origin");
+		//accessControlAllowOrigin = conf.getInitParameter("header.Access-Control-Allow-Origin");
 		//                servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-
+		Enumeration initParamNames = conf.getInitParameterNames();
+		while(initParamNames.hasMoreElements()) {
+			String initParamName = (String)initParamNames.nextElement();
+			if(initParamName.startsWith("header.")) {
+				additionalHeaders.setProperty(initParamName.substring(7), conf.getInitParameter(initParamName));
+			}
+		}
 
 		System.out.println(new LogEntry("loginRequired:" + loginRequired));
 
@@ -264,8 +272,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		//TODO IP addresses can be obtained when request is passed by Apache (reverse proxy) from header X-Forwarded-For
 		//TODO IP blocking should be added
 
-		if(accessControlAllowOrigin != null) {
-			((HttpServletResponse)servletResponse).addHeader("Access-Control-Allow-Origin", accessControlAllowOrigin);
+		for(String header : additionalHeaders.toOrderedMap().keySet()) {
+			((HttpServletResponse)servletResponse).addHeader(header, additionalHeaders.getProperty(header));
 		}
 
 		servletRequest.setCharacterEncoding("UTF-8");

@@ -27,6 +27,8 @@ import org.eclipse.jetty.servlet.Holder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.MultiException;
+import org.eclipse.jetty.util.resource.PathResource;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
@@ -42,6 +44,7 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
 import java.io.File;
+import java.security.KeyStore;
 import java.util.*;
 
 /**
@@ -188,6 +191,8 @@ public class SimpleJettyServletContext implements Startable {
 		//ctx.setInitParams(PropertiesSupport.getSubsection(properties, "initparam"));
 
 		ctx.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeout);
+		//Jetty 10
+		//ctx.getSessionHandler().setMaxInactiveInterval(sessionTimeout);
 		//set root directory
 		ctx.setResourceBase(documentRoot);
 //			addInitParameters(ctx.getInitParams(), section);
@@ -383,9 +388,15 @@ public class SimpleJettyServletContext implements Startable {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration.setSecureScheme("https");
 
+		//Resource resource = new PathResource(new File(keystoreLocation));
+
 		SslContextFactory sslContextFactory = new SslContextFactory(keystoreLocation);
+
+		//Jetty 10
+/*		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server(/ *keystoreLocation* /);
+		sslContextFactory.setKeyStorePath(keystoreLocation);
 		sslContextFactory.setKeyStorePassword(getKeystorePassword());
-		HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
+*/		HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
 		httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
 		ServerConnector httpsConnector = new ServerConnector(server,
 				new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
