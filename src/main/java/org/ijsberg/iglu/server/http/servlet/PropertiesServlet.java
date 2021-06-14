@@ -25,25 +25,34 @@ public class PropertiesServlet extends HttpServlet {
     public void init(ServletConfig conf) throws ServletException {
         super.init(conf);
         String propertiesFile = getInitParameter("properties_file");
-        Properties properties = IgluProperties.loadProperties(propertiesFile);
+        IgluProperties properties = IgluProperties.loadProperties(propertiesFile);
+        merge(properties);
         jsonProperties = new JsonHierarchicalPropertiesObject(properties, false);
-        enrich();
+        //enrich();
+
+    }
+
+    private void merge(IgluProperties properties) {
+        if(additionalProperties != null) {
+            properties.merge(additionalProperties);
+        }
     }
 
     public void enrich(Properties additionalProperties) {
         this.additionalProperties = additionalProperties;
     }
 
-    private void enrich() {
+/*    private void enrich() {
         if(additionalProperties != null) {
             for (String key : additionalProperties.stringPropertyNames()) {
                 if (!jsonProperties.containsAttribute(key)) {
                     jsonProperties.addStringAttribute(key, additionalProperties.getProperty(key));
+                    jsonProperties.s
                 }
             }
         }
     }
-
+*/
     public void service(HttpServletRequest servletRequest, HttpServletResponse response) throws IOException, ServletException {
         ServletOutputStream out = response.getOutputStream();
         response.setContentType("application/json");

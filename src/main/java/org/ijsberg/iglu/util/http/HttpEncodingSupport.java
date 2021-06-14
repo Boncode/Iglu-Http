@@ -55,6 +55,14 @@ public abstract class HttpEncodingSupport {
 		}
 	}
 
+	public static String urlEncodeXSSRiskCharacters(String input) {
+		String result = StringSupport.replaceAll(input, "<", "%3c");
+		result = StringSupport.replaceAll(result, ">", "%3e");
+		result = StringSupport.replaceAll(result, "\"", "%22");
+		return result;
+
+	}
+
 	public static String urlDecode(String input)
 	{
 		if (input == null)
