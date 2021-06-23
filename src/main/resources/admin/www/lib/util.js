@@ -58,25 +58,68 @@ function cloneAttributes(obj) {
     return retval;
 }
 
-function log(message) {
+const LogLevel = Object.freeze({"TRC":1, "DBG":2, "VBS":3, "CRT":4});
+var LOG_LEVEL = 1;
+function setLogLevel(string) {
+    num = LogLevel[string];
+    if (!(num >= 1 && num <= 4)) {
+        log(LogLevel.VBS, "invalid logLevel: %s", string);
+    } else {
+        LOG_LEVEL = num;
+        log(LogLevel.VBS, "LOG_LEVEL set to: %s", string);
+    }
+}
+
+function log(level, message, ...args) {
+    if (arguments.length === 0) {
+        return;
+    } else if (arguments.length === 1 || !(level >= 1 && level <= 4)) {
+        args.unshift(message);
+        message = level;
+        level = 1;
+    }
+
+    if (level < LOG_LEVEL) {
+        return;
+    }
 
     var now = new Date();
-    var dateStr = now.getHours() + ':' + now.getMinutes() + '.' + now.getSeconds() + '.' + now.getMilliseconds();
+    var seconds = now.getSeconds().toString();
+    seconds = seconds.length == 1 ? "0" + seconds : seconds;
+    var minutes = now.getMinutes().toString();
+    minutes = minutes.length == 1 ? "0" + minutes : minutes;
+    var hours = now.getHours().toString();
+    hours = hours.length == 1 ? "0" + hours : hours;
+    var message = hours + ':' + minutes + ':' + seconds + " " + message;
 
+    // f12 console
+    if (level === LogLevel.CRT) {
+        message = "CRT " + message;
+        console.error(message, ...args);
+    } else if (level === LogLevel.VBS) {
+        message = "VBS " + message;
+        console.warn(message, ...args);
+    } else if (level === LogLevel.DBG) {
+        message = "DBG " + message;
+        console.info(message, ...args);
+    } else {
+        message = "TRC " + message;
+        console.log(message, ...args);
+    }
+
+    // logging window (only if open)
 	if(typeof WidgetManager != 'undefined') {
 		var logStream = WidgetManager.instance.getWidget('logstream');
 		if(logStream != null) {
-			logStream.append(dateStr + ' ' + message);
+			logStream.append(message + args);
 			return;
 		}
 	}
 	var element = document.getElementById('logstream');
 	if(element != null) {
-		element.innerHTML = dateStr + ' ' + message + '<br>\n' + element.innerHTML;
+		element.innerHTML = message + '<br>\n' + element.innerHTML;
 	}
 }
-
-
 
 function subclass(subclass, baseclass) {
 	subclass.prototype = clone(baseclass.prototype);
@@ -345,7 +388,7 @@ function scrollToElement(containerId, scrollTargetId) {
 	if(scrollTarget != null) {
 		container.scrollTop = scrollTarget.offsetTop;
 	} else {
-    	console.log('cannot scroll ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
+    	log(LogLevel.TRC, 'cannot scroll ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
 		container.scrollTop = 0;
 	}
 }

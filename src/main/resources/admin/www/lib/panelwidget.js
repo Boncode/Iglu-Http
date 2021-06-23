@@ -52,7 +52,7 @@ PanelWidget.prototype.createTitleBarFunctionHtml = function() {
     }
     html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
 
-    console.log('createTitleBarFunctionHtml: ' + html)
+    log(LogLevel.TRC, 'createTitleBarFunctionHtml: ' + html)
 
     return html;
 };
