@@ -206,7 +206,10 @@ public class UploadAgentImpl implements UploadAgent {
 		//TODO make configurable
 		String message = fileData.getFileName() + " has been uploaded to " + getUserDir();
 		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
-		new Executable() {
+
+		requestRegistry.dropMessage("System", new MailMessage("upload notification", message));
+
+/*		new Executable() {
 			@Override
 			protected Object execute() throws Throwable {
 				try {
@@ -217,7 +220,7 @@ public class UploadAgentImpl implements UploadAgent {
 				}
 				return null;
 			}
-		}.executeAsync();
+		}.executeAsync();*/
 	}
 
 	@Override
