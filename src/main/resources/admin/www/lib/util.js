@@ -87,6 +87,7 @@ function toggleLogLevel() {
 }
 
 function log(level, message, ...args) {
+try{
     if (arguments.length === 0) {
         return;
     } else if (arguments.length === 1 || !(level >= 1 && level <= 4)) {
@@ -134,6 +135,9 @@ function log(level, message, ...args) {
 	var element = document.getElementById('logstream');
 	if(element != null) {
 		element.innerHTML = message + '<br>\n' + element.innerHTML;
+	}
+	}catch(e) {
+	    console.error(e);
 	}
 }
 
