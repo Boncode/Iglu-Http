@@ -26,6 +26,8 @@ import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.rest.RequestParameter;
+import org.ijsberg.iglu.rest.RequestPath;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.execution.Executable;
 import org.ijsberg.iglu.util.http.MultiPartReader;
@@ -37,11 +39,18 @@ import org.ijsberg.iglu.util.mail.EMail;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+
+import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
+import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.GET;
+import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.POST;
+import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
+import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
 
 
 /**
@@ -109,9 +118,19 @@ public class UploadAgentImpl implements UploadAgent {
 		return fileCollection.getFileNames();
 	}
 
+/*	@RequestPath(inputType = STRING, path = "calculate_next_execution_time", method = GET, returnType = TXT, parameters = {
+			@RequestParameter(name = "cronUnixDef")
+	})
+*/
+	@Override
+	@RequestPath(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
+	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
+		System.out.println("UPLOAD ==================================================");
+		readMultiPartUpload(req, new Properties(), "configurations/analysis-server/upload/uploads/");
+	}
+
 
 	//TODO reconsider "synchronized" : should probably be confined to code starting with: if(readingUpload) {
-	@Override
 	public synchronized String readMultiPartUpload(HttpServletRequest req, Properties properties, String directoryName) {
 
 		isUploadCancelled = false;
@@ -147,13 +166,13 @@ public class UploadAgentImpl implements UploadAgent {
 			}
 
 
-			Enumeration e = req.getAttributeNames();
+/*			Enumeration e = req.getAttributeNames();
 			while (e.hasMoreElements())
 			{
 				String name = (String) e.nextElement();
 				Object attr = req.getAttribute(name);
 				properties.put(name, attr);
-			}
+			}*/
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
 		if(reader != null && reader.getUploadFile() != null && !isUploadCancelled) {
@@ -249,7 +268,21 @@ public class UploadAgentImpl implements UploadAgent {
 		return JsonSupport.toMessage(jsFunction, "progress", retval);
 	}
 
+
+
 	@Override
+	@RequestPath(inputType = VOID, path = "progress", method = GET, returnType = JSON)
+	public String getProgress() {
+		JsonData retval = new JsonData();
+		JsonData jsonData = new JsonData();
+		retval.addAttribute("progress", jsonData);
+		jsonData.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
+		jsonData.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
+		return jsonData.toString();
+	}
+
+	@Override
+	@RequestPath(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
 	public String cancelUpload() {
 		System.out.println(new LogEntry(Level.VERBOSE, "cancelling upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
 		if(reader != null) {
@@ -273,6 +306,7 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	@Override
+	@RequestPath(inputType = VOID, path = "reset", method = GET)
 	public void reset() {
 		System.out.println(new LogEntry(Level.VERBOSE, "resetting upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
 		if(reader != null) {

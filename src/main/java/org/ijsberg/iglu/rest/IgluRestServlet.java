@@ -220,7 +220,7 @@ public class IgluRestServlet extends HttpServlet {
 
     private static Object[] getParameters(HttpServletRequest request, RestMethodData methodData) throws IOException {
 
-        if(methodData.requestPath.inputType() == VOID) {
+        if(methodData.requestPath.inputType() == VOID || methodData.requestPath.inputType() == REQUEST_RESPONSE) {
             return new Object[0];
         }
         RequestParameter[] declaredParameters = methodData.requestPath.parameters();
@@ -340,7 +340,8 @@ public class IgluRestServlet extends HttpServlet {
                 contentType = restMethodData.getResponseContentType();
                 restMethodData.assertUserAuthorized();
                 try {
-                    if(contentType == EVENT_STREAM) {
+                    if(restMethodData.requestPath.inputType() == REQUEST_RESPONSE) {
+//                    if(contentType == EVENT_STREAM) {
                         result = restMethodData.getComponent().invoke(restMethodData.method.getName(), servletRequest, servletResponse);
                         return;
                     } else {

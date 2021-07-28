@@ -19,10 +19,19 @@
 
 package org.ijsberg.iglu.server.facilities;
 
+import org.ijsberg.iglu.rest.RequestPath;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+
+import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
+import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.GET;
+import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.POST;
+import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
+import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
 
 /**
  */
@@ -30,7 +39,10 @@ public interface UploadAgent {
 
 	List<String> getDownloadableFileNames();
 
-	String readMultiPartUpload(HttpServletRequest request, Properties properties, String fileName) throws IOException;
+    @RequestPath(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
+    void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res);
+
+    String readMultiPartUpload(HttpServletRequest request, Properties properties, String fileName) throws IOException;
 
 	//String readMultiPartUpload(HttpServletRequest request, Properties properties) throws IOException;
 
@@ -38,12 +50,17 @@ public interface UploadAgent {
 
 	long getContentLength();
 
-	String cancelUpload();
+    @RequestPath(inputType = VOID, path = "progress", method = GET, returnType = JSON)
+    String getProgress();
+
+    @RequestPath(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
+    String cancelUpload();
 
 	boolean isUploadCancelled();
 
     boolean isUploadInProgress();
 
+    @RequestPath(inputType = VOID, path = "reset", method = GET)
     void reset();
 
 	String getProgress(String jsFunction);
