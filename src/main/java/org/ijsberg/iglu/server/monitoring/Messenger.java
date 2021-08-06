@@ -48,7 +48,7 @@ public class Messenger implements Pageable, Startable, EntryPoint {
     @Override
     public void onPageEvent(long officialTime) {
         ((StandardSession)session).updateLastAccessedTime();
-        UserMessage userMessage = session.getUser().consumeLatestMessage();
+        UserConsumableMessage userMessage = session.getUser().consumeLatestMessage();
         while (userMessage != null) {
             if (userMessage != null && userMessage instanceof MailMessage) {
                 MailMessage mailMessage = (MailMessage) userMessage;
