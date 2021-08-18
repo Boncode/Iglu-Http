@@ -131,7 +131,7 @@ public class IgluRestServlet extends HttpServlet {
             if(requiredRole != null) {
                 User user = accessManager.getCurrentRequest().getUser();
                 if (user != null) {
-                    System.out.println(new LogEntry("checking rights for " + user.getId() + (user.getGroup() != null ? " : " + user.getGroup().getName() : "")));
+                    System.out.println(new LogEntry(TRACE,"checking rights for " + user.getId() + (user.getGroup() != null ? " : " + user.getGroup().getName() : "")));
                     if (!user.hasRole(requiredRole)) {
                         throw new RestException("not authorized for endpoint " + this.requestPath.path(), 403);
                     }

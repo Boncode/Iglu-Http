@@ -37,6 +37,7 @@ import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
  */
 public interface UploadAgent {
 
+    @RequestPath(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
 	List<String> getDownloadableFileNames();
 
     @RequestPath(inputType = REQUEST_RESPONSE, path = "upload", method = POST)

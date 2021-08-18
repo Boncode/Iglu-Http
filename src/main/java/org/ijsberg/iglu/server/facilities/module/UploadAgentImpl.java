@@ -112,6 +112,7 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	@Override
+	@RequestPath(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
 	public List<String> getDownloadableFileNames() {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
 		System.out.println("getDownloadDir(): " + getDownloadDir());
@@ -125,8 +126,9 @@ public class UploadAgentImpl implements UploadAgent {
 	@Override
 	@RequestPath(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
-		System.out.println("UPLOAD ==================================================");
-		readMultiPartUpload(req, new Properties(), "configurations/analysis-server/upload/uploads/");
+//		System.out.println("UPLOAD ==================================================");
+//		readMultiPartUpload(req, new Properties(), "configurations/analysis-server/upload/uploads/");
+		readMultiPartUpload(req, new Properties(), uploadRootDir);
 	}
 
 
