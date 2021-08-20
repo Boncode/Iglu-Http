@@ -189,6 +189,21 @@ WidgetManager.prototype.destroyPopup = function(widgetId) {
 }
 
 
+WidgetManager.prototype.registerNotificationWidget = function(widget) {
+//    setTimeout('WidgetManager.instance.destroyNotification("' + widget.id + '")', widget.timeout);
+	this.activateCurrentWidget(widget);
+}
+
+
+WidgetManager.prototype.destroyNotification = function(widgetId) {
+    log('destroying popup ' + widgetId);
+    var widget = WidgetManager.instance.getWidget(widgetId);
+    if(widget != null) {
+        WidgetManager.instance.destroyWidget(widgetId);
+    }
+}
+
+
 
 /**
  *
