@@ -126,7 +126,7 @@ public class AdminAgentImpl implements AdminAgent, SessionDestructionListener, L
 
 	private List<MenuItem> getOptionsMenu() {
 		List<MenuItem> optionsMenu = new ArrayList<MenuItem>();
-		optionsMenu.add(new MenuItem("js_log", "javascript log").addOnclick("openJavaScriptLog()").addCssClassName("submenu_item"));
+		//optionsMenu.add(new MenuItem("js_log", "javascript log").addOnclick("openJavaScriptLog()").addCssClassName("submenu_item"));
 		optionsMenu.add(new MenuItem("server_log", "server log").addOnclick("openServerLog()").addCssClassName("submenu_item"));
 /*		optionsMenu.add(new MenuItem("style", "toggle resolved references").addOnclick("toggleCss(4);").addCssClassName("submenu_item"));    */
 		return optionsMenu;

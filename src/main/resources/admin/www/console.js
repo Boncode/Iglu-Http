@@ -214,21 +214,21 @@ function invokeMethod(form) {
 
 
 
-function openJavaScriptLog() {
-	 var logwidget = new LogStreamWidget({
-		id: 'logstream',
-    	cssClassName : 'logstream',
-	 });
-
-    var windowWidget = new WindowWidget({
-    	id : 'logwindow',
-    	cssClassName : 'window',
-    	title : 'javascript log output',
-		width: 400,
-		height: 300
-    }, logwidget);
-   	widgetmanager.deployWidget(windowWidget);
-}
+//function openJavaScriptLog() {
+//	 var logwidget = new LogStreamWidget({
+//		id: 'logstream',
+//    	cssClassName : 'logstream',
+//	 });
+//
+//    var windowWidget = new WindowWidget({
+//    	id : 'logwindow',
+//    	cssClassName : 'window',
+//    	title : 'javascript log output',
+//		width: 400,
+//		height: 300
+//    }, logwidget);
+//   	widgetmanager.deployWidget(windowWidget);
+//}
 
 
 function openServerLog() {
