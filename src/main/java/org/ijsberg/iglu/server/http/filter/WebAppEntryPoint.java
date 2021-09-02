@@ -297,7 +297,12 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			if(sessionToken != null) {
 				session = appRequest.resolveSession(sessionToken, userId);
 			} else {
-				session = getAccessByToken((HttpServletRequest) servletRequest, appRequest);
+				try {
+					session = getAccessByToken((HttpServletRequest) servletRequest, appRequest);
+				} catch (Exception e) {
+					System.out.println(new LogEntry(Level.CRITICAL, "error while obtaining session by token", e));
+					session = null;
+				}
 			}
 			if(session == null) {
 				System.out.println(new LogEntry(Level.VERBOSE, "no session yet for IP " + ((HttpServletRequest)servletRequest).getHeader("X-Forwarded-For")));
