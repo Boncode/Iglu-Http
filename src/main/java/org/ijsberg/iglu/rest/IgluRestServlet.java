@@ -261,14 +261,14 @@ public class IgluRestServlet extends HttpServlet {
             return new Object[]{new String(postData)};
         } else { //GET
             Object[] result = getInputObjectsFromRequest(request, methodData, methodData.requestPath.inputType());
-            System.out.println("initial input: " + ArraySupport.format(result, ","));
+            //System.out.println("initial input: " + ArraySupport.format(result, ","));
             if(methodData.requestPath.secondInputType() != null) {
 
                 Object[] additionalInput = getInputObjectsFromRequest(request, methodData, methodData.requestPath.secondInputType());
-                System.out.println("additional input: " + ArraySupport.format(additionalInput, ","));
+               //System.out.println("additional input: " + ArraySupport.format(additionalInput, ","));
 
                 result = ArraySupport.join(result, additionalInput);
-                System.out.println("result input: " + ArraySupport.format(result, ","));
+                //System.out.println("result input: " + ArraySupport.format(result, ","));
             }
             return result;
         }
