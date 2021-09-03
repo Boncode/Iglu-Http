@@ -70,22 +70,6 @@ function setLogLevel(string) {
     }
 }
 
-function toggleLogLevel() {
-    if (LOG_LEVEL === 1) {
-        setLogLevel("DBG");
-        alert("log level set to Debug (2/4)");
-    } else if (LOG_LEVEL === 2) {
-        setLogLevel("VBS");
-        alert("log level set to Verbose (3/4)");
-    } else if (LOG_LEVEL === 3) {
-        setLogLevel("CRT");
-        alert("log level set to Critical (4/4)");
-    } else {
-        setLogLevel("TRC");
-        alert("log level set to Trace (1/4)");
-    }
-}
-
 function log(level, message, ...args) {
 try{
     if (arguments.length === 0) {
