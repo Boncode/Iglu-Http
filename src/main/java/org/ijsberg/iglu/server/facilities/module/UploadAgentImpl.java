@@ -163,8 +163,9 @@ public class UploadAgentImpl implements UploadAgent {
 			} catch (Exception e) {
 				isUploadCancelled = true;
 				System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " failed or was interrupted", e));
-				//TODO exception if file missing
 
+				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed (Code U1)"));
+				//TODO exception if file missing
 			}
 
 
@@ -186,6 +187,7 @@ public class UploadAgentImpl implements UploadAgent {
 			if(reader.getUploadFile() != null) {
 				reader.getUploadFile().delete();
 			}
+			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed (Code U2)"));
 		}
 		readingUpload = false;
 		return "DONE";
@@ -213,6 +215,7 @@ public class UploadAgentImpl implements UploadAgent {
 				uploadedFile.delete();
 			} catch (IOException e) {
 				System.out.println(new LogEntry(Level.CRITICAL, "cannot move file (or metadata) to target dir", e));
+				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed (Code U3)"));
 			}
 		}
 		if(sendEmail) {
