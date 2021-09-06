@@ -60,15 +60,6 @@ function cloneAttributes(obj) {
 
 const LogLevel = Object.freeze({"TRC":1, "DBG":2, "VBS":3, "CRT":4});
 var LOG_LEVEL = 1;
-function setLogLevel(string) {
-    num = LogLevel[string];
-    if (!(num >= 1 && num <= 4)) {
-        log(LogLevel.VBS, "invalid logLevel: %s", string);
-    } else {
-        LOG_LEVEL = num;
-        log(LogLevel.VBS, "LOG_LEVEL set to: %s", string);
-    }
-}
 
 function log(level, message, ...args) {
 try{
