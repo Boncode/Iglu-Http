@@ -41,22 +41,30 @@ NotificationWidget.prototype.onDeploy = function() {
 
 
 NotificationWidget.prototype.writeHTML = function() {
-    log(this.status);
+    var iconElement = document.createElement('i');
+    iconElement.className = 'notification_icon';
+
     switch(this.status) {
         case 'success':
-
-        break;
+            iconElement.className += ' bi bi-check-circle-fill';
+            iconElement.style.color = 'var(--boncode-green)';
+            break;
         case 'failure':
-
-        break;
+            iconElement.className += ' bi bi-exclamation-triangle-fill';
+            iconElement.style.color = 'var(--boncode-red)';
+            break;
         default:
-
+            iconElement.className += ' bi bi-info-square-fill';
+            iconElement.style.color = 'var(--boncode-blue)';
     }
-    //todo icon based on status
 
+    this.element.appendChild(iconElement);
 	this.element.className = 'notification';
 	this.element.style.zIndex = WidgetManager.instance.currentZIndex++;
 
 	WidgetManager.instance.deployWidgetInContainer(this.element, this.content);
 };
 
+NotificationWidget.prototype.beforeDestroy = function() {
+    this.element.style.transform = "translate(200px,0)";
+};

@@ -189,17 +189,26 @@ WidgetManager.prototype.destroyPopup = function(widgetId) {
 }
 
 
-WidgetManager.prototype.registerNotificationWidget = function(widget) {
-//    setTimeout('WidgetManager.instance.destroyNotification("' + widget.id + '")', widget.timeout);
-	this.activateCurrentWidget(widget);
+WidgetManager.prototype.registerNotificationWidget = function(notificationWidget) {
+    setTimeout('WidgetManager.instance.beforeDestroyNotification("' + notificationWidget.id + '");', notificationWidget.timeout - 300);
+    setTimeout('WidgetManager.instance.destroyNotification("' + notificationWidget.id + '");', notificationWidget.timeout);
+	this.activateCurrentWidget(notificationWidget);
+}
+
+WidgetManager.instance.beforeDestroyNotification = function(notificationWidgetId) {
+    log('animating notification exit of ' + notificationWidgetId);
+    var notificationWidget = WidgetManager.instance.getWidget(notificationWidgetId);
+    if(notificationWidget != null) {
+        notificationWidget.beforeDestroy();
+    }
 }
 
 
-WidgetManager.prototype.destroyNotification = function(widgetId) {
-    log('destroying popup ' + widgetId);
-    var widget = WidgetManager.instance.getWidget(widgetId);
+WidgetManager.prototype.destroyNotification = function(notificationWidgetId) {
+    log('destroying notification ' + notificationWidgetId);
+    var widget = WidgetManager.instance.getWidget(notificationWidgetId);
     if(widget != null) {
-        WidgetManager.instance.destroyWidget(widgetId);
+        WidgetManager.instance.destroyWidget(notificationWidgetId);
     }
 }
 
