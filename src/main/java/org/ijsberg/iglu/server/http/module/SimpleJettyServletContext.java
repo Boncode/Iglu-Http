@@ -190,9 +190,9 @@ public class SimpleJettyServletContext implements Startable {
 		setInitParameters(ctx, IgluProperties.getSubsection(properties, "initparam"));
 		//ctx.setInitParams(PropertiesSupport.getSubsection(properties, "initparam"));
 
-		ctx.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeout);
+		//ctx.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeout);
 		//Jetty 10
-		//ctx.getSessionHandler().setMaxInactiveInterval(sessionTimeout);
+		ctx.getSessionHandler().setMaxInactiveInterval(sessionTimeout);
 		//set root directory
 		ctx.setResourceBase(documentRoot);
 //			addInitParameters(ctx.getInitParams(), section);
@@ -390,14 +390,20 @@ public class SimpleJettyServletContext implements Startable {
 
 		//Resource resource = new PathResource(new File(keystoreLocation));
 
-		SslContextFactory sslContextFactory = new SslContextFactory(keystoreLocation);
+		//SslContextFactory sslContextFactory = new SslContextFactory(keystoreLocation);
 
 		//Jetty 10
-/*		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server(/ *keystoreLocation* /);
+		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server(/*keystoreLocation*/);
+//		sslContextFactory.setSniRequired(false);
 		sslContextFactory.setKeyStorePath(keystoreLocation);
 		sslContextFactory.setKeyStorePassword(getKeystorePassword());
-*/		HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
-		httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
+
+		HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
+		SecureRequestCustomizer customizer = new SecureRequestCustomizer();
+		//Server Name Indication check disabled
+		customizer.setSniRequired(false);
+		customizer.setSniHostCheck(false);
+		httpsConfiguration.addCustomizer(customizer);
 		ServerConnector httpsConnector = new ServerConnector(server,
 				new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
 				new HttpConnectionFactory(httpsConfiguration));
@@ -425,6 +431,7 @@ public class SimpleJettyServletContext implements Startable {
 
 	protected String getKeystorePassword() {
 		if(xorKey != null) {
+			//System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX " + EncodingSupport.decodeXor(keystorePassword, xorKey));
 			return EncodingSupport.decodeXor(keystorePassword, xorKey);
 		}
 		return keystorePassword;
