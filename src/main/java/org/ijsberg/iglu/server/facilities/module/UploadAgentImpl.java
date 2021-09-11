@@ -26,6 +26,7 @@ import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.rest.AllowPublicAccess;
 import org.ijsberg.iglu.rest.RequestParameter;
 import org.ijsberg.iglu.rest.RequestPath;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
@@ -112,6 +113,7 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	@Override
+	@AllowPublicAccess
 	@RequestPath(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
 	public List<String> getDownloadableFileNames() {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
@@ -124,6 +126,7 @@ public class UploadAgentImpl implements UploadAgent {
 	})
 */
 	@Override
+	@AllowPublicAccess
 	@RequestPath(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
 //		System.out.println("UPLOAD ==================================================");
@@ -276,6 +279,7 @@ public class UploadAgentImpl implements UploadAgent {
 
 
 	@Override
+	@AllowPublicAccess
 	@RequestPath(inputType = VOID, path = "progress", method = GET, returnType = JSON)
 	public String getProgress() {
 		JsonData retval = new JsonData();
@@ -287,6 +291,7 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	@Override
+	@AllowPublicAccess
 	@RequestPath(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
 	public String cancelUpload() {
 		System.out.println(new LogEntry(Level.VERBOSE, "cancelling upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
