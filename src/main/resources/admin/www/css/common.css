@@ -1,0 +1,115 @@
+
+/* Table small rows */
+.boncode_table_small {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 14pt;
+    flex: 1 0 auto;
+}
+
+body .boncode_table_small table tbody>tr:nth-child(odd),
+body .boncode_table_small table tbody>tr:nth-child(odd) {
+    background: var(--widget-table-secondary-row-color);
+}
+
+body.dark code[class*=language-],
+body.dark .boncode_table_small table tbody>tr:nth-child(odd),
+body.dark .boncode_table_small table tbody>tr:nth-child(odd) {
+  background: var(--widget-table-secondary-row-color-dark);
+}
+
+.boncode_table_small span {
+    height: auto;
+    width: auto;
+    text-align: left;
+    vertical-align: center;
+}
+
+.boncode_table_small table {
+    font-size: 9pt;
+    text-align: left;
+    width: 100%;
+    height: auto;
+    border-collapse: collapse;
+}
+
+.boncode_table_small table td {
+    margin: 0;
+    padding: 0px 0px 0px 5px;
+    line-height: 1.6em;
+}
+
+
+/* Table large rows */
+.boncode_table_large, .boncode_table_large tbody {
+    flex: 1;
+    background-color: var(--widget-background-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    table-layout: fixed;
+    white-space: normal!important;
+}
+
+.boncode_table_large thead {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+
+.boncode_table_large thead tr {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+.boncode_table_large tbody {
+    font-size: 9pt;
+    text-align: left;
+    table-layout: fixed;
+    width: inherit;
+    height: auto;
+    border-collapse: collapse;
+}
+
+.boncode_table_large tbody tr {
+    border-top: 1px solid var(--table-hairline);
+    display: flex;
+}
+
+.boncode_table_large_label {
+    width: 100px;
+}
+
+.boncode_table_large tbody td, .boncode_table_large thead th {
+    line-height: 30px;
+    min-width: 75px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0;
+    flex: 1;
+}
+
+.boncode_table_large .selected {
+    background-color: var(--leaf-selected) !important;
+}
+
+body.dark .boncode_table_large tbody, body.dark .boncode_table_large thead {
+    background-color: var(--widget-background-color-dark);
+}
+
+body.dark .boncode_table_large tbody tr {
+    border-top: 1px solid var(--table-hairline-dark);
+}
+
+
+/* General */
+
+.clickable {
+    cursor: pointer;
+}
+
