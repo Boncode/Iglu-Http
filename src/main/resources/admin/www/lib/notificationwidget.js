@@ -65,6 +65,10 @@ NotificationWidget.prototype.writeHTML = function() {
 	WidgetManager.instance.deployWidgetInContainer(this.element, this.content);
 };
 
+NotificationWidget.prototype.beforeDeploy = function() {
+    this.element.style.transform = "translate(0,0)";
+};
+
 NotificationWidget.prototype.beforeDestroy = function() {
     this.element.style.transform = "translate(200px,0)";
 };

@@ -190,9 +190,18 @@ WidgetManager.prototype.destroyPopup = function(widgetId) {
 
 
 WidgetManager.prototype.registerNotificationWidget = function(notificationWidget) {
+    setTimeout('WidgetManager.instance.beforeDeployNotification("' + notificationWidget.id + '");', 300);
     setTimeout('WidgetManager.instance.beforeDestroyNotification("' + notificationWidget.id + '");', notificationWidget.timeout - 300);
     setTimeout('WidgetManager.instance.destroyNotification("' + notificationWidget.id + '");', notificationWidget.timeout);
 	this.activateCurrentWidget(notificationWidget);
+}
+
+WidgetManager.instance.beforeDeployNotification = function(notificationWidgetId) {
+    log('animating notification entry of ' + notificationWidgetId);
+    var notificationWidget = WidgetManager.instance.getWidget(notificationWidgetId);
+    if(notificationWidget != null) {
+        notificationWidget.beforeDeploy();
+    }
 }
 
 WidgetManager.instance.beforeDestroyNotification = function(notificationWidgetId) {
