@@ -174,6 +174,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	public static void storeSessionDataInCookie(String key, String value, ServletResponse response) {
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
 		cookie.setMaxAge(-1);//expire when browser closes
 		((HttpServletResponse)response).addCookie(cookie);
 	}
@@ -336,7 +338,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 					System.out.println(new LogEntry("" + pathInfo + " == " + loginPath));
 					if(!(pathInfo.equals(loginPath) || pathInfo.equals("/"))) {
 						System.out.println(new LogEntry("user must authenticate first to obtain " + pathInfo));
-						ServletSupport.respond((HttpServletResponse)servletResponse, loginPath, 403);
+						ServletSupport.respond((HttpServletResponse)servletResponse, "Session expired ...", 401);
 						return;
 					}
 				}

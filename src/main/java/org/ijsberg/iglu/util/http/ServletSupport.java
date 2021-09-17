@@ -476,7 +476,7 @@ public abstract class ServletSupport extends HttpEncodingSupport
 	public static void respond(HttpServletResponse response, String message, int status) throws IOException {
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
-		response.setStatus(403);
+		response.setStatus(status);
 		out.print(message);
 	}
 

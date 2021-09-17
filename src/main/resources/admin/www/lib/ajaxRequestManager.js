@@ -29,6 +29,8 @@ var hash = window.location.hash;
 
 function AjaxRequestManager()
 {
+    this.redirectIfNotAuthenticated = false;
+
 	this.is_ie = (navigator.userAgent.indexOf('MSIE') >= 0) ? 1 : 0;
 	this.is_ie5 = (navigator.appVersion.indexOf('MSIE 5.5') != -1) ? 1 : 0;
 	this.is_opera = ((navigator.userAgent.indexOf('Opera 6') != -1) || (navigator.userAgent.indexOf('Opera/6') != -1)) ? 1 : 0;
@@ -219,6 +221,11 @@ function dispatchResponse(requestNr)
 		if(typeof ajaxRequestManager.callbacks[requestNr] != 'function') {
 			alert('' + ajaxRequestManager.callbacks[requestNr] + ' is not a function');
 		} else {
+			if(ajaxRequestManager.redirectIfNotAuthenticated && ajaxRequestManager.ajaxRequests[requestNr].status == 401) {
+			    //alert('ajaxRequest callback:' + ajaxRequestManager.callbacks[requestNr]);
+				window.location.href = '/';
+			}
+
 /*			if(ajaxRequestManager.ajaxRequests[requestNr].status == 403) {
 				window.location.href = ajaxRequestManager.ajaxRequests[requestNr].responseText;
         		removeFromRequestQueue(requestNr);

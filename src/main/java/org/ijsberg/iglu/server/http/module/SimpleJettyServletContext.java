@@ -431,7 +431,6 @@ public class SimpleJettyServletContext implements Startable {
 
 	protected String getKeystorePassword() {
 		if(xorKey != null) {
-			//System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX " + EncodingSupport.decodeXor(keystorePassword, xorKey));
 			return EncodingSupport.decodeXor(keystorePassword, xorKey);
 		}
 		return keystorePassword;
