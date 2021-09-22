@@ -164,7 +164,6 @@ function updateProgress(data, dataId) {
 	} else {
 		WidgetManager.instance.unregisterTimerListener(uploadWindow);
 		//abort request
-		//document.getElementById("upload_select_frame").src='<%=getServiceBaseUrl()%>/service/uploadform.jsp';
 	}
 }
 

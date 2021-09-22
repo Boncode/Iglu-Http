@@ -29,9 +29,6 @@ import org.ijsberg.iglu.configuration.module.ComponentStarter;
 import org.ijsberg.iglu.configuration.module.StandardCluster;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.logging.Logger;
-import org.ijsberg.iglu.mvc.RequestMapper;
-import org.ijsberg.iglu.mvc.component.StandardRequestMapper;
-import org.ijsberg.iglu.mvc.servlet.DispatcherServlet;
 import org.ijsberg.iglu.server.admin.http.AdminAjaxResponseAgent;
 import org.ijsberg.iglu.server.facilities.module.UploadAgentImpl;
 import org.ijsberg.iglu.server.http.filter.WebAppEntryPoint;
@@ -82,32 +79,12 @@ public class AdminAgentAssemblyHelper {
 		admin.connect("AdminAgentFactory", new StandardComponent(AdminAgentImpl.getAgentFactory(admin)));
 		admin.connect("AdminAgentResponseFactory", new StandardComponent(AdminAjaxResponseAgent.getAgentFactory(admin)));
 
-		RequestMapper requestMapper = new StandardRequestMapper();
-		Component requestMapperComponent = new StandardComponent(requestMapper);
-		requestMapperComponent.setProperties(loadProperties("admin/config/request_mapper.properties"));
-		admin.connect("AdminRequestMapper", requestMapperComponent);
-		//register as external component
-		core.getFacade().connect(requestMapperComponent);
-
 		SimpleJettyServletContext servletContext = new SimpleJettyServletContext();
 		Component jettyComponent = new StandardComponent(servletContext);
 		jettyComponent.setProperties(loadProperties("admin/config/servlet_context.properties"));
 		admin.connect("AdminServletContext", jettyComponent);
 		//register as external component
 		core.getFacade().connect(jettyComponent);
-
-		//provide servlets access to other components
-		//cuurently actual references are set instead of proxies
-		for(Servlet servlet : servletContext.getServlets()) {
-			if(servlet instanceof DispatcherServlet) {
-				Component requestDispatcher = new StandardComponent(servlet);
-				admin.connect("AdminRequestDispatcher", requestDispatcher);
-				//override request mapper
-				((DispatcherServlet)servlet).setRequestMapper(requestMapper);
-				((DispatcherServlet)servlet).setAccessManager((RequestRegistry) adminAccessManager);
-			}
-		}
-
 
 		for(Filter filter : servletContext.getFilters()) {
 			if(filter instanceof WebAppEntryPoint) {

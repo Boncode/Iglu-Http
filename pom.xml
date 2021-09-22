@@ -78,12 +78,6 @@
         </dependency -->
 
         <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>javax.servlet.jsp-api</artifactId>
-            <version>2.3.3</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.ijsberg</groupId>
             <artifactId>iglu</artifactId>
             <version>1.0.5-SNAPSHOT</version>

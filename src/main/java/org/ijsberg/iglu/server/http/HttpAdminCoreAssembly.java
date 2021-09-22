@@ -59,13 +59,6 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
         admin.connect("AdminAgentFactory", new StandardComponent(AdminAgentImpl.getAgentFactory(admin)));
         admin.connect("AdminAgentResponseFactory", new StandardComponent(AdminAjaxResponseAgent.getAgentFactory(admin)));
 
-        RequestMapper requestMapper = new StandardRequestMapper();
-        Component requestMapperComponent = new StandardComponent(requestMapper);
-        requestMapperComponent.setProperties(IgluProperties.loadProperties("admin/config/request_mapper.properties"));
-        admin.connect("AdminRequestMapper", requestMapperComponent);
-        //register as external component
-        core.getFacade().connect(requestMapperComponent);
-
         SimpleJettyServletContext servletContext = new SimpleJettyServletContext();
         Component jettyComponent = new StandardComponent(servletContext);
         Properties servletProperties = IgluProperties.loadProperties("admin/config/servlet_context.properties");
@@ -73,18 +66,6 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
         admin.connect("AdminServletContext", jettyComponent);
         //register as external component
         core.getFacade().connect(jettyComponent);
-
-        //provide servlets access to other components
-        //cuurently actual references are set instead of proxies
-        for(Servlet servlet : servletContext.getServlets()) {
-            if(servlet instanceof DispatcherServlet) {
-                Component requestDispatcher = new StandardComponent(servlet);
-                admin.connect("AdminRequestDispatcher", requestDispatcher);
-                //override request mapper
-                ((DispatcherServlet)servlet).setRequestMapper(requestMapper);
-            }
-        }
-
 
         for(Filter filter : servletContext.getFilters()) {
             if(filter instanceof WebAppEntryPoint) {
