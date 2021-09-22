@@ -92,7 +92,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 	private String publicContentRegExp;
 
-	//private String accessControlAllowOrigin;
+	private boolean passSessionIdSecure = false;
+
 	private IgluProperties additionalHeaders = new IgluProperties();
 
 
@@ -171,11 +172,11 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 * @param value
 	 * @param response
 	 */
-	public static void storeSessionDataInCookie(String key, String value, ServletResponse response) {
+	public void storeSessionDataInCookie(String key, String value, ServletResponse response) {
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
+		cookie.setSecure(passSessionIdSecure);
 		cookie.setMaxAge(-1);//expire when browser closes
 		((HttpServletResponse)response).addCookie(cookie);
 	}
@@ -206,8 +207,10 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false);
 		loginPath = conf.getInitParameter("login_path");
 
-		//accessControlAllowOrigin = conf.getInitParameter("header.Access-Control-Allow-Origin");
-		//                servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+		//pass_session_id_secure
+		String passSessionIdSecureStr = conf.getInitParameter("pass_session_id_secure");
+		passSessionIdSecure = (passSessionIdSecureStr != null ? Boolean.valueOf(passSessionIdSecureStr) : false);
+
 		Enumeration initParamNames = conf.getInitParameterNames();
 		while(initParamNames.hasMoreElements()) {
 			String initParamName = (String)initParamNames.nextElement();
