@@ -106,6 +106,9 @@ body.dark .boncode_table_large tbody tr {
     border-top: 1px solid var(--table-hairline-dark);
 }
 
+body.dark .boncode_table_large {
+    background-color: var(--widget-background-color-dark);
+}
 
 /* General */
 
