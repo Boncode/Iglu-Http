@@ -103,10 +103,10 @@ PanelWidget.prototype.writeHTML = function() {
         id : this.id + '_frame',
         cssClassName : 'panelcontentframe',
         //todo margin
-        top: (this.hasHeader ? 24 : 0),
+        top: (this.hasHeader ? 30 : 0),
         left: 0,
         width: (this.width),
-        height: (this.hasHeader ? (this.height - 24) : (this.height - 0))
+        height: (this.hasHeader ? (this.height - 30) : (this.height - 0))
 	}, this.content);
 	contentFrame.stretchToOuterWidget(this, {'e':{'offset':0}});
 	contentFrame.stretchToOuterWidget(this, {'s':{'offset':0}});
