@@ -29,6 +29,7 @@ import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
+import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.*;
@@ -114,7 +115,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	}
 
 	public void setXorKey(String xorKey) {
-		//System.out.println("setting XOR " + xorKey);
 		this.xorKey = xorKey;
 	}
 
@@ -135,7 +135,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		storeSessionDataInCookie(SESSION_TOKEN_KEY, session.getToken(), response);
 		if(session.getUser() != null) {
-			storeSessionDataInCookie(USER_ID_KEY, session.getUser(/*realm.getId()*/).getId(), response);
+			storeSessionDataInCookie(USER_ID_KEY, session.getUser().getId(), response);
 		}
 		else {
 			storeSessionDataInCookie(USER_ID_KEY, null, response);
@@ -396,20 +396,15 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 	private Credentials decodeCredentials(String encodedCredentials) {
 		String decodedCredentials = decodeString(encodedCredentials);
-//		System.out.println(new LogEntry("decodedCredentials " + decodedCredentials));
-		int colonIndex = decodedCredentials.indexOf(':');
-		if (colonIndex == -1) {
+		List<String> credentialsArray = StringSupport.split(decodedCredentials, ":");
+		if (credentialsArray.size() < 2) {
 			throw new IllegalArgumentException("wrong format of encoded credentials: colon separator not found");
 		}
-		String userId = decodedCredentials.substring(0, colonIndex);
-		String password = decodedCredentials.substring(colonIndex + 1);
-
-		Credentials credentials = new SimpleCredentials(userId, password);
+		Credentials credentials = new SimpleCredentials(credentialsArray.get(0), credentialsArray.get(1));
 		return credentials;
 	}
 
 	protected String decodeString(String encodedString) {
-		//System.out.println("XOR " + xorKey);
 		if(xorKey != null) {
 			return EncodingSupport.decodeXor(encodedString, xorKey);
 		}
