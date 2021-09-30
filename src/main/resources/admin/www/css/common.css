@@ -140,7 +140,6 @@ body.dark .projects_table_filter {
     border-bottom-style: solid;
     border-bottom-width: 2px;
     border-color: var(--menu-hairline);
-    transition: border-bottom-color 0.2s linear;
     outline: none;
     top: 0;
     background-color: var(--widget-background-color);
