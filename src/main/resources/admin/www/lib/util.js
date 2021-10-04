@@ -62,56 +62,42 @@ const LogLevel = Object.freeze({"TRC":1, "DBG":2, "VBS":3, "CRT":4});
 var LOG_LEVEL = 1;
 
 function log(level, message, ...args) {
-try{
-    if (arguments.length === 0) {
-        return;
-    } else if (arguments.length === 1 || !(level >= 1 && level <= 4)) {
-        args.unshift(message);
-        message = level;
-        level = 1;
-    }
+    try {
+        if (arguments.length === 0) {
+            return;
+        } else if (arguments.length === 1 || !(level >= 1 && level <= 4)) {
+            args.unshift(message);
+            message = level;
+            level = 1;
+        }
 
-    if (level < LOG_LEVEL) {
-        return;
-    }
+        if (level < LOG_LEVEL) {
+            return;
+        }
 
-    var now = new Date();
-    var seconds = now.getSeconds().toString();
-    seconds = seconds.length == 1 ? "0" + seconds : seconds;
-    var minutes = now.getMinutes().toString();
-    minutes = minutes.length == 1 ? "0" + minutes : minutes;
-    var hours = now.getHours().toString();
-    hours = hours.length == 1 ? "0" + hours : hours;
-    var message = hours + ':' + minutes + ':' + seconds + " " + message;
+        var now = new Date();
+        var seconds = now.getSeconds().toString();
+        seconds = seconds.length == 1 ? "0" + seconds : seconds;
+        var minutes = now.getMinutes().toString();
+        minutes = minutes.length == 1 ? "0" + minutes : minutes;
+        var hours = now.getHours().toString();
+        hours = hours.length == 1 ? "0" + hours : hours;
+        var message = hours + ':' + minutes + ':' + seconds + " " + message;
 
-    // f12 console
-    if (level === LogLevel.CRT) {
-        message = "CRT " + message;
-        console.error(message, ...args);
-    } else if (level === LogLevel.VBS) {
-        message = "VBS " + message;
-        console.warn(message, ...args);
-    } else if (level === LogLevel.DBG) {
-        message = "DBG " + message;
-        console.info(message, ...args);
-    } else {
-        message = "TRC " + message;
-        console.log(message, ...args);
-    }
-
-    // logging window (only if open)
-	if(typeof WidgetManager != 'undefined') {
-		var logStream = WidgetManager.instance.getWidget('logstream');
-		if(logStream != null) {
-			logStream.append(message + args);
-			return;
-		}
-	}
-	var element = document.getElementById('logstream');
-	if(element != null) {
-		element.innerHTML = message + '<br>\n' + element.innerHTML;
-	}
-	}catch(e) {
+        if (level === LogLevel.CRT) {
+            message = "CRT " + message;
+            console.error(message, ...args);
+        } else if (level === LogLevel.VBS) {
+            message = "VBS " + message;
+            console.warn(message, ...args);
+        } else if (level === LogLevel.DBG) {
+            message = "DBG " + message;
+            console.info(message, ...args);
+        } else {
+            message = "TRC " + message;
+            console.log(message, ...args);
+        }
+	} catch(e) {
 	    console.error(e);
 	}
 }
