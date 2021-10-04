@@ -111,6 +111,10 @@ body.dark .boncode_table_large thead {
     background-color: var(--leaf-selected) !important;
 }
 
+body.dark .boncode_table_large .selected {
+    background-color: var(--leaf-selected-dark) !important;
+}
+
 body.dark .boncode_table_large tbody, body.dark .boncode_table_large thead {
     background-color: var(--widget-background-color-dark);
 }
@@ -155,6 +159,15 @@ body.dark .projects_table_filter:focus {
 }
 
 /* General */
+.clickable_row:hover {
+    cursor: pointer;
+    background-color: var(--leaf-hover);
+}
+
+body.dark .clickable_row:hover {
+    cursor: pointer;
+    background-color: var(--leaf-hover-dark);
+}
 
 .clickable {
     cursor: pointer;
