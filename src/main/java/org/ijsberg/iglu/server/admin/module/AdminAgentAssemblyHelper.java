@@ -70,7 +70,7 @@ public class AdminAgentAssemblyHelper {
 		//TODO entry point needs "AccessManager"
 		//core.connect("AccessManager", requestManagerComponent);
 
-		UserManager adminUserManager = new StandardUserManager();
+		UserManager adminUserManager = new StandardUserManager("asdasrasduifS740qadh".getBytes());
 		Component adminUserManagerComponent = new StandardComponent(adminUserManager);
 		admin.connect("Authenticator", adminUserManagerComponent);
 		//TODO properties

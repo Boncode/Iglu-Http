@@ -50,7 +50,7 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
         core.connect("AdminAccessManager", requestManagerComponent);
         admin.connect("RequestRegistry", requestManagerComponent, RequestRegistry.class);
 
-        UserManager adminUserManager = new StandardUserManager();
+        UserManager adminUserManager = new StandardUserManager("sjodifo9475kdfnHGrp".getBytes());
         Component adminUserManagerComponent = new StandardComponent(adminUserManager);
         core.connect("Authenticator", adminUserManagerComponent);
         //TODO properties
