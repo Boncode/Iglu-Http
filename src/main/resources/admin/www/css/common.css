@@ -179,3 +179,6 @@ body.dark .clickable_row:hover {
     cursor: pointer;
 }
 
+body.waiting * {
+    cursor: progress;
+}
