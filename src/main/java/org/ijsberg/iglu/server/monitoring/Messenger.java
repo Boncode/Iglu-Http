@@ -59,7 +59,12 @@ public class Messenger implements Pageable, Startable, EntryPoint {
                             mailMessage.getSubject() + hostDescription,
                             mailMessage.getMessageText());
                 } catch (MessagingException e) {
-                    System.out.println(new LogEntry(Level.CRITICAL, "sending mail with subject " + mailMessage.getSubject() + " failed", e));
+                    // FIXME critical errors logged when mail doesn't work, will cause infinite loop "crit log <-> send mail failed"
+                    Level logLevel = Level.CRITICAL;
+                    if (mailMessage.getSubject().equals("[CRT]")) {
+                        logLevel = Level.VERBOSE;
+                    }
+                    System.out.println(new LogEntry(logLevel, "sending mail with subject " + mailMessage.getSubject() + " failed", e));
                 }
             }
             userMessage = session.getUser().consumeLatestMessage();
