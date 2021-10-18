@@ -6,15 +6,16 @@ import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.mail.MailClient;
 import org.ijsberg.iglu.scheduling.Pageable;
+import org.ijsberg.iglu.util.StatusMonitor;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.mail.MessagingException;
 import java.net.InetAddress;
 import java.util.Properties;
 
-public class Messenger implements Pageable, Startable, EntryPoint {
+public class Messenger implements Pageable, Startable, EntryPoint, StatusMonitor {
 
-    private long SYSTEM_SESSION_TIMEOUT_SEC_24_HOURS = 86400;
+    private final long SYSTEM_SESSION_TIMEOUT_SEC_24_HOURS = 86400;
 
     private AccessManager accessManager;
     private Request request;
@@ -25,6 +26,7 @@ public class Messenger implements Pageable, Startable, EntryPoint {
 
     private String xorKey;
     private IgluProperties mailProperties;
+    private long lastCrashTimeMillis;
 
     public void setAccessManager(AccessManager accessManager) {
         this.accessManager = accessManager;
@@ -50,7 +52,7 @@ public class Messenger implements Pageable, Startable, EntryPoint {
         ((StandardSession)session).updateLastAccessedTime();
         UserConsumableMessage userMessage = session.getUser().consumeLatestMessage();
         while (userMessage != null) {
-            if (userMessage != null && userMessage instanceof MailMessage) {
+            if (userMessage instanceof MailMessage) {
                 MailMessage mailMessage = (MailMessage) userMessage;
                 try {
                     mailClient.sendMail(
@@ -59,12 +61,8 @@ public class Messenger implements Pageable, Startable, EntryPoint {
                             mailMessage.getSubject() + hostDescription,
                             mailMessage.getMessageText());
                 } catch (MessagingException e) {
-                    // FIXME critical errors logged when mail doesn't work, will cause infinite loop "crit log <-> send mail failed"
-                    Level logLevel = Level.CRITICAL;
-                    if (mailMessage.getSubject().equals("[CRT]")) {
-                        logLevel = Level.VERBOSE;
-                    }
-                    System.out.println(new LogEntry(logLevel, "sending mail with subject " + mailMessage.getSubject() + " failed", e));
+                    registerCrash();
+                    System.out.println(new LogEntry(Level.CRITICAL, "sending mail with subject " + mailMessage.getSubject() + " failed", e));
                 }
             }
             userMessage = session.getUser().consumeLatestMessage();
@@ -121,5 +119,15 @@ public class Messenger implements Pageable, Startable, EntryPoint {
     @Override
     public void importUserSettings(Request currentRequest, Properties properties) {
 
+    }
+
+    @Override
+    public boolean hasRecentlyCrashed() {
+        return (System.currentTimeMillis() - CRASH_INTERVAL_TIME_MILLIS) <= lastCrashTimeMillis;
+    }
+
+    @Override
+    public void registerCrash() {
+        lastCrashTimeMillis = System.currentTimeMillis();
     }
 }
