@@ -6,14 +6,13 @@ import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.mail.MailClient;
 import org.ijsberg.iglu.scheduling.Pageable;
-import org.ijsberg.iglu.util.StatusMonitor;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.mail.MessagingException;
 import java.net.InetAddress;
 import java.util.Properties;
 
-public class Messenger implements Pageable, Startable, EntryPoint, StatusMonitor {
+public class Messenger implements Pageable, Startable, EntryPoint {
 
     private final long SYSTEM_SESSION_TIMEOUT_SEC_24_HOURS = 86400;
 
@@ -26,7 +25,6 @@ public class Messenger implements Pageable, Startable, EntryPoint, StatusMonitor
 
     private String xorKey;
     private IgluProperties mailProperties;
-    private long lastCrashTimeMillis;
 
     public void setAccessManager(AccessManager accessManager) {
         this.accessManager = accessManager;
@@ -61,7 +59,6 @@ public class Messenger implements Pageable, Startable, EntryPoint, StatusMonitor
                             mailMessage.getSubject() + hostDescription,
                             mailMessage.getMessageText());
                 } catch (MessagingException e) {
-                    registerCrash();
                     System.out.println(new LogEntry(Level.CRITICAL, "sending mail with subject " + mailMessage.getSubject() + " failed", e));
                 }
             }
@@ -119,15 +116,5 @@ public class Messenger implements Pageable, Startable, EntryPoint, StatusMonitor
     @Override
     public void importUserSettings(Request currentRequest, Properties properties) {
 
-    }
-
-    @Override
-    public boolean hasRecentlyCrashed() {
-        return (System.currentTimeMillis() - CRASH_INTERVAL_TIME_MILLIS) <= lastCrashTimeMillis;
-    }
-
-    @Override
-    public void registerCrash() {
-        lastCrashTimeMillis = System.currentTimeMillis();
     }
 }
