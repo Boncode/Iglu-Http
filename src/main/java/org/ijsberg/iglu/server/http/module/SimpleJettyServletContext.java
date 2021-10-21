@@ -27,24 +27,24 @@ import org.eclipse.jetty.servlet.Holder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.MultiException;
-import org.eclipse.jetty.util.resource.PathResource;
-import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.logging.Logger;
 import org.ijsberg.iglu.util.execution.Executable;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 import org.ijsberg.iglu.util.reflection.ReflectionSupport;
+import org.slf4j.impl.StaticLoggerBinder;
+import org.slf4j.impl.Slf4jHack;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
 import java.io.File;
-import java.security.KeyStore;
 import java.util.*;
 
 /**
@@ -73,6 +73,10 @@ public class SimpleJettyServletContext implements Startable {
 	private boolean sslEnabled = false;
 
 	public SimpleJettyServletContext() {
+	}
+
+	public void setLogger(Logger logger) {
+		Slf4jHack.init(logger);
 	}
 
 	public SimpleJettyServletContext(String xorKey) {
@@ -168,7 +172,7 @@ public class SimpleJettyServletContext implements Startable {
 			} else {
 				configureForHttp();
 			}
-			//xxx();
+
 
 		} else {
 			File file = new File(xmlConfig);
