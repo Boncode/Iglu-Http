@@ -59,10 +59,10 @@ public class AdminAgentImpl implements AdminAgent, SessionDestructionListener, L
 	 */
 	public void setLogger(Logger logger) {
 
-		System.out.println("LOGGER set");
+//		System.out.println("LOGGER set");
 //		if(logger instanceof SimpleFileLogger) {
 			this.logger = logger;
-			System.out.println("appender added");
+//			System.out.println("appender added");
 			this.logger.addAppender(this);
 //		}
 	}
@@ -168,6 +168,11 @@ public class AdminAgentImpl implements AdminAgent, SessionDestructionListener, L
 	@Override
 	public void removeAppender(Logger appender) {
 
+	}
+
+	@Override
+	public int getLogLevelOrdinal() {
+		return logger.getLogLevelOrdinal();
 	}
 
 	@Override

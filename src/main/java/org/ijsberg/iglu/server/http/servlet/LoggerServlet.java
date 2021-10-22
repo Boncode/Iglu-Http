@@ -66,4 +66,9 @@ public class LoggerServlet extends HttpServlet implements Logger {
     @Override
     public void removeAppender(Logger appender) {
     }
+
+    @Override
+    public int getLogLevelOrdinal() {
+        return logLevelOrdinal;
+    }
 }
