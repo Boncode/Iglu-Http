@@ -82,7 +82,7 @@ function log(level, message, ...args) {
         minutes = minutes.length == 1 ? "0" + minutes : minutes;
         var hours = now.getHours().toString();
         hours = hours.length == 1 ? "0" + hours : hours;
-        var message = hours + ':' + minutes + ':' + seconds + " " + message;
+        var message = thisLine() + ' ' + hours + ':' + minutes + ':' + seconds + " " + message;
 
         if (level === LogLevel.CRT) {
             message = "CRT " + message;
@@ -100,6 +100,13 @@ function log(level, message, ...args) {
 	} catch(e) {
 	    console.error(e);
 	}
+}
+
+function thisLine() {
+  const e = new Error();
+  const regex = /\((.*):(\d+):(\d+)\)$/
+  const match = regex.exec(e.stack.split("\n")[3]);
+  return match[1] + ':' + match[2] + ':' + match[3];
 }
 
 function subclass(subclass, baseclass) {
