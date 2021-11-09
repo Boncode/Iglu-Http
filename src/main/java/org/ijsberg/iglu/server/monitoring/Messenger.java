@@ -54,7 +54,7 @@ public class Messenger implements Pageable, Startable, EntryPoint {
                 MailMessage mailMessage = (MailMessage) userMessage;
                 try {
                     mailClient.sendMail(
-                            mailProperties.getProperty("user"),
+                            mailProperties.getProperty("user", "service@boncode.nl"),
                             mailProperties.getProperty("recipient", mailProperties.getProperty("user")),
                             mailMessage.getSubject() + hostDescription,
                             mailMessage.getMessageText());
