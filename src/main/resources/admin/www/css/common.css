@@ -182,3 +182,12 @@ body.dark .clickable_row:hover {
 body.waiting * {
     cursor: progress;
 }
+
+.no_flex tbody td {
+    flex: 0 !important;
+    min-width: revert !important;
+}
+
+.no_flex tbody tr {
+    display: revert !important;
+}
