@@ -17,16 +17,17 @@ public class MailClient {
         this.xorKey = xorKey;
         this.properties = properties;
 
-        IgluProperties.throwIfKeysMissing(properties, "user", "password");
+        if(!IgluProperties.checkKeysMissing(properties, "user", "password")) {
 
-        authenticator = new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(
-                        properties.getProperty("user"),
-                        EncodingSupport.decodeXor(properties.getProperty("password"), xorKey));
-            }
-        };
+            authenticator = new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(
+                            properties.getProperty("user"),
+                            EncodingSupport.decodeXor(properties.getProperty("password"), xorKey));
+                }
+            };
+        }
     }
 
     public void sendMail(String sender, String recipient, String subject, String messageTxt) throws MessagingException {
