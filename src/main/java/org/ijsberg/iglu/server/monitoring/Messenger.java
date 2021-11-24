@@ -54,12 +54,12 @@ public class Messenger implements Pageable, Startable, EntryPoint {
                 MailMessage mailMessage = (MailMessage) userMessage;
                 try {
                     mailClient.sendMail(
-                            mailProperties.getProperty("user", "service@boncode.nl"),
-                            mailProperties.getProperty("recipient", mailProperties.getProperty("user")),
+                            mailProperties.getProperty("user", "service@bon-code.nl"),
+                            mailProperties.getProperty("recipient", mailProperties.getProperty("user", "service@bon-code.nl")),
                             mailMessage.getSubject() + hostDescription,
                             mailMessage.getMessageText());
                 } catch (MessagingException e) {
-                    System.out.println(new LogEntry(Level.CRITICAL, "sending mail with subject " + mailMessage.getSubject() + " failed", e));
+                    System.out.println(new LogEntry(Level.CRITICAL, "sending mail with subject " + mailMessage.getSubject() + " and text: \"" + mailMessage.getMessageText() + "\" failed", e));
                 }
             }
             userMessage = session.getUser().consumeLatestMessage();
