@@ -82,6 +82,8 @@ FrameWidget.prototype.constructFrameWidget = function(settings, enclosedWidget) 
 };
 
 FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
+//    console.info('adding resize listener to: ' + widget.id + ', actions: ');
+//    console.info(actionsByDirection);
 	var listenerData = this.sizeAndPositionListeners[widget.id];
 	if(typeof listenerData == 'undefined' || listenerData == null) {
 		listenerData = new Object();
@@ -127,14 +129,14 @@ FrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSe
 
 		var actionData = listenerData.actionsByDirection[direction];
 		if(typeof actionData != 'undefined') {
-			//log('' + this.id + ' triggers ' + actionData.action + ' of ' + widgetId + ' ' + direction + ':' + offSet);
+//			console.info('' + this.id + ' triggers ' + /*actionData.action + ' of +'*/ widgetId + ' ' + direction + ':' + offSet);
 			var newOffsetOverFlow = actionData.action.call(listenerData.widget, actionData.factor * offSet);
 			//log('' + newOffsetOverFlow);
 			if(Math.abs(newOffsetOverFlow) > Math.abs(offsetOverFlow)) {
 			    offsetOverFlow = newOffsetOverFlow;
 			}
 		} else {
-    	    //log('' + this.id + ' trying to trigger ' + widgetId + ' : no actionData for direction ' + direction);
+//    	    console.info('' + this.id + ' trying to trigger ' + widgetId + ' : no actionData for direction ' + direction);
 		}
 	}
 	return offsetOverFlow;
