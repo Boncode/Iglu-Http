@@ -302,7 +302,7 @@ public abstract class ServletSupport extends HttpEncodingSupport
 				String value = URLDecoder.decode(nameValuePair.substring(separator + 1), "UTF-8");
 				retval.setProperty(name, value);
 
-				System.out.println(new LogEntry("request parameter found: [" + name + '=' + value + ']'));
+				//System.out.println(new LogEntry("request parameter found: [" + name + '=' + value + ']'));
 			}
 		}
 		return retval;
