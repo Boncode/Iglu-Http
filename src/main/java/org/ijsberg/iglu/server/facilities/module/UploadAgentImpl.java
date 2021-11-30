@@ -234,7 +234,7 @@ public class UploadAgentImpl implements UploadAgent {
 		String message = fileData.getFileName() + " has been uploaded to " + getUserDir();
 		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
 
-		requestRegistry.dropMessage("System", new MailMessage("upload notification", message));
+		requestRegistry.dropMessage("System", new MailMessage(getUserDir() + " : upload notification", message));
 
 /*		new Executable() {
 			@Override
