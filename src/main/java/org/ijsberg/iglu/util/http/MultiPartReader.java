@@ -188,13 +188,18 @@ public class MultiPartReader {
 			}
 			partialCopyOutputStream.write(line3, 0, len3);
 			bytesRead += len3;
+			//System.out.println(len3);
 			len3 = len2;
 			line3 = line2;
 			len2 = bytesReadAsLine;
 			line2 = line;
 			line = new byte[BUFFER_SIZE];
-
-        }
+/*			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}*/
+		}
 	}
 
 	private OutputStream getStorageOutputStream() throws IOException {
