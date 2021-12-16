@@ -82,7 +82,7 @@ function log(level, message, ...args) {
         minutes = minutes.length == 1 ? "0" + minutes : minutes;
         var hours = now.getHours().toString();
         hours = hours.length == 1 ? "0" + hours : hours;
-        var message = thisLine() + ' ' + hours + ':' + minutes + ':' + seconds + " " + message;
+        var message = hours + ':' + minutes + ':' + seconds + ' ' + message + ' (in ' + thisLine() + ') ';
 
         if (level === LogLevel.CRT) {
             message = "CRT " + message;
