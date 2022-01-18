@@ -92,10 +92,12 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	private String loginPath;
 
 	private String publicContentRegExp;
+	private String staticContentRegExp;
 
 	private boolean passSessionIdSecure = false;
 
 	private IgluProperties additionalHeaders = new IgluProperties();
+	private IgluProperties additionalStaticContentHeaders = new IgluProperties();
 
 
 	private static class ExceptionHandlingSettings {
@@ -211,13 +213,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		String passSessionIdSecureStr = conf.getInitParameter("pass_session_id_secure");
 		passSessionIdSecure = (passSessionIdSecureStr != null ? Boolean.valueOf(passSessionIdSecureStr) : false);
 
-		Enumeration initParamNames = conf.getInitParameterNames();
-		while(initParamNames.hasMoreElements()) {
-			String initParamName = (String)initParamNames.nextElement();
-			if(initParamName.startsWith("header.")) {
-				additionalHeaders.setProperty(initParamName.substring(7), conf.getInitParameter(initParamName));
-			}
-		}
+		gatherAdditionalHeaders(conf);
 
 		System.out.println(new LogEntry("loginRequired:" + loginRequired));
 
@@ -225,6 +221,22 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		userPrefsMaxAge = userPrefsMaxAgeStr != null ? Integer.valueOf(userPrefsMaxAgeStr) : userPrefsMaxAge;
 
 		publicContentRegExp = conf.getInitParameter("public_content_reg_exp");
+		staticContentRegExp = conf.getInitParameter("static_content_reg_exp");
+	}
+
+	private void gatherAdditionalHeaders(FilterConfig conf) {
+		Enumeration initParamNames = conf.getInitParameterNames();
+		while(initParamNames.hasMoreElements()) {
+			String initParamName = (String)initParamNames.nextElement();
+			if(initParamName.startsWith("header.")) {
+				additionalHeaders.setProperty(initParamName.substring(7), conf.getInitParameter(initParamName));
+			}
+			if(initParamName.startsWith("static_content_header.")) {
+				additionalStaticContentHeaders.setProperty(initParamName.substring("static_content_header.".length()), conf.getInitParameter(initParamName));
+			}
+			//additionalStaticContentHeaders
+			//static_content_header
+		}
 	}
 
 /*	private void initializeExceptionPages()
@@ -278,7 +290,14 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		//TODO IP blocking should be added
 
 		for(String header : additionalHeaders.toOrderedMap().keySet()) {
-			((HttpServletResponse)servletResponse).addHeader(header, additionalHeaders.getProperty(header));
+			String additionalHeaderValue = additionalHeaders.getProperty(header);
+			if(isStaticContent(getPath(servletRequest))) {
+				//System.out.println(getPath(servletRequest) + " MATCHES " + staticContentRegExp);
+				if(additionalStaticContentHeaders.containsKey(header)) {
+					additionalHeaderValue = additionalStaticContentHeaders.getProperty(header);
+				}
+			}
+			((HttpServletResponse)servletResponse).addHeader(header, additionalHeaderValue);
 		}
 
 		servletRequest.setCharacterEncoding("UTF-8");
@@ -331,11 +350,9 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 			if(loginRequired) {
 				User user = appRequest.getUser();
-				String servletPath = ((HttpServletRequest)servletRequest).getServletPath();
-				String pathInfo = ((HttpServletRequest) servletRequest).getPathInfo();
-				if(pathInfo == null) {
-					pathInfo = servletPath;
-				}
+				//String pathInfo;
+				//String servletPath =
+				String pathInfo = getPath(servletRequest);
 
 				if(user == null && contentNotPublic(pathInfo)) {
 					System.out.println(new LogEntry("" + pathInfo + " == " + loginPath));
@@ -374,6 +391,14 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				accessManager.releaseRequest();
 			}
 		}
+	}
+
+	private String getPath(ServletRequest servletRequest) {
+		String pathInfo = ((HttpServletRequest) servletRequest).getPathInfo();
+		if(pathInfo == null) {
+			pathInfo = ((HttpServletRequest)servletRequest).getServletPath();
+		}
+		return pathInfo;
 	}
 
 	private Session getAccessByToken(HttpServletRequest servletRequest, Request request) {
@@ -416,6 +441,9 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		return (publicContentRegExp == null || !PatternMatchingSupport.valueMatchesRegularExpression(servletPath, publicContentRegExp));
 	}
 
+	private boolean isStaticContent(String servletPath) {
+		return staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp);
+	}
 
 
 	/**
