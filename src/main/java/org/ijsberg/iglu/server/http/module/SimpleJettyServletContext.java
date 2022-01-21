@@ -128,15 +128,15 @@ public class SimpleJettyServletContext implements Startable {
 	 */
 	public void stop() {
 		try {
-			new Executable() {
-				@Override
-				protected Object execute() throws Throwable {
+			//new Executable() {
+			//	@Override
+			//	protected Object execute() throws Throwable {
 					server.stop();
 					server.destroy();
-					System.out.println("server stopped");
-					return null;
-				}
-			}.executeAsync();
+					//System.out.println("server stopped");
+			//		return null;
+			//	}
+			//}.executeAsync();
 		}
 		catch (Exception e) {
 			throw new ConfigurationException("exception occurred while stopping webserver at port " + port, e);
