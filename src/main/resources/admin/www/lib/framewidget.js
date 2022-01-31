@@ -119,12 +119,12 @@ offSet: float
 */
 FrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSet) {
 
-//	log(LogLevel.TRC, 'FrameWidget.prototype.notifySizeAndPositionListeners');
+//	console.log('FrameWidget.prototype.notifySizeAndPositionListeners');
 
     var offsetOverFlow = 0;
 
 	for(var widgetId in this.sizeAndPositionListeners) {
-//	    log(LogLevel.TRC, '' + this.id + ' trying to trigger ' + widgetId);
+//	    console.log('' + this.id + ' trying to trigger ' + widgetId);
 		var listenerData = this.sizeAndPositionListeners[widgetId];
 
 		var actionData = listenerData.actionsByDirection[direction];
@@ -449,7 +449,7 @@ FrameWidget.prototype.centerInOuterWidget = function(outerWidget) {
 
 FrameWidget.prototype.centerInWindow = function() {
 	this.left = parseInt((window.innerWidth - this.width) / 2);
-    log(LogLevel.TRC, '(' + window.innerWidth + ' - ' + this.width + ') / 2 = ' + this.left);
+    console.log('(' + window.innerWidth + ' - ' + this.width + ') / 2 = ' + this.left);
 	this.top = parseInt((window.innerHeight - this.height) / 2);
 }
 

@@ -124,12 +124,12 @@ offSet: float
 /*
 FlexFrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSet) {
 
-//	log(LogLevel.TRC, 'FlexFrameWidget.prototype.notifySizeAndPositionListeners');
+//	console.log('FlexFrameWidget.prototype.notifySizeAndPositionListeners');
 
     var offsetOverFlow = 0;
 
 	for(var widgetId in this.sizeAndPositionListeners) {
-//	    log(LogLevel.TRC, '' + this.id + ' trying to trigger ' + widgetId);
+//	    console.log('' + this.id + ' trying to trigger ' + widgetId);
 		var listenerData = this.sizeAndPositionListeners[widgetId];
 
 		var actionData = listenerData.actionsByDirection[direction];

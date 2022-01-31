@@ -69,7 +69,7 @@ function dragWidget(event) {
 			WidgetManager.instance.resizingWidget.resizeEast(offset);
 		}
 	} else if(widgetmanager.draggedWidget != null) {
-	    //log(LogLevel.TRC, 'dragging widget ' + widgetmanager.draggedWidget.getId());
+	    //console.log('dragging widget ' + widgetmanager.draggedWidget.getId());
 	    //must be used if complete page is scrolled
 //		var mousePos = getMousePositionInPage(event);
         //must be used if part of the page scrolled

@@ -376,7 +376,7 @@ function scrollToElement(containerId, scrollTargetId) {
 	if(scrollTarget != null) {
 		container.scrollTop = scrollTarget.offsetTop;
 	} else {
-    	log(LogLevel.TRC, 'cannot scroll ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
+    	console.log('cannot scroll ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
 		container.scrollTop = 0;
 	}
 }

@@ -34,17 +34,17 @@ iglu.util.CallStack.prototype.mark = function(call) {
 iglu.util.CallStack.prototype.goBackOrForward = function(hash) {
     if(typeof hash != 'undefined' && hash != null && hash.length > 4) {
         var hashValue = parseInt(window.location.hash.substring(4));
-        log(LogLevel.TRC, hashValue + ' : ' + this.lastHashValue + ' : ' + this.lastHashIndex);
+        console.log(hashValue + ' : ' + this.lastHashValue + ' : ' + this.lastHashIndex);
         if(hashValue < this.lastHashValue && this.lastHashIndex > 0) {
-            log(LogLevel.TRC, 'back');
+            console.log('back');
             this.lastHashIndex--;
             this.executedCall = this.stack[this.lastHashIndex];
-            log(LogLevel.TRC, 'back: ' + this.stack[this.lastHashIndex]);
+            console.log('back: ' + this.stack[this.lastHashIndex]);
             eval(this.stack[this.lastHashIndex]);
         } else if(hashValue > this.lastHashValue && this.lastHashIndex + 1 < this.stack.length) {
             this.lastHashIndex++;
             this.executedCall = this.stack[this.lastHashIndex];
-            log(LogLevel.TRC, 'forward: ' + this.stack[this.lastHashIndex]);
+            console.log('forward: ' + this.stack[this.lastHashIndex]);
             eval(this.stack[this.lastHashIndex]);
         }
         this.lastHashValue = hashValue;
@@ -52,7 +52,7 @@ iglu.util.CallStack.prototype.goBackOrForward = function(hash) {
 }
 
 window.onhashchange = function() {
-    log(LogLevel.TRC, 'window.onhashchange: ' + window.location.hash + ' -> ' + window.location.lasthash);
+    console.log('window.onhashchange: ' + window.location.hash + ' -> ' + window.location.lasthash);
     var hash = window.location.hash;
     iglu.util.CallStack.instance.goBackOrForward(hash);
 }

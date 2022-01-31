@@ -132,7 +132,7 @@ WindowWidget.prototype.writeHTML = function() {
 
 
 WindowWidget.prototype.onDestroy = function() {
-    log(LogLevel.TRC, 'WindowWidget.prototype.onDestroy:' + this.left);
+    console.log('WindowWidget.prototype.onDestroy:' + this.left);
 	if(typeof this.left != 'undefined' && this.left != null) {
 		WidgetManager.instance.lastX = this.left - 20;
 	}

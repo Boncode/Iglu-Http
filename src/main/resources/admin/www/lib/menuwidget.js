@@ -29,7 +29,7 @@ function MenuWidget(id, content, callback) {
 	}
 	this.callback = callback;
 	this.isLoaded = false;
-    log(LogLevel.TRC, 'isLoaded:' + this.isLoaded);
+    console.log('isLoaded:' + this.isLoaded);
 
 
 	var settings = new Object();
@@ -38,7 +38,7 @@ function MenuWidget(id, content, callback) {
 	this.constructMenuWidget(settings, settings.content);
 
     this.expertMode = false;
-    log(LogLevel.TRC, 'isLoaded:' + this.isLoaded);
+    console.log('isLoaded:' + this.isLoaded);
 	//TODO initialize and invoke super
 }
 
@@ -194,7 +194,7 @@ MenuWidget.prototype.handleAjaxResponse = function(responseText) {
 
 MenuWidget.prototype.evaluate = function(contents, menuWidget) {
 
-	log(LogLevel.TRC, 'evaluate');
+	console.log('evaluate');
 	if(!this.isLoaded) {
 		menuWidget.menu = eval(contents);
 		menuWidget.writeHTML();
@@ -205,9 +205,9 @@ MenuWidget.prototype.evaluate = function(contents, menuWidget) {
 
 MenuWidget.prototype.load = function(contents, menuWidget) {
 
-    //log(LogLevel.TRC, 'menuwidget this ' + this);
+    //console.log('menuwidget this ' + this);
 	if(!menuWidget.isLoaded) {
-	    log(LogLevel.TRC, 'loading menu contents');
+	    console.log('loading menu contents');
 		menuWidget.menu = JSON.parse(contents).menu;
 		menuWidget.writeHTML();
 		menuWidget.isLoaded = true;
@@ -215,14 +215,14 @@ MenuWidget.prototype.load = function(contents, menuWidget) {
 		    menuWidget.callback(menuWidget);
 		}
 	} else {
-	    log(LogLevel.TRC, 'menu contents already loaded');
+	    console.log('menu contents already loaded');
 	}
 	//save state
 };
 
 
 MenuWidget.prototype.onDeploy = function() {
-	log(LogLevel.TRC, 'deploying menu with source ' + this.source);
+	console.log('deploying menu with source ' + this.source);
 	if(this.source != null) {
 		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
 	}

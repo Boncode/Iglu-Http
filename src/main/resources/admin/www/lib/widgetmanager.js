@@ -192,7 +192,7 @@ WidgetManager.prototype.doAutoRefreshWidget = function(widgetId) {
 			this.widgetTimerMap[widgetId] = setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widgetId + '")', autoRefreshInterval);
 		}
 	} else {
-		log(LogLevel.TRC, 'cannot auto refresh ' + widgetId + ', widget not registered');
+		console.log('cannot auto refresh ' + widgetId + ', widget not registered');
 	}
 }
 
@@ -218,7 +218,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	var widget = this.widgets[newWidget.getId()];
 
 	if(widget != null) {
-		log(LogLevel.TRC, 'widget "' + widget.getId() + '" already exists');
+		console.log('widget "' + widget.getId() + '" already exists');
 		this.activateCurrentWidget(widget.id);
     	return false;
 	}
@@ -243,7 +243,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	newWidget.setDOMElement(element);
 	//newWidget.draw();
 	newWidget.onDeploy();
-	log(LogLevel.TRC, 'widget "' + newWidget.getId() + '" deployed, DOMElement: ' + newWidget.getDOMElement());
+	console.log('widget "' + newWidget.getId() + '" deployed, DOMElement: ' + newWidget.getDOMElement());
 
 	this.activateCurrentWidget(newWidget.id);
 	return true;
@@ -274,7 +274,7 @@ WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget
         container.replaceChild(newElement, oldElement);
 	}
 	newWidget.containerElement = container;
-	log(LogLevel.TRC, 'setting DOM element ' + newElement)
+	console.log('setting DOM element ' + newElement)
 	newWidget.setDOMElement(newElement);
 	//newWidget.draw();
 	newWidget.onDeploy();
