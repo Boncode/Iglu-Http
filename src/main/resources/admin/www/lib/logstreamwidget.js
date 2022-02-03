@@ -70,7 +70,7 @@ LogStreamWidget.prototype.loadEntries = function(entries, logStreamWidget) {
 
 
 LogStreamWidget.prototype.onDestroy = function() {
-	log('log stream widget destroyed');
+	console.log('log stream widget destroyed');
 	WidgetManager.instance.unregisterTimerListener(this);
 	//save state
 };

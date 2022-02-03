@@ -132,20 +132,20 @@ WidgetManager.prototype.registerTimerListener = function(listener, frameRate) {
 
 	listener.frameRate = frameRate;
 	listener.eventInterval = Math.round(this.FRAME_RATE / frameRate);
-	log('registering timer listener ' + listener.id + ' with event interval ' + listener.eventInterval);
+	console.log('registering timer listener ' + listener.id + ' with event interval ' + listener.eventInterval);
 	listener.eventIntervalCountdown = listener.eventInterval;
 	listener.timerIndex = this.timerListeners.length;
 	this.timerListeners[this.timerListeners.length] = listener;
-	log('current number of timer listeners: ' + this.timerListeners.length);
+	console.log('current number of timer listeners: ' + this.timerListeners.length);
 	if(this.timerListeners.length == 1) {
-		log('starting timer');
+		console.log('starting timer');
     	setTimeout('WidgetManager.instance.tick();', this.TIMER_INTERVAL);
 	}
 }
 
 WidgetManager.prototype.unregisterTimerListener = function(listener) {
 
-	log('unregistering timer listener ' + listener.id);
+	console.log('unregistering timer listener ' + listener.id);
 	this.timerListeners.splice(listener.timerIndex,1);
 }
 
@@ -153,11 +153,11 @@ WidgetManager.prototype.tick = function() {
 	if(this.timerListeners.length > 0) {
     	setTimeout('WidgetManager.instance.tick();', this.TIMER_INTERVAL);
     } else {
-   		log('stopping timer');
+   		console.log('stopping timer');
 	}
 	for(var i in this.timerListeners) {
 		 if(this.timerListeners[i].eventIntervalCountdown-- <= 0) {
-//			log('notifying ' + this.timerListeners[i].id);
+//			console.log('notifying ' + this.timerListeners[i].id);
 			this.timerListeners[i].eventIntervalCountdown = this.timerListeners[i].eventInterval;
 			this.timerListeners[i].onTimer();
 		}
@@ -254,7 +254,7 @@ WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget
     //TODO handle proper destruction, notifying etc.
 	var widget = this.widgets[newWidget.getId()];
 /*	if(widget != null) {
-		log('widget "' + widget.getId() + '" already exists');
+		console.log('widget "' + widget.getId() + '" already exists');
 		this.activateCurrentWidget(widget.id);
     	return false;
 	}
@@ -278,7 +278,7 @@ WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget
 	newWidget.setDOMElement(newElement);
 	//newWidget.draw();
 	newWidget.onDeploy();
-	log('widget "' + newWidget.getId() + '" deployed');
+	console.log('widget "' + newWidget.getId() + '" deployed');
 
 	this.activateCurrentWidget(newWidget.id);
 	return true;
@@ -287,7 +287,7 @@ WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget
 WidgetManager.prototype.destroyWidget = function(widgetId) {
 	var widget = this.widgets[widgetId];
 	if(widget != null) {
-		log('removing widget "' + widgetId + '"');
+		console.log('removing widget "' + widgetId + '"');
 		//call widget destructor
 		widget.onDestroy();
 		var element = document.getElementById(widgetId);
@@ -295,7 +295,7 @@ WidgetManager.prototype.destroyWidget = function(widgetId) {
 			try {
 				widget.containerElement.removeChild(element);
 			} catch(e) {
-				log('ERROR while removing ' + element + ': ' + e.message);
+				console.log('ERROR while removing ' + element + ': ' + e.message);
 			}
 		}
 		this.unregisterDraggableWidget(widget);
@@ -305,9 +305,9 @@ WidgetManager.prototype.destroyWidget = function(widgetId) {
 		    this.widgets[remainingWidgetId].notifyWidgetDestroyed(widget);
 		}
 		delete this.widgets[widgetId];
-		log('done');
+		console.log('done');
 	} else {
-		log('NOT removing unregistered widget "' + widgetId + '"');
+		console.log('NOT removing unregistered widget "' + widgetId + '"');
 		if(typeof widgetId == 'undefined') {
 		    throw 'undefined widget ID';
 		}
@@ -322,7 +322,7 @@ WidgetManager.prototype.getWidget = function(id) {
 }
 
 WidgetManager.prototype.containsWidget = function(id) {
-	log('containsWidget(' + id + ')' + this.widgets[id]);
+	console.log('containsWidget(' + id + ')' + this.widgets[id]);
 	return this.widgets[id] != null;
 }
 

@@ -222,7 +222,7 @@ WidgetContent.prototype.constructWidgetContent = function(settings, content) {
 			this.source_load_action = 'display';
 		 }
 	}
-	log('source load action of ' + this.id  + ' is ' + this.source_load_action);
+	console.log('source load action of ' + this.id  + ' is ' + this.source_load_action);
 	if(typeof content != 'undefined' && content != null) {
 		this.content = content;
 	} else {

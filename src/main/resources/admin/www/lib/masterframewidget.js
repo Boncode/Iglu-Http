@@ -90,7 +90,7 @@ WidgetManager.prototype.registerDraggableWidget = function(widget)
 	widget.isDraggable = true;
 	widget.getDragSelectElement().onmousedown = function(event)
 	{
-		log('MOUSEDOWN:' + this.id);
+		console.log('MOUSEDOWN:' + this.id);
 		if(WidgetManager.instance.resizingWidget == null) {
 			var draggableWidget = WidgetManager.instance.draggableWidgets[this.id];
 			WidgetManager.initDraggingMode(event, draggableWidget);

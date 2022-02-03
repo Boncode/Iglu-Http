@@ -65,7 +65,7 @@ UploadWindowWidget.prototype.onTimer = function() {
 }
 
 UploadWindowWidget.prototype.displayProgress = function(data) {
-	log(data);
+	console.log(data);
 	eval(data);
 }
 
