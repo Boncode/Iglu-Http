@@ -58,57 +58,6 @@ function cloneAttributes(obj) {
     return retval;
 }
 
-const LogLevel = Object.freeze({"TRC":1, "DBG":2, "VBS":3, "CRT":4});
-var LOG_LEVEL = 1;
-
-function log(level, message, ...args) {
-    try {
-        if (arguments.length === 0) {
-            return;
-        } else if (arguments.length === 1 || !(level >= 1 && level <= 4)) {
-            args.unshift(message);
-            message = level;
-            level = 1;
-        }
-
-        if (level < LOG_LEVEL) {
-            return;
-        }
-
-        var now = new Date();
-        var seconds = now.getSeconds().toString();
-        seconds = seconds.length == 1 ? "0" + seconds : seconds;
-        var minutes = now.getMinutes().toString();
-        minutes = minutes.length == 1 ? "0" + minutes : minutes;
-        var hours = now.getHours().toString();
-        hours = hours.length == 1 ? "0" + hours : hours;
-        var message = hours + ':' + minutes + ':' + seconds + ' ' + message + ' (in ' + thisLine() + ') ';
-
-        if (level === LogLevel.CRT) {
-            message = "CRT " + message;
-            console.error(message, ...args);
-        } else if (level === LogLevel.VBS) {
-            message = "VBS " + message;
-            console.warn(message, ...args);
-        } else if (level === LogLevel.DBG) {
-            message = "DBG " + message;
-            console.info(message, ...args);
-        } else {
-            message = "TRC " + message;
-            console.log(message, ...args);
-        }
-	} catch(e) {
-	    console.error(e);
-	}
-}
-
-function thisLine() {
-  const e = new Error();
-  const regex = /\((.*):(\d+):(\d+)\)$/
-  const match = regex.exec(e.stack.split("\n")[3]);
-  return match[1] + ':' + match[2] + ':' + match[3];
-}
-
 function subclass(subclass, baseclass) {
 	subclass.prototype = clone(baseclass.prototype);
 	subclass.prototype.constructor = subclass;

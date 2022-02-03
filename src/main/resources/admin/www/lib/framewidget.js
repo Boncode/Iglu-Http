@@ -338,7 +338,7 @@ FrameWidget.prototype.onDestroy = function() {
 		}
 	}
 	if(this.content && this.content.onDestroy != 'undefined') {
-	    log(this.id + ' destroying content [' + this.content + '] ' + this.content.id);
+	    console.log(this.id + ' destroying content [' + this.content + '] ' + this.content.id);
 		WidgetManager.instance.destroyWidget(this.content.id);
 	}
 };

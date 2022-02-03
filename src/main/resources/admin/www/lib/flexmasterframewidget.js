@@ -51,7 +51,7 @@ function dragWidget(event) {
 	event = event || window.event;
 	if(widgetmanager.resizingWidget != null && widgetmanager.resizeDirection != null) {
 		var mousePos = getMousePositionInPage(event);
-		//log('widgetmanager.resizeDirection: ' + widgetmanager.resizeDirection);
+		//console.log('widgetmanager.resizeDirection: ' + widgetmanager.resizeDirection);
 		if(widgetmanager.resizeDirection.indexOf('n') > -1) {
 			widgetmanager.resizingWidget.resizeNorth(-1 * (mousePos.y - widgetmanager.mouseOffset.y - widgetmanager.resizingWidget.top));
 		}
@@ -90,14 +90,14 @@ WidgetManager.prototype.registerDraggableWidget = function(widget)
 	widget.isDraggable = true;
 	widget.getDragSelectElement().onmousedown = function(event)
 	{
-		log('MOUSEDOWN:' + this.id);
+		console.log('MOUSEDOWN:' + this.id);
 		if(WidgetManager.instance.resizingWidget == null) {
 			var draggableWidget = WidgetManager.instance.draggableWidgets[this.id];
 			WidgetManager.initDraggingMode(event, draggableWidget);
 //    WidgetManager.instance.draggedWidget = draggableWidget;
 //    WidgetManager.instance.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(this, event);
 //    WidgetManager.instance.activateCurrentWidget(draggableWidget.id);
-//    log('activate ' + draggableWidget.id);
+//    console.log('activate ' + draggableWidget.id);
 
 		}
 	}
@@ -126,7 +126,7 @@ WidgetManager.prototype.registerDraggableWidget = function(widget)
 			WidgetManager.instance.draggedWidget = draggableWidget;
 			WidgetManager.instance.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(this, event);
 			WidgetManager.instance.activateCurrentWidget(draggableWidget.id);
-			log('2 activate ' + draggableWidget.id);
+			console.log('2 activate ' + draggableWidget.id);
 		}
 	}
 
@@ -137,7 +137,7 @@ WidgetManager.initDraggingMode = function(event, draggableWidget) {
     WidgetManager.instance.draggedWidget = draggableWidget;
     WidgetManager.instance.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(draggableWidget.getDragSelectElement(), event);
     WidgetManager.instance.activateCurrentWidget(draggableWidget.id);
-    log('activate ' + draggableWidget.id);
+    console.log('activate ' + draggableWidget.id);
 }
 
 WidgetManager.prototype.unregisterDraggableWidget = function(widget) {
@@ -168,7 +168,7 @@ WidgetManager.prototype.registerPopupWidget = function(widget) {
 		}
 		widget.element.onmouseover = function(event) {
 			WidgetManager.instance.getWidget(this.id).mouseOverPopup = true;
-			log('mouse over popup');
+			console.log('mouse over popup');
 		}
 	} else {
 		widget.mouseOverPopup = false;
@@ -178,7 +178,7 @@ WidgetManager.prototype.registerPopupWidget = function(widget) {
 }
 
 WidgetManager.prototype.destroyPopup = function(widgetId) {
-	log('destroying popup ' + widgetId);
+	console.log('destroying popup ' + widgetId);
 	var widget = WidgetManager.instance.getWidget(widgetId);
 	if(widget != null && !widget.mouseOverPopup) {
 		if(widget.triggerElement != null) {
@@ -197,7 +197,7 @@ WidgetManager.prototype.registerNotificationWidget = function(notificationWidget
 }
 
 WidgetManager.instance.beforeDeployNotification = function(notificationWidgetId) {
-    log('animating notification entry of ' + notificationWidgetId);
+    console.log('animating notification entry of ' + notificationWidgetId);
     var notificationWidget = WidgetManager.instance.getWidget(notificationWidgetId);
     if(notificationWidget != null) {
         notificationWidget.beforeDeploy();
@@ -205,7 +205,7 @@ WidgetManager.instance.beforeDeployNotification = function(notificationWidgetId)
 }
 
 WidgetManager.instance.beforeDestroyNotification = function(notificationWidgetId) {
-    log('animating notification exit of ' + notificationWidgetId);
+    console.log('animating notification exit of ' + notificationWidgetId);
     var notificationWidget = WidgetManager.instance.getWidget(notificationWidgetId);
     if(notificationWidget != null) {
         notificationWidget.beforeDestroy();
@@ -214,7 +214,7 @@ WidgetManager.instance.beforeDestroyNotification = function(notificationWidgetId
 
 
 WidgetManager.prototype.destroyNotification = function(notificationWidgetId) {
-    log('destroying notification ' + notificationWidgetId);
+    console.log('destroying notification ' + notificationWidgetId);
     var widget = WidgetManager.instance.getWidget(notificationWidgetId);
     if(widget != null) {
         WidgetManager.instance.destroyWidget(notificationWidgetId);
@@ -237,11 +237,11 @@ WidgetManager.prototype.registerResizeableWidget = function(widget, resizeDirect
 		widget.resizeDirections = 'nesw';//North - East - South - West
 	}
 	widget.getDOMElement().onmousedown = function(event) {
-		log('mousedown noticed for resizing for widget ' + this.id);
+		console.log('mousedown noticed for resizing for widget ' + this.id);
 		if(WidgetManager.instance.resizeDirection != null) {
 			WidgetManager.instance.activateCurrentWidget(this.id);
 			WidgetManager.instance.resizingWidget = WidgetManager.instance.currentWidget;
-			//log('current resizing widget ' + this.id)
+			//console.log('current resizing widget ' + this.id)
 		}
 	}
 	widget.getDOMElement().onmouseup = function(event) {
@@ -253,18 +253,18 @@ WidgetManager.prototype.registerResizeableWidget = function(widget, resizeDirect
 	}
 
 	widget.getDOMElement().onmouseover = function(event) {
-		//log('=====> ' + this.id);
+		//console.log('=====> ' + this.id);
 		if(WidgetManager.instance.resizingWidget == null) {
 			WidgetManager.instance.determineResizeAction(widget, event);
 		}
 	}
 
 	widget.getDOMElement().onmousemove = function(event) {
-//    	log('mousemove noticed for resizing for widget ' + WidgetManager.instance.resizingWidget);
+//    	console.log('mousemove noticed for resizing for widget ' + WidgetManager.instance.resizingWidget);
 		if(WidgetManager.instance.resizingWidget == null) {
 			WidgetManager.instance.determineResizeAction(widget, event);
 		} else {
-//    		log('mousemove noticed for resizing for widget ' + WidgetManager.instance.resizingWidget);
+//    		console.log('mousemove noticed for resizing for widget ' + WidgetManager.instance.resizingWidget);
 			dragWidget(event);
 		}
 	}
@@ -288,7 +288,7 @@ WidgetManager.prototype.determineResizeAction = function(widget, event) {
 		if(widget.allowsResize('n') && this.mouseOffset.y < WidgetManager.RESIZE_DETECTION_OFFSET) {
 			direction = 'n';
          }
-        //log('allows: ' + widget.allowsResize('s') + ': ' + this.mouseOffset.y + ' > ' + (widget.height - 5));
+        //console.log('allows: ' + widget.allowsResize('s') + ': ' + this.mouseOffset.y + ' > ' + (widget.height - 5));
 		if(widget.allowsResize('s') && this.mouseOffset.y > widget.height - WidgetManager.RESIZE_DETECTION_OFFSET) {
 			direction = 's';
         }
@@ -299,7 +299,7 @@ WidgetManager.prototype.determineResizeAction = function(widget, event) {
 			direction += 'e';
          }
          if(direction != '') {
-            //log('direction: ' + direction);
+            //console.log('direction: ' + direction);
             if(typeof widget.suppressScrolling != 'undefined') {
                 widget.suppressScrolling();
             }
@@ -345,7 +345,7 @@ WidgetManager.prototype.activateCurrentWidget = function(widgetId)
 				} else {
 					this.currentWidget.element.style.zIndex = WidgetManager.instance.currentZIndex++;
 				}
-				log('widget "' + this.currentWidget.element.id + '" set to z-index ' + this.currentWidget.element.style.zIndex);
+				console.log('widget "' + this.currentWidget.element.id + '" set to z-index ' + this.currentWidget.element.style.zIndex);
 			}
 			this.currentWidget.onFocus();
 		}

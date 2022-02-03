@@ -137,7 +137,7 @@ WidgetManager.initDraggingMode = function(event, draggableWidget) {
     WidgetManager.instance.draggedWidget = draggableWidget;
     WidgetManager.instance.mouseOffset = getMouseOffsetFromAbsoluteElementPosition(draggableWidget.getDragSelectElement(), event);
     WidgetManager.instance.activateCurrentWidget(draggableWidget.id);
-    log('activate ' + draggableWidget.id);
+    console.log('activate ' + draggableWidget.id);
 }
 
 WidgetManager.prototype.unregisterDraggableWidget = function(widget) {
