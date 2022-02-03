@@ -152,7 +152,7 @@ WindowWidget.prototype.onDestroy = function() {
 //todo rename to activate / deactivate
 
 WindowWidget.prototype.onFocus = function() {
-	log('this.id:' + this.id);
+	console.log('this.id:' + this.id);
 	this.setHeaderClass('title_bar_active');
 };
 
