@@ -367,8 +367,16 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			//role based access control
 	//		checkAccess(servletRequest,  appRequest);
 
+			long start = System.currentTimeMillis();
+
 			//delegate request
 			chain.doFilter(servletRequest, servletResponse);
+
+			long timeUsed = System.currentTimeMillis() - start;
+			if(timeUsed > 100) {
+				System.out.println(new LogEntry(Level.VERBOSE, "Handling request: " + getPath(servletRequest)
+						+ " took " + timeUsed + "ms." ));
+			}
 		}
 		catch (Throwable t)//make sure user gets a controlled response
 		{
