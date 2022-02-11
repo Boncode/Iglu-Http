@@ -166,19 +166,8 @@ public class UploadAgentImpl implements UploadAgent {
 			} catch (Exception e) {
 				isUploadCancelled = true;
 				System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " failed or was interrupted", e));
-
-				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed or was interrupted."));
 				//TODO exception if file missing
 			}
-
-
-/*			Enumeration e = req.getAttributeNames();
-			while (e.hasMoreElements())
-			{
-				String name = (String) e.nextElement();
-				Object attr = req.getAttribute(name);
-				properties.put(name, attr);
-			}*/
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
 		if(reader != null && reader.getUploadFile() != null && !isUploadCancelled) {
