@@ -38,7 +38,7 @@ public class LoggerServlet extends HttpServlet implements Logger {
         PrintWriter out = response.getWriter();
         response.setContentType("text/html");
 
-        out.println("<div style=\"display: flex; flex-direction: column;\">");
+        out.println("<div style=\"display: flex; flex-direction: column; font-family: monospace;\">");
         List<LogEntry> logEntries = new ArrayList<>(logEntryQueue);
         for(LogEntry logEntry : logEntries) {
             String entryString = logEntry.toString();
