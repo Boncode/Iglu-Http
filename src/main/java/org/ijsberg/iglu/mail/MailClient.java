@@ -35,6 +35,8 @@ public class MailClient {
 
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(sender));
+
+        InternetAddress[] addresses = InternetAddress.parse(recipient, false);
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(recipient));
         message.setSubject(subject);

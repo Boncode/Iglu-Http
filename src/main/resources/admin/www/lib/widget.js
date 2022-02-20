@@ -32,6 +32,7 @@ Widget.prototype.constructWidget = function(settings) {
 
 Widget.prototype.refreshSettings = function(settings) {
 	for(var name in settings) {
+	    //console.log('setting ' + name + ' to ' + settings[name]);
       	this.set(name, settings[name], this[name]);
     }
 }
