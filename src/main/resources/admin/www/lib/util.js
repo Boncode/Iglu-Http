@@ -322,6 +322,8 @@ function scrollToElement(containerId, scrollTargetId) {
 	var scrollTarget = document.getElementById(scrollTargetId);
 	var container = document.getElementById(containerId);
 
+    console.debug('trying to scroll in container ' + containerId + ', scrolling to element ' + scrollTargetId);
+
 	if(scrollTarget != null) {
 		container.scrollTop = scrollTarget.offsetTop;
 	} else {

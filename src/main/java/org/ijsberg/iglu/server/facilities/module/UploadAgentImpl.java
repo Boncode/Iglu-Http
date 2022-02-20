@@ -305,6 +305,7 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	@Override
+	@AllowPublicAccess
 	@RequestPath(inputType = VOID, path = "reset", method = GET)
 	public void reset() {
 		System.out.println(new LogEntry(Level.VERBOSE, "resetting upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
