@@ -17,7 +17,7 @@ public class Messenger implements Pageable, Startable, EntryPoint {
     private final long SYSTEM_SESSION_TIMEOUT_SEC_24_HOURS = 86400;
 
     private AccessManager accessManager;
-    private Request request;
+    //private Request request;
     private Session session;
     private MailClient mailClient;
 
@@ -54,8 +54,8 @@ public class Messenger implements Pageable, Startable, EntryPoint {
                 MailMessage mailMessage = (MailMessage) userMessage;
                 try {
                     mailClient.sendMail(
-                            mailProperties.getProperty("user", "service@bon-code.nl"),
-                            mailProperties.getProperty("recipient", mailProperties.getProperty("user", "service@bon-code.nl")),
+                            mailProperties.getProperty("user"),
+                            mailProperties.getProperty("recipient", mailProperties.getProperty("user")),
                             mailMessage.getSubject() + hostDescription,
                             mailMessage.getMessageText());
                 } catch (MessagingException e) {
@@ -81,9 +81,11 @@ public class Messenger implements Pageable, Startable, EntryPoint {
     }
 
     private void loginAsSystem() {
-        request = accessManager.bindRequest(this);
-        session = request.getSession(true);
-        session.loginAsSystem(SYSTEM_SESSION_TIMEOUT_SEC_24_HOURS);
+        //
+        //request = accessManager.bindRequest(this);
+        //accessManager.createSession()
+        session = accessManager.createSession(new Properties());
+        session.loginAsSystem("System", SYSTEM_SESSION_TIMEOUT_SEC_24_HOURS);
     }
 
     @Override

@@ -92,7 +92,7 @@ public class IgluRestServlet extends HttpServlet {
                 //RAW (icw PUT or POST) allows for additional parameters past
                 if(requestPath.secondInputType() == MAPPED || requestPath.secondInputType() == FROM_PATH) {
                     if (requestPath.parameters().length + 1 /*raw bytes*/ != parameterTypes.length) {
-                        throw new ConfigurationException("please define " + (parameterTypes.length - 1) + " extra input parameters");
+                        throw new ConfigurationException("please define " + (parameterTypes.length - 1) + " extra input parameters method " + method.getName());
                     }
                 }
             }
@@ -101,19 +101,19 @@ public class IgluRestServlet extends HttpServlet {
             }
             else if(inputType == MAPPED) {
                 if(requestPath.parameters().length != parameterTypes.length) {
-                    throw new ConfigurationException("please define " + parameterTypes.length + " input parameters");
+                    throw new ConfigurationException("please define " + parameterTypes.length + " input parameters for method " + method.getName());
                 }
             } else if(inputType == REQUEST_RESPONSE) {
                 // it's up to the component to handle everything
             } else {
                 if(parameterTypes.length != 1) {
-                    throw new ConfigurationException("input type " + inputType + " requires exactly 1 parameter");
+                    throw new ConfigurationException("input type " + inputType + " requires exactly 1 parameter method " + method.getName());
                 }
                 if(inputType == PROPERTIES && !Properties.class.isAssignableFrom(parameterTypes[0])) {
-                    throw new ConfigurationException("input type " + inputType + " requires 1 parameter of type Properties");
+                    throw new ConfigurationException("input type " + inputType + " requires 1 parameter of type Properties method " + method.getName());
                 }
                 if(inputType == JSON_POST && requestPath.method() != POST) {
-                    throw new ConfigurationException("input type " + inputType + " requires invocation by method " + POST);
+                    throw new ConfigurationException("input type " + inputType + " requires invocation by method " + POST + " method " + method.getName());
                 }
             }
             AssertUserRole assertUserRole = method.getAnnotation(AssertUserRole.class);
