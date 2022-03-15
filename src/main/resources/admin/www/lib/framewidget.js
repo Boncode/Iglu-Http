@@ -243,14 +243,17 @@ FrameWidget.prototype.move = function(left, top) {
 
 FrameWidget.prototype.resizeNorth = function(offset) {
 	var calcOffset = offset + this.offsetOverFlowTop;
-	var newHeight = calcOffset + this.height;
+    var realHeight = parseInt(getComputedStyle(this.element).getPropertyValue("height"), 10);
+	var newHeight = calcOffset + realHeight;
 	if(newHeight < FrameWidget.MINIMUM_FRAME_HEIGHT) {
-		this.top = this.top + this.height - FrameWidget.MINIMUM_FRAME_HEIGHT;
+		this.top = this.top + realHeight - FrameWidget.MINIMUM_FRAME_HEIGHT;
 		this.height = FrameWidget.MINIMUM_FRAME_HEIGHT;
 		this.offsetOverFlowTop = newHeight - this.height;
 	} else {
-		this.top = this.top + this.height - newHeight;
-		this.height = newHeight;
+		this.top = this.top + realHeight - newHeight;
+		if (this.height != 'auto') {
+		    this.height = newHeight;
+		}
 		this.offsetOverFlowTop = 0;
 	}
 	this.setSizeAndPosition();
@@ -309,6 +312,7 @@ FrameWidget.prototype.resizeWest = function(offset) {
 };
 
 FrameWidget.prototype.resizeSouth = function(offset) {
+    // TODO refactor to resizeNorth(-offset) or remove
 	var calcOffset = offset + this.offsetOverFlowTop;
 
 	var newHeight = calcOffset + this.height;
