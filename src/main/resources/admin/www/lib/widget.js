@@ -55,11 +55,11 @@ Widget.prototype.cloneSettings = function(extraSettingsNames) {
     var clonedSettings = cloneAttributes(this.settings);
 
 	for(var name in this.settings) {
-      	clonedSettings[name] = this[name];
+      	clonedSettings[name] = JSON.parse(JSON.stringify(this[name]));
     }
 	for(var i in extraSettingsNames) {
 	    if(typeof this[extraSettingsNames[i]] != 'undefined') {
-      	    clonedSettings[extraSettingsNames[i]] = this[extraSettingsNames[i]];
+      	    clonedSettings[extraSettingsNames[i]] = JSON.parse(JSON.stringify(this[extraSettingsNames[i]]));
       	}
     }
     return clonedSettings;

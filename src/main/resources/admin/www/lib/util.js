@@ -51,11 +51,7 @@ function copyMembers(classA, classB) {
 }
 
 function cloneAttributes(obj) {
-	var retval = new Object;
-	for(var name in obj) {
-      	retval[name] = obj[name];
-    }
-    return retval;
+    return JSON.parse(JSON.stringify(obj));
 }
 
 function subclass(subclass, baseclass) {
