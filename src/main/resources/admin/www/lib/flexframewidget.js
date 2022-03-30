@@ -63,7 +63,6 @@ FlexFrameWidget.prototype.draw = function() {
 
 
 FlexFrameWidget.prototype.resizeWest = function(offset) {
-
 //	var calcOffset = offset + this.offsetOverFlowLeft;
 //	var newWidth = calcOffset + this.width;
 //	if(newWidth < FlexFrameWidget.MINIMUM_FRAME_WIDTH) {
@@ -81,7 +80,6 @@ FlexFrameWidget.prototype.resizeWest = function(offset) {
 };
 
 FlexFrameWidget.prototype.resizeSouth = function(offset) {
-    window.alert('aap noot mies')
 //	var calcOffset = offset + this.offsetOverFlowTop;
 //
 //	var newHeight = calcOffset + this.height;
