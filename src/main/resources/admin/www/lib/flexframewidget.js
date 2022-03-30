@@ -64,41 +64,37 @@ FlexFrameWidget.prototype.draw = function() {
 
 FlexFrameWidget.prototype.resizeWest = function(offset) {
 
-    //log('resize west ' + this.id + ' offset: ' + offset);
-	//log('offset: ' + offset + ' ---> 1111 OffsOL: ' + this.offsetOverFlowLeft);
-	var calcOffset = offset + this.offsetOverFlowLeft;
-    //log('RW:' + calcOffset)
-	var newWidth = calcOffset + this.width;
-	if(newWidth < FlexFrameWidget.MINIMUM_FRAME_WIDTH) {
-		this.left = this.left + this.width - FlexFrameWidget.MINIMUM_FRAME_WIDTH;
-		this.width = FlexFrameWidget.MINIMUM_FRAME_WIDTH;
-		this.offsetOverFlowLeft = newWidth - this.width;
-        //offsetOverflow = newWidth - this.width;
-		//log('offset: ' + offset + ' ---> OffsOL: ' + this.offsetOverFlowLeft);
-	} else {
-		this.left = this.left + this.width - newWidth;
-		this.width = newWidth;
-		this.offsetOverFlowLeft = 0;
-	}
-	this.notifySizeAndPositionListeners('w', offset);
-	this.setSizeAndPosition();
-	return this.offsetOverFlowLeft;
+//	var calcOffset = offset + this.offsetOverFlowLeft;
+//	var newWidth = calcOffset + this.width;
+//	if(newWidth < FlexFrameWidget.MINIMUM_FRAME_WIDTH) {
+//		this.left = this.left + this.width - FlexFrameWidget.MINIMUM_FRAME_WIDTH;
+//		this.width = FlexFrameWidget.MINIMUM_FRAME_WIDTH;
+//		this.offsetOverFlowLeft = newWidth - this.width;
+//	} else {
+//		this.left = this.left + this.width - newWidth;
+//		this.width = newWidth;
+//		this.offsetOverFlowLeft = 0;
+//	}
+//	this.notifySizeAndPositionListeners('w', offset);
+//	this.setSizeAndPosition();
+//	return this.offsetOverFlowLeft;
 };
 
 FlexFrameWidget.prototype.resizeSouth = function(offset) {
-	var calcOffset = offset + this.offsetOverFlowTop;
-
-	var newHeight = calcOffset + this.height;
-	if(newHeight < FlexFrameWidget.MINIMUM_FRAME_HEIGHT) {
-		this.height = FlexFrameWidget.MINIMUM_FRAME_HEIGHT;
-		this.offsetOverFlowTop = newHeight - this.height;
-	} else {
-		this.height = newHeight;
-		this.offsetOverFlowTop = 0;
-	}
-	this.setSizeAndPosition();
-	this.notifySizeAndPositionListeners('s', offset);
-	return 0;
+    window.alert('aap noot mies')
+//	var calcOffset = offset + this.offsetOverFlowTop;
+//
+//	var newHeight = calcOffset + this.height;
+//	if(newHeight < FlexFrameWidget.MINIMUM_FRAME_HEIGHT) {
+//		this.height = FlexFrameWidget.MINIMUM_FRAME_HEIGHT;
+//		this.offsetOverFlowTop = newHeight - this.height;
+//	} else {
+//		this.height = newHeight;
+//		this.offsetOverFlowTop = 0;
+//	}
+//	this.setSizeAndPosition();
+//	this.notifySizeAndPositionListeners('s', offset);
+//	return 0;
 };
 
 FlexFrameWidget.prototype.onDestroy = function() {
