@@ -1,5 +1,4 @@
 
-//todo z-index overrides navigation...
 function NotificationWidget(settings, content) {
 	this.cssClassName = 'notification';
     this.status = typeof settings.status === 'undefined' ? 'info' : settings.status;
