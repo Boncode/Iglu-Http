@@ -755,8 +755,8 @@ public abstract class ServletSupport extends HttpEncodingSupport
 	public static String getUserDir(RequestRegistry requestRegistry) {
 		String retval;
 		User user = requestRegistry.getCurrentRequest().getUser();
-		if(user.getGroup() != null) {
-			retval = user.getGroup().getName();
+		if(user.getFirstGroup() != null) {
+			retval = user.getFirstGroup().getName();
 		} else {
 			retval = user.getId();
 		}

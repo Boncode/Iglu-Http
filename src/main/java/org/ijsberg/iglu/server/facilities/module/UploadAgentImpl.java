@@ -27,23 +27,20 @@ import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.AllowPublicAccess;
-import org.ijsberg.iglu.rest.RequestParameter;
 import org.ijsberg.iglu.rest.RequestPath;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
-import org.ijsberg.iglu.util.execution.Executable;
+import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.MultiPartReader;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.FSFileCollection;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
-import org.ijsberg.iglu.util.mail.EMail;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
@@ -199,8 +196,8 @@ public class UploadAgentImpl implements UploadAgent {
 				User user = requestRegistry.getCurrentRequest().getUser();
 				IgluProperties metadata = new IgluProperties();
 				metadata.setProperty("userId", user.getId());
-				if(user.getGroup() != null) {
-					metadata.setProperty("group", user.getGroup().getName());
+				if(!user.getGroupNames().isEmpty()) {
+					metadata.setProperty("group", CollectionSupport.format(user.getGroupNames(), ","));
 				}
 				metadata.setProperty("isAdmin", "" + user.hasRole(AccessConstants.ADMIN_ROLE_NAME));
 				IgluProperties.saveProperties(metadata, permanentFileName + ".metadata.properties");

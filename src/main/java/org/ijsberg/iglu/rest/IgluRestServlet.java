@@ -22,7 +22,6 @@ import org.ijsberg.iglu.util.misc.StringSupport;
 import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.*;
 import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
-import static org.ijsberg.iglu.util.http.HttpEncodingSupport.urlEncode;
 import static org.ijsberg.iglu.util.http.HttpEncodingSupport.urlEncodeXSSRiskCharacters;
 import static org.ijsberg.iglu.util.mail.WebContentType.*;
 
@@ -131,7 +130,7 @@ public class IgluRestServlet extends HttpServlet {
             if(requiredRole != null) {
                 User user = accessManager.getCurrentRequest().getUser();
                 if (user != null) {
-                    System.out.println(new LogEntry(TRACE,"checking rights for " + user.getId() + (user.getGroup() != null ? " : " + user.getGroup().getName() : "")));
+                    System.out.println(new LogEntry(TRACE,"checking rights for " + user.getId() + " (" + CollectionSupport.format(user.getGroupNames(), ",") + ")"));
                     if (!user.hasRole(requiredRole)) {
                         throw new RestException("not authorized for endpoint " + this.requestPath.path(), 403);
                     }
