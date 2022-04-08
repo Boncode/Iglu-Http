@@ -28,9 +28,10 @@ import java.io.IOException;
 
 /**
  */
-public class ClassPathResourceServlet extends BinaryResourceServlet {
+public class FSorCPResourceServlet extends BinaryResourceServlet {
 
 	protected String classPathRoot;
+	protected String fileSystemRoot;
 	protected String allowedContentRegExp;
 
 	@Override
@@ -40,6 +41,11 @@ public class ClassPathResourceServlet extends BinaryResourceServlet {
 		classPathRoot = conf.getInitParameter("classpath_root");
 		if(classPathRoot == null) {
 			classPathRoot = "";
+		}
+
+		fileSystemRoot = conf.getInitParameter("filesystem_root");
+		if(fileSystemRoot == null) {
+			fileSystemRoot = "";
 		}
 
 		allowedContentRegExp = conf.getInitParameter("allowed_content_reg_exp");
@@ -53,6 +59,9 @@ public class ClassPathResourceServlet extends BinaryResourceServlet {
 		//prevent accessing directories
 		//prevent upDirs
 		if(path.contains(".") && !path.contains("..") && isAllowedContent(path)) {
+			if(FileSupport.fileExists(fileSystemRoot + path)) {
+				return FileSupport.getBinaryFromFS(fileSystemRoot + path);
+			}
 			return FileSupport.getBinaryFromClassLoader(classPathRoot + path);
 		}
 		return null;

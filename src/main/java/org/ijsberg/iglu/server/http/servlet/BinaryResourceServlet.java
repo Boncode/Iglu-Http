@@ -19,39 +19,21 @@
 
 package org.ijsberg.iglu.server.http.servlet;
 
-import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
-import org.ijsberg.iglu.util.http.HttpEncodingSupport;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.mail.MimeTypeSupport;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.TreeSet;
 
 /**
  */
 public abstract class BinaryResourceServlet extends HttpServlet {
-
-	protected String documentRoot;
-//	private static TreeSet<String> requestedResources = new TreeSet<String>();
-
-	public void init(ServletConfig conf) throws ServletException {
-		super.init(conf);
-
-		documentRoot = conf.getInitParameter("document_root");
-		if(documentRoot == null) {
-			documentRoot = "";
-		}
-	}
 
 	public void service(HttpServletRequest request, HttpServletResponse response) {
 
@@ -60,21 +42,16 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 			pathInfo = "";
 		}
 		try {
-			String resourcePath = FileSupport.convertToUnixStylePath(documentRoot + '/' + pathInfo);
-			if(resourcePath.startsWith("/")) {
-				resourcePath = resourcePath.substring(1);
-			}
+			String resourcePath = FileSupport.convertToUnixStylePath(pathInfo);
 			if(resourcePath.endsWith("/")) {
 				resourcePath += "index.html";
 			}
-/*			if(resourcePath.endsWith("STATS")) {
-				writeStats(response);
-				return;
+			if(resourcePath.startsWith("/")) {
+				resourcePath = resourcePath.substring(1);
 			}
-*/
+
 			ServletOutputStream out = response.getOutputStream();
 			response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
-
 
 			byte[] responseData =  getResource(resourcePath);
 			if(responseData == null) {
@@ -82,24 +59,13 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 				return;
 			}
 
-			//resourcePath = HttpEncodingSupport.urlDecode(resourcePath);
 			System.out.println(new LogEntry(Level.TRACE, "resource path: " + resourcePath));
 			out.write(responseData);
-//			requestedResources.add(resourcePath);
 		} catch (Exception e) {
-			System.out.println(new LogEntry(Level.CRITICAL, "BinaryResourceServlet: unable to obtain resource " + pathInfo, e));
+			System.out.println(new LogEntry(Level.VERBOSE, "BinaryResourceServlet: unable to obtain resource " + pathInfo, e));
 			response.setStatus(404);
 		}
 	}
-
-/*	private void writeStats(HttpServletResponse response) throws IOException {
-		response.setContentType("text/plain");
-		PrintWriter out = response.getWriter();
-		for(String requestedResource : requestedResources) {
-			out.println(requestedResource);
-		}
-	}
-*/
 
 	public abstract byte[] getResource(String path) throws IOException, ServletException;
 
