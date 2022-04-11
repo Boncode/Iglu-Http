@@ -191,3 +191,16 @@ body.waiting * {
 .no_flex tbody tr {
     display: revert !important;
 }
+
+.duplication_top_ten td, .duplication_top_ten th {
+    flex: 0 !important;
+    min-width: 46px !important;
+}
+
+.duplication_top_ten .middle, .duplication_top_ten .middle {
+    min-width: 80px !important;
+}
+
+.duplication_top_ten .right, .duplication_top_ten .right {
+    flex: 100 !important;
+}
