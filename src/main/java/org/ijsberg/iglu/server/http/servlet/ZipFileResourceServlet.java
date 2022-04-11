@@ -32,10 +32,16 @@ import java.io.IOException;
 public class ZipFileResourceServlet extends BinaryResourceServlet implements ZipFileResource {
 
 	private String zipFileName = null;
+	protected String documentRoot;
 
 	public void init(ServletConfig conf) throws ServletException {
 		super.init(conf);
 		zipFileName = conf.getInitParameter("zip_file_name");
+
+		documentRoot = conf.getInitParameter("document_root");
+		if(documentRoot == null) {
+			documentRoot = "";
+		}
 	}
 
 	@Override
@@ -51,7 +57,7 @@ public class ZipFileResourceServlet extends BinaryResourceServlet implements Zip
 			System.out.println(new LogEntry(Level.CRITICAL, this.getClass().getSimpleName() + ": cannot resolve resource"));
 			return "currently no resources available".getBytes();
 		}
-		byte[] resource = FileSupport.getBinaryFromJar(path, zipFileName);
+		byte[] resource = FileSupport.getBinaryFromJar(documentRoot + path, zipFileName);
         return resource;
 	}
 }
