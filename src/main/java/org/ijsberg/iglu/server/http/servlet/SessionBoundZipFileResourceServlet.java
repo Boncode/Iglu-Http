@@ -26,6 +26,8 @@ import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.io.FileSupport;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
@@ -36,6 +38,20 @@ public class SessionBoundZipFileResourceServlet  extends BinaryResourceServlet i
 
 	public void setAccessManager(AccessManager accessManager) {
 		this.accessManager = accessManager;
+	}
+
+
+	protected String documentRoot;
+//	private static TreeSet<String> requestedResources = new TreeSet<String>();
+
+	@Override
+	public void init(ServletConfig conf) throws ServletException {
+		super.init(conf);
+
+		documentRoot = conf.getInitParameter("document_root");
+		if(documentRoot == null) {
+			documentRoot = "";
+		}
 	}
 
 	@Override
