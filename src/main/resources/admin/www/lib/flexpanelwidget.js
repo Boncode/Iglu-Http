@@ -49,7 +49,7 @@ FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
     }
     html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
 
-    console.log('createTitleBarFunctionHtml: ' + html)
+    console.debug('createTitleBarFunctionHtml: ' + html)
 
     return html;
 };

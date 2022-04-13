@@ -109,7 +109,7 @@ FlexFrameWidget.prototype.onDestroy = function() {
 		}
 	}
 	if(this.content && this.content.onDestroy != 'undefined') {
-	    console.log(this.id + ' destroying content [' + this.content + '] ' + this.content.id);
+	    console.debug(this.id + ' destroying content [' + this.content + '] ' + this.content.id);
 		WidgetManager.instance.destroyWidget(this.content.id);
 	}
 };

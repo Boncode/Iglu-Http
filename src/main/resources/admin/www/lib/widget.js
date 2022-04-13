@@ -32,7 +32,6 @@ Widget.prototype.constructWidget = function(settings) {
 
 Widget.prototype.refreshSettings = function(settings) {
 	for(var name in settings) {
-	    //console.log('setting ' + name + ' to ' + settings[name]);
       	this.set(name, settings[name], this[name]);
     }
 }
@@ -48,7 +47,6 @@ Widget.prototype.set = function(name, value, defaultValue) {
 	} else if(typeof defaultValue != 'undefined') {
 		this[name] = defaultValue;
 	}
-	//console.log(name + ' set to ' + value + ' : ' + this[name]);
 };
 
 Widget.prototype.cloneSettings = function(extraSettingsNames) {
@@ -223,7 +221,6 @@ WidgetContent.prototype.constructWidgetContent = function(settings, content) {
 			this.source_load_action = 'display';
 		 }
 	}
-	console.log('source load action of ' + this.id  + ' is ' + this.source_load_action);
 	if(typeof content != 'undefined' && content != null) {
 		this.content = content;
 	} else {

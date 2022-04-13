@@ -82,8 +82,6 @@ FrameWidget.prototype.constructFrameWidget = function(settings, enclosedWidget) 
 };
 
 FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
-//    console.info('adding resize listener to: ' + widget.id + ', actions: ');
-//    console.info(actionsByDirection);
 	var listenerData = this.sizeAndPositionListeners[widget.id];
 	if(typeof listenerData == 'undefined' || listenerData == null) {
 		listenerData = new Object();
@@ -91,7 +89,6 @@ FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
 	}
 	listenerData.widget = widget;
 	for(var direction in actionsByDirection) {
-	    //log('' + this.id + ' will notify ' + widget.id + ' of event ' + direction);
 		listenerData.actionsByDirection[direction] = actionsByDirection[direction];
 	}
 	this.sizeAndPositionListeners[widget.id] = listenerData;
@@ -119,24 +116,18 @@ offSet: float
 */
 FrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSet) {
 
-//	console.log('FrameWidget.prototype.notifySizeAndPositionListeners');
-
     var offsetOverFlow = 0;
 
 	for(var widgetId in this.sizeAndPositionListeners) {
-//	    console.log('' + this.id + ' trying to trigger ' + widgetId);
 		var listenerData = this.sizeAndPositionListeners[widgetId];
 
 		var actionData = listenerData.actionsByDirection[direction];
 		if(typeof actionData != 'undefined') {
-//			console.info('' + this.id + ' triggers ' + /*actionData.action + ' of +'*/ widgetId + ' ' + direction + ':' + offSet);
 			var newOffsetOverFlow = actionData.action.call(listenerData.widget, actionData.factor * offSet);
-			//log('' + newOffsetOverFlow);
 			if(Math.abs(newOffsetOverFlow) > Math.abs(offsetOverFlow)) {
 			    offsetOverFlow = newOffsetOverFlow;
 			}
 		} else {
-//    	    console.info('' + this.id + ' trying to trigger ' + widgetId + ' : no actionData for direction ' + direction);
 		}
 	}
 	return offsetOverFlow;
@@ -342,7 +333,7 @@ FrameWidget.prototype.onDestroy = function() {
 		}
 	}
 	if(this.content && this.content.onDestroy != 'undefined') {
-	    console.log(this.id + ' destroying content [' + this.content + '] ' + this.content.id);
+	    console.debug(this.id + ' destroying content [' + this.content + '] ' + this.content.id);
 		WidgetManager.instance.destroyWidget(this.content.id);
 	}
 };
@@ -453,7 +444,7 @@ FrameWidget.prototype.centerInOuterWidget = function(outerWidget) {
 
 FrameWidget.prototype.centerInWindow = function() {
 	this.left = parseInt((window.innerWidth - this.width) / 2);
-    console.log('(' + window.innerWidth + ' - ' + this.width + ') / 2 = ' + this.left);
+    console.debug('(' + window.innerWidth + ' - ' + this.width + ') / 2 = ' + this.left);
 	this.top = parseInt((window.innerHeight - this.height) / 2);
 }
 
