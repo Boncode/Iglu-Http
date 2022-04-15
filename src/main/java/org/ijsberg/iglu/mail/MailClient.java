@@ -4,7 +4,10 @@ import org.ijsberg.iglu.util.misc.EncodingSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 
 public class MailClient {

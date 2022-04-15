@@ -3,7 +3,7 @@ package org.ijsberg.iglu.http.json;
 import junit.framework.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Properties;
 
 /**
  */

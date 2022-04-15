@@ -1,6 +1,5 @@
 package org.ijsberg.iglu.server.http.servlet;
 
-import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.util.http.ServletSupport;
 

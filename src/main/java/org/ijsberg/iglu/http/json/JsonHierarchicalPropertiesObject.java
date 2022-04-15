@@ -3,7 +3,8 @@ package org.ijsberg.iglu.http.json;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
-import java.util.*;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  */

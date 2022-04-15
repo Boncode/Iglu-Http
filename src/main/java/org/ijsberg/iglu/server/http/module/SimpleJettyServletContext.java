@@ -32,12 +32,10 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.logging.Logger;
-import org.ijsberg.iglu.util.execution.Executable;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 import org.ijsberg.iglu.util.reflection.ReflectionSupport;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.slf4j.impl.Slf4jHack;
 
 import javax.servlet.DispatcherType;

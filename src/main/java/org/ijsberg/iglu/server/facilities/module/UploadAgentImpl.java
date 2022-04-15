@@ -44,7 +44,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
+import static org.ijsberg.iglu.rest.RequestPath.ParameterType.REQUEST_RESPONSE;
+import static org.ijsberg.iglu.rest.RequestPath.ParameterType.VOID;
 import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.GET;
 import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.POST;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;

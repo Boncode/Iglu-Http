@@ -38,7 +38,6 @@ import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
 import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
 
 import javax.servlet.Filter;
-import javax.servlet.Servlet;
 
 import static org.ijsberg.iglu.util.properties.IgluProperties.loadProperties;
 

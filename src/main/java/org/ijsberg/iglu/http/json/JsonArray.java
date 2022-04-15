@@ -25,7 +25,6 @@ import org.ijsberg.iglu.util.collection.CollectionSupport;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  */

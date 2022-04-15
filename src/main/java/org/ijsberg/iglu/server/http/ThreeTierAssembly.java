@@ -9,7 +9,6 @@ import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
 import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
-import org.ijsberg.iglu.util.collection.ArraySupport;
 
 import java.util.Properties;
 

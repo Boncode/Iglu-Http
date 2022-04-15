@@ -8,9 +8,6 @@ import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.logging.Logger;
-import org.ijsberg.iglu.mvc.RequestMapper;
-import org.ijsberg.iglu.mvc.component.StandardRequestMapper;
-import org.ijsberg.iglu.mvc.servlet.DispatcherServlet;
 import org.ijsberg.iglu.server.admin.http.AdminAjaxResponseAgent;
 import org.ijsberg.iglu.server.admin.module.AdminAgentImpl;
 import org.ijsberg.iglu.server.facilities.module.UploadAgentImpl;
@@ -21,7 +18,6 @@ import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.Filter;
-import javax.servlet.Servlet;
 import java.util.Properties;
 
 public class HttpAdminCoreAssembly extends StandardCoreAssembly {

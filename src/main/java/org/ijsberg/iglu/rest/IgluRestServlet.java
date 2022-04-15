@@ -19,12 +19,6 @@ import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.misc.StringSupport;
 
-import static org.ijsberg.iglu.logging.Level.TRACE;
-import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.*;
-import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
-import static org.ijsberg.iglu.util.http.HttpEncodingSupport.urlEncodeXSSRiskCharacters;
-import static org.ijsberg.iglu.util.mail.WebContentType.*;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +29,14 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+
+import static org.ijsberg.iglu.logging.Level.TRACE;
+import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
+import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.POST;
+import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.PUT;
+import static org.ijsberg.iglu.util.http.HttpEncodingSupport.urlEncodeXSSRiskCharacters;
+import static org.ijsberg.iglu.util.mail.WebContentType.HTML;
+import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
 
 /**
  * Created by J Meetsma on 22-8-2016.

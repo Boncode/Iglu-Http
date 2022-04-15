@@ -6,7 +6,6 @@ import org.ijsberg.iglu.logging.LogEntry;
 import org.slf4j.event.Level;
 
 import static org.ijsberg.iglu.logging.Level.DEBUG;
-import static org.slf4j.impl.IgluLoggerHandler.getIgluLogLevel;
 
 public class IgluJettyLogAppender implements JettyAppender {
     @Override

@@ -2,14 +2,12 @@ package org.slf4j.impl;
 
 import org.eclipse.jetty.logging.JettyLevel;
 import org.eclipse.jetty.logging.JettyLogger;
-import org.eclipse.jetty.logging.JettyLoggerFactory;
 import org.eclipse.jetty.logging.StdErrAppender;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.logging.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
