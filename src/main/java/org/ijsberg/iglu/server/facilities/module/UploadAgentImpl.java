@@ -212,7 +212,7 @@ public class UploadAgentImpl implements UploadAgent {
 		} else {
 			System.out.println(new LogEntry("notification disabled"));
 		}
-		requestRegistry.dropMessageToCurrentUser(new EventMessage("processSuccess", "Upload success! The file will be processed shortly."));
+		requestRegistry.dropMessageToCurrentUser(new EventMessage("uploadDone", "Upload success! The file will be processed shortly."));
 	}
 
 	private void notifyAsync(FileData fileData) {

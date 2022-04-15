@@ -132,7 +132,7 @@ WindowWidget.prototype.writeHTML = function() {
 
 
 WindowWidget.prototype.onDestroy = function() {
-    console.log('WindowWidget.prototype.onDestroy:' + this.left);
+    console.debug('WindowWidget.prototype.onDestroy:' + this.left);
 	if(typeof this.left != 'undefined' && this.left != null) {
 		WidgetManager.instance.lastX = this.left - 20;
 	}
@@ -152,7 +152,7 @@ WindowWidget.prototype.onDestroy = function() {
 //todo rename to activate / deactivate
 
 WindowWidget.prototype.onFocus = function() {
-	console.log('this.id:' + this.id);
+	console.debug('this.id:' + this.id);
 	this.setHeaderClass('title_bar_active');
 };
 

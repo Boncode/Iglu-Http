@@ -34,17 +34,13 @@ iglu.util.CallStack.prototype.mark = function(call) {
 iglu.util.CallStack.prototype.goBackOrForward = function(hash) {
     if(typeof hash != 'undefined' && hash != null && hash.length > 4) {
         var hashValue = parseInt(window.location.hash.substring(4));
-        console.log(hashValue + ' : ' + this.lastHashValue + ' : ' + this.lastHashIndex);
         if(hashValue < this.lastHashValue && this.lastHashIndex > 0) {
-            console.log('back');
             this.lastHashIndex--;
             this.executedCall = this.stack[this.lastHashIndex];
-            console.log('back: ' + this.stack[this.lastHashIndex]);
             eval(this.stack[this.lastHashIndex]);
         } else if(hashValue > this.lastHashValue && this.lastHashIndex + 1 < this.stack.length) {
             this.lastHashIndex++;
             this.executedCall = this.stack[this.lastHashIndex];
-            console.log('forward: ' + this.stack[this.lastHashIndex]);
             eval(this.stack[this.lastHashIndex]);
         }
         this.lastHashValue = hashValue;
@@ -52,7 +48,7 @@ iglu.util.CallStack.prototype.goBackOrForward = function(hash) {
 }
 
 window.onhashchange = function() {
-    console.log('window.onhashchange: ' + window.location.hash + ' -> ' + window.location.lasthash);
+    console.debug('window.onhashchange: ' + window.location.hash + ' -> ' + window.location.lasthash);
     var hash = window.location.hash;
     iglu.util.CallStack.instance.goBackOrForward(hash);
 }

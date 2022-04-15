@@ -132,20 +132,20 @@ WidgetManager.prototype.registerTimerListener = function(listener, frameRate) {
 
 	listener.frameRate = frameRate;
 	listener.eventInterval = Math.round(this.FRAME_RATE / frameRate);
-	console.log('registering timer listener ' + listener.id + ' with event interval ' + listener.eventInterval);
+	console.debug('registering timer listener ' + listener.id + ' with event interval ' + listener.eventInterval);
 	listener.eventIntervalCountdown = listener.eventInterval;
 	listener.timerIndex = this.timerListeners.length;
 	this.timerListeners[this.timerListeners.length] = listener;
-	console.log('current number of timer listeners: ' + this.timerListeners.length);
+	console.debug('current number of timer listeners: ' + this.timerListeners.length);
 	if(this.timerListeners.length == 1) {
-		console.log('starting timer');
+		console.debug('starting timer');
     	setTimeout('WidgetManager.instance.tick();', this.TIMER_INTERVAL);
 	}
 }
 
 WidgetManager.prototype.unregisterTimerListener = function(listener) {
 
-	console.log('unregistering timer listener ' + listener.id);
+	console.debug('unregistering timer listener ' + listener.id);
 	this.timerListeners.splice(listener.timerIndex,1);
 }
 
@@ -153,11 +153,10 @@ WidgetManager.prototype.tick = function() {
 	if(this.timerListeners.length > 0) {
     	setTimeout('WidgetManager.instance.tick();', this.TIMER_INTERVAL);
     } else {
-   		console.log('stopping timer');
+   		console.debug('stopping timer');
 	}
 	for(var i in this.timerListeners) {
 		 if(this.timerListeners[i].eventIntervalCountdown-- <= 0) {
-//			console.log('notifying ' + this.timerListeners[i].id);
 			this.timerListeners[i].eventIntervalCountdown = this.timerListeners[i].eventInterval;
 			this.timerListeners[i].onTimer();
 		}
@@ -192,7 +191,7 @@ WidgetManager.prototype.doAutoRefreshWidget = function(widgetId) {
 			this.widgetTimerMap[widgetId] = setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widgetId + '")', autoRefreshInterval);
 		}
 	} else {
-		console.log('cannot auto refresh ' + widgetId + ', widget not registered');
+		console.warn('cannot auto refresh ' + widgetId + ', widget not registered');
 	}
 }
 
@@ -218,7 +217,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	var widget = this.widgets[newWidget.getId()];
 
 	if(widget != null) {
-		console.log('widget "' + widget.getId() + '" already exists');
+		console.warn('widget "' + widget.getId() + '" already exists');
 		this.activateCurrentWidget(widget.id);
     	return false;
 	}
@@ -243,7 +242,7 @@ WidgetManager.prototype.deployWidgetInContainer = function(container, newWidget,
 	newWidget.setDOMElement(element);
 	//newWidget.draw();
 	newWidget.onDeploy();
-	console.log('widget "' + newWidget.getId() + '" deployed, DOMElement: ' + newWidget.getDOMElement());
+	console.debug('widget "' + newWidget.getId() + '" deployed, DOMElement: ' + newWidget.getDOMElement());
 
 	this.activateCurrentWidget(newWidget.id);
 	return true;
@@ -253,12 +252,6 @@ WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget
 
     //TODO handle proper destruction, notifying etc.
 	var widget = this.widgets[newWidget.getId()];
-/*	if(widget != null) {
-		console.log('widget "' + widget.getId() + '" already exists');
-		this.activateCurrentWidget(widget.id);
-    	return false;
-	}
-*/
 	this.widgets[newWidget.getId()] = newWidget;
 	var newElement = container;
 
@@ -274,11 +267,10 @@ WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget
         container.replaceChild(newElement, oldElement);
 	}
 	newWidget.containerElement = container;
-	console.log('setting DOM element ' + newElement)
 	newWidget.setDOMElement(newElement);
 	//newWidget.draw();
 	newWidget.onDeploy();
-	console.log('widget "' + newWidget.getId() + '" deployed');
+	console.debug('widget "' + newWidget.getId() + '" deployed');
 
 	this.activateCurrentWidget(newWidget.id);
 	return true;
@@ -287,7 +279,7 @@ WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget
 WidgetManager.prototype.destroyWidget = function(widgetId) {
 	var widget = this.widgets[widgetId];
 	if(widget != null) {
-		console.log('removing widget "' + widgetId + '"');
+		console.debug('removing widget "' + widgetId + '"');
 		//call widget destructor
 		widget.onDestroy();
 		var element = document.getElementById(widgetId);
@@ -295,7 +287,7 @@ WidgetManager.prototype.destroyWidget = function(widgetId) {
 			try {
 				widget.containerElement.removeChild(element);
 			} catch(e) {
-				console.log('ERROR while removing ' + element + ': ' + e.message);
+				console.error('ERROR while removing ' + element + ': ' + e.message);
 			}
 		}
 		this.unregisterDraggableWidget(widget);
@@ -305,9 +297,8 @@ WidgetManager.prototype.destroyWidget = function(widgetId) {
 		    this.widgets[remainingWidgetId].notifyWidgetDestroyed(widget);
 		}
 		delete this.widgets[widgetId];
-		console.log('done');
 	} else {
-		console.log('NOT removing unregistered widget "' + widgetId + '"');
+		console.warn('failed to remove "' + widgetId + '": not registered');
 		if(typeof widgetId == 'undefined') {
 		    throw 'undefined widget ID';
 		}
@@ -322,7 +313,6 @@ WidgetManager.prototype.getWidget = function(id) {
 }
 
 WidgetManager.prototype.containsWidget = function(id) {
-	console.log('containsWidget(' + id + ')' + this.widgets[id]);
 	return this.widgets[id] != null;
 }
 

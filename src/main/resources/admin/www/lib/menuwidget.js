@@ -29,8 +29,6 @@ function MenuWidget(id, content, callback) {
 	}
 	this.callback = callback;
 	this.isLoaded = false;
-    console.log('isLoaded:' + this.isLoaded);
-
 
 	var settings = new Object();
 	settings.id = id;
@@ -38,7 +36,6 @@ function MenuWidget(id, content, callback) {
 	this.constructMenuWidget(settings, settings.content);
 
     this.expertMode = false;
-    console.log('isLoaded:' + this.isLoaded);
 	//TODO initialize and invoke super
 }
 
@@ -194,7 +191,7 @@ MenuWidget.prototype.handleAjaxResponse = function(responseText) {
 
 MenuWidget.prototype.evaluate = function(contents, menuWidget) {
 
-	console.log('evaluate');
+	console.debug('MenuWidget evaluate');
 	if(!this.isLoaded) {
 		menuWidget.menu = eval(contents);
 		menuWidget.writeHTML();
@@ -205,9 +202,8 @@ MenuWidget.prototype.evaluate = function(contents, menuWidget) {
 
 MenuWidget.prototype.load = function(contents, menuWidget) {
 
-    //console.log('menuwidget this ' + this);
 	if(!menuWidget.isLoaded) {
-	    console.log('loading menu contents');
+	    console.debug('loading menu contents');
 		menuWidget.menu = JSON.parse(contents).menu;
 		menuWidget.writeHTML();
 		menuWidget.isLoaded = true;
@@ -215,14 +211,14 @@ MenuWidget.prototype.load = function(contents, menuWidget) {
 		    menuWidget.callback(menuWidget);
 		}
 	} else {
-	    console.log('menu contents already loaded');
+	    console.warn('cannot load: menu contents already loaded');
 	}
 	//save state
 };
 
 
 MenuWidget.prototype.onDeploy = function() {
-	console.log('deploying menu with source ' + this.source);
+	console.debug('deploying menu with source ' + this.source);
 	if(this.source != null) {
 		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
 	}
