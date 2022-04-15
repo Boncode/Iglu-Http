@@ -34,10 +34,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by J Meetsma on 22-8-2016.
@@ -50,13 +47,12 @@ public class IgluRestServlet extends HttpServlet {
         this.accessManager = accessManager;
     }
 
-
-
     private class RestMethodData {
 
         Method method;
         RequestPath requestPath;
         String requiredRole;
+        String requiredAccessRight;
         //rest method can either be invoked on:
         Component serviceComponent;
         //or by retrieving stateful agent by:
@@ -124,6 +120,13 @@ public class IgluRestServlet extends HttpServlet {
                     requiredRole = AccessConstants.ADMIN_ROLE_NAME;
                 }
             }
+            AssertAccessRight assertAccessRight = method.getAnnotation(AssertAccessRight.class);
+            if(assertAccessRight != null) {
+                requiredAccessRight = assertAccessRight.right();
+                if(!accessRightNames.contains(requiredAccessRight)) {
+                    throw new ConfigurationException("required access right " + requiredAccessRight + " is not part of configured access rights " + accessRightNames);
+                }
+            }
         }
 
         public void assertUserAuthorized() {
@@ -162,9 +165,12 @@ public class IgluRestServlet extends HttpServlet {
     //FIXME allow for method overloading
     private Map<String, RestMethodData> invokeableMethods = new HashMap<>();
 
-    public void setAssembly(Assembly assembly) {
+    private List<String> accessRightNames;
+
+    public void setAssembly(Assembly assembly, String[] accessRightNames) {
         this.assembly = assembly;
         accessManager = assembly.getCoreCluster().getFacade().getProxy("AccessManager", AccessManager.class);
+        this.accessRightNames = Arrays.asList(accessRightNames);
     }
 
     public void setAgentType(String agentName, Class agentClass) {
