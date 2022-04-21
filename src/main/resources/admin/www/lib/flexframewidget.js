@@ -30,27 +30,18 @@ subclass(FlexFrameWidget, Widget);
 
 FlexFrameWidget.prototype.constructFlexFrameWidget = function(settings, enclosedWidget) {
 
-	//TODO a frame may not exceed the limits of the master frame
 	this.innerContainer;
-	this.content = null;//TODO enclosedWidget
+	this.content = null;
 	this.subWidgets = new Object();
 	if(enclosedWidget != null && typeof enclosedWidget != 'undefined') {
 	 	if(!enclosedWidget.onDeploy) {
 			throw 'content with id ' + enclosedWidget.id + ' must be of type widget, not of type ' + typeof enclosedWidget;
 		}
-		//this.addSubWidget(this.id, enclosedWidget);
 		enclosedWidget.outerWidget = this;
 	}
-
 	this.set('content', enclosedWidget);
-	//invoke super
 	this.constructWidget(settings, enclosedWidget);
 };
-
-FlexFrameWidget.prototype.notifyWidgetDestroyed = function(destroyedWidget) {
-//   delete this.sizeAndPositionListeners[destroyedWidget.id];
-};
-
 
 FlexFrameWidget.prototype.draw = function() {
 	if(this.element != null) {
@@ -114,12 +105,6 @@ FlexFrameWidget.prototype.onDestroy = function() {
 	}
 };
 
-FlexFrameWidget.prototype.setPositionFromPage = function() {
-//	var elementPosition = getElementPositionInPage(this.element);
-//	this.top = elementPosition.y;
-//	this.left = elementPosition.x;
-}
-
 FlexFrameWidget.prototype.setDOMElement = function(element) {
 	this.element = element;
 	if(this.cssClassName != null) {
@@ -161,20 +146,9 @@ FlexFrameWidget.prototype.onDeploy = function() {
 	this.display();
 };
 
-FlexFrameWidget.prototype.refresh = function() {
-/*	//load state
-	if(this.source != null) {
-		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
-	} else if(this.content != null) {
-		this.writeHTML();
-	} */
-};
-
-
 
 
 //todo rename to activate / deactivate
-
 FlexFrameWidget.prototype.writeHTML = function() {
 };
 
