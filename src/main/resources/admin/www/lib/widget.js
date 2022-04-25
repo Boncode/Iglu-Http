@@ -164,6 +164,22 @@ Widget.prototype.evaluate = function(content, element) {
 	eval(content);
 };
 
+Widget.prototype.activate = function() {
+    if(this.getDOMElement() !== null) {
+        this.getDOMElement().style.display = 'unset';
+    } else {
+        console.warn('Widget ' + this.getId() + ' cannot be activated, no element present to display.');
+    }
+}
+
+
+Widget.prototype.deactivate = function() {
+    if(this.getDOMElement() !== null) {
+        this.getDOMElement().style.display = 'none';
+    } else {
+        console.warn('Widget ' + this.getId() + ' cannot be deactivated, no element present to deactivate.');
+    }
+}
 
 //TODO separate content (WidgetContent) from position and size (FrameWidget)
 
