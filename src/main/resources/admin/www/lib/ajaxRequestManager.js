@@ -287,38 +287,6 @@ var ajaxRequestManager = new AjaxRequestManager();
 ////// UTILITIES
 //TODO move to menu (?)
 
-
-function loadPageHtml(contents, callbackInput) {
-
-	//TODO lot of assumptions here
-
-	var panelContents = document.getElementById(callbackInput.target + '_contents');
-	if(panelContents == null) {
-		panelContents = document.getElementById(callbackInput.target);
-	}
-	if(panelContents != null) {
-		panelContents.innerHTML = contents;
-	}
-
-	var panelHeader = document.getElementById(callbackInput.target + '_header');
-	if(panelHeader != null) {
-		panelHeader.getElementsByClassName('panelheadertitle')[0].innerHTML = callbackInput.title;
-	} else {
-		log('WARNING: cannot find element ' + callbackInput.target + '_header');
-	}
-}
-
-//TODO rename and add prefix
-function linkToHtml(source, target, title) {
-
-	var callbackInput = new Object();
-	callbackInput.target = target;
-	callbackInput.title = title;
-
-	ajaxRequestManager.doRequest('./' + source, loadPageHtml, callbackInput);
-	return false;
-}
-
 function loadPageJson(contents, callbackInput) {
 	var panelContents = document.getElementById(callbackInput.target + '_contents');
 	panelContents.innerHTML = '';
@@ -378,8 +346,6 @@ function getToggleProperty(value, on, off) {
 
 }
 
-
-
 function createLink(item, alternativeLabel) {
 
 	var onclick = '';
@@ -427,23 +393,3 @@ function createLink(item, alternativeLabel) {
 		return item.label;
 	}
 }
-
-/*
-setInterval(function(){
-    if (window.location.hash != hash) {
-
-        //alert('' + parseInt(window.location.hash.substring(1)) + ' != ' + parseInt(hash.substring(1)));
-
-        if(parseInt(window.location.hash.substring(4)) < parseInt(hash.substring(4))) {
-            ajaxRequestManager.back();
-        }
-
-
-        hash = window.location.hash;
-        //alert("User went back or forward to application state represented by " + hash);
-    }
-}, 100);
-*/
-
-
-
