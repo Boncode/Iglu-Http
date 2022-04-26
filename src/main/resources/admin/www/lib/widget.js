@@ -166,16 +166,15 @@ Widget.prototype.evaluate = function(content, element) {
 
 Widget.prototype.activate = function() {
     if(this.getDOMElement() !== null) {
-        this.getDOMElement().style.display = 'unset';
+        this.getDOMElement().classList.remove('deactivated');
     } else {
         console.warn('Widget ' + this.getId() + ' cannot be activated, no element present to display.');
     }
 }
 
-
 Widget.prototype.deactivate = function() {
     if(this.getDOMElement() !== null) {
-        this.getDOMElement().style.display = 'none';
+        this.getDOMElement().classList.add('deactivated');
     } else {
         console.warn('Widget ' + this.getId() + ' cannot be deactivated, no element present to deactivate.');
     }

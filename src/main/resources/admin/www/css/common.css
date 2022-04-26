@@ -204,3 +204,7 @@ body.waiting * {
 .duplication_top_ten .right, .duplication_top_ten .right {
     flex: 100 !important;
 }
+
+.deactivated {
+    display: none !important;
+}
