@@ -179,6 +179,10 @@ body.dark .clickable_row:hover {
     cursor: pointer;
 }
 
+.hover_underline:hover {
+    text-decoration: underline;
+}
+
 body.waiting * {
     cursor: progress;
 }
