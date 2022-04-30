@@ -32,6 +32,7 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.logging.Logger;
+import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
@@ -196,7 +197,9 @@ public class SimpleJettyServletContext implements Startable {
 		//Jetty 10
 		ctx.getSessionHandler().setMaxInactiveInterval(sessionTimeout);
 		//set root directory
-		ctx.setResourceBase(documentRoot);
+		if(FileSupport.fileExists(documentRoot)) {
+			ctx.setResourceBase(documentRoot);
+		}
 //			addInitParameters(ctx.getInitParams(), section);
 
 		addServlets(ctx, this.properties);

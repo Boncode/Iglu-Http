@@ -2,7 +2,6 @@ package org.ijsberg.iglu.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ijsberg.iglu.FatalException;
-import org.ijsberg.iglu.access.AccessConstants;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.configuration.Assembly;
@@ -53,8 +52,8 @@ public class IgluRestServlet extends HttpServlet {
 
         Method method;
         RequestPath requestPath;
-        String requiredRole;
-        String requiredAccessRight;
+        String[] requiredRight;
+//        String requiredAccessRight;
         //rest method can either be invoked on:
         Component serviceComponent;
         //or by retrieving stateful agent by:
@@ -113,30 +112,23 @@ public class IgluRestServlet extends HttpServlet {
                     throw new ConfigurationException("input type " + inputType + " requires invocation by method " + POST + " method " + method.getName());
                 }
             }
-            AssertUserRole assertUserRole = method.getAnnotation(AssertUserRole.class);
-            if(assertUserRole != null) {
-                requiredRole = assertUserRole.role();
+            RequireOneOrMorePermissions requireOneOrMorePermissions = method.getAnnotation(RequireOneOrMorePermissions.class);
+            if(requireOneOrMorePermissions != null) {
+                requiredRight = requireOneOrMorePermissions.permission();
             } else {
                 AllowPublicAccess allowPublicAccess = method.getAnnotation(AllowPublicAccess.class);
                 if(allowPublicAccess == null) {
-                    requiredRole = AccessConstants.ADMIN_ROLE_NAME;
-                }
-            }
-            AssertAccessRight assertAccessRight = method.getAnnotation(AssertAccessRight.class);
-            if(assertAccessRight != null) {
-                requiredAccessRight = assertAccessRight.right();
-                if(!accessRightNames.contains(requiredAccessRight)) {
-                    throw new ConfigurationException("required access right " + requiredAccessRight + " is not part of configured access rights " + accessRightNames);
+                    requiredRight = new String[]{"x"};//AccessConstants.ADMIN_ROLE_NAME;
                 }
             }
         }
 
         public void assertUserAuthorized() {
-            if(requiredRole != null) {
+            if(requiredRight != null) {
                 User user = accessManager.getCurrentRequest().getUser();
                 if (user != null) {
                     System.out.println(new LogEntry(TRACE,"checking rights for " + user.getId() + " (" + CollectionSupport.format(user.getGroupNames(), ",") + ")"));
-                    if (!user.hasRole(requiredRole)) {
+                    if (!user.hasOneOfRights(requiredRight)) {
                         throw new RestException("not authorized for endpoint " + this.requestPath.path(), 403);
                     }
                 } else {
@@ -401,18 +393,15 @@ public class IgluRestServlet extends HttpServlet {
     }
 
     public void handleException(RestMethodData restMethodData, HttpServletResponse response, Exception e) throws IOException {
-        System.out.println(new LogEntry(Level.CRITICAL, "unable to process request", e));
         try {
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("text/plain");
             if(e instanceof RestException) {
-//                response.setStatus(((RestException) e).getHttpStatusCode());
+                System.out.println(new LogEntry(Level.DEBUG, "process request failed with predictable error", e));
                 respondWithError(response, restMethodData, ((RestException) e).getHttpStatusCode(), e.getMessage());
-//                out.println(e.getMessage());
             } else {
-//                response.setStatus(500);
+                System.out.println(new LogEntry(Level.CRITICAL, "processing request failed with server error", e));
                 respondWithError(response, restMethodData, 500, "unexpected error");
-//                out.println("unexpected error");
             }
         } catch (Exception excHandlingException) {
             System.out.println(new LogEntry(Level.CRITICAL, "exception handling failed", excHandlingException));

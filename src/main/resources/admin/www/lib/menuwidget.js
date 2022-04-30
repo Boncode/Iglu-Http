@@ -17,7 +17,7 @@
  * along with Iglu.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function MenuWidget(id, content, callback) {
+function MenuWidget(id, content, callback, grantedPermissions) {
 
 	//Widget.call(this);
 	this.id = id;
@@ -36,6 +36,9 @@ function MenuWidget(id, content, callback) {
 	this.constructMenuWidget(settings, settings.content);
 
     this.expertMode = false;
+
+    this.grantedPermissions = grantedPermissions;
+
 	//TODO initialize and invoke super
 }
 
@@ -86,10 +89,45 @@ MenuWidget.prototype.writeHTML = function() {
 
 };
 
+
+MenuWidget.prototype.getRequiredPermissions = function(treeItem) {
+    if(typeof treeItem.require_one_of_permissions != 'undefined') {
+        return treeItem.require_one_of_permissions.split();
+    }
+    return null;
+}
+
+MenuWidget.prototype.itemIsVisible = function(treeItem) {
+   var requiredPermissions = this.getRequiredPermissions(treeItem);
+   if( typeof this.grantedPermissions != 'undefined' &&
+        this.grantedPermissions != null &&
+        requiredPermissions != null) {
+        for(var j in requiredPermissions) {
+            if(this.grantedPermissions.indexOf(requiredPermissions[j]) != -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
+}
+
+MenuWidget.prototype.containsVisibleItems = function(tree) {
+    for(var i in tree) {
+        if(!tree[i].expertMode || this.expertMode) {
+            if(this.itemIsVisible(tree[i])) {
+                return true;
+            }
+        }
+    }
+}
+
 MenuWidget.prototype.createTree = function(tree, container) {
     for(var i in tree) {
         if(!tree[i].expertMode || this.expertMode) {
-            this.addItem(tree[i], container);
+            if(this.itemIsVisible(tree[i])) {
+                this.addItem(tree[i], container);
+            }
         }
     }
 }
@@ -131,9 +169,17 @@ MenuWidget.prototype.addItem = function(item, container) {
 		}
 
 		itemDiv.innerHTML = itemLabel;
-        if(item.label !== ""){
-            itemDiv.innerHTML += getSubMenuChevronDownHTML();
+        if(item.label !== "" && this.containsVisibleItems(item.submenu)){
+            itemDiv.innerHTML +=
+                '<span id="' + itemId + '.chevron">' +
+                getSubMenuChevronDownHTML() +
+                '</span>';
+        } else {
+            itemDiv.innerHTML +=
+                '<span id="' + itemId + '.chevron">' +
+                '</span>';
         }
+
 
 		itemDiv.appendChild(branchDiv);
 		this.createTree(item.submenu, branchDiv);

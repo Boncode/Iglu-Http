@@ -375,7 +375,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			long timeUsed = System.currentTimeMillis() - start;
 			if(timeUsed > 100) {
 				System.out.println(new LogEntry(Level.VERBOSE, "Handling request: " + getPath(servletRequest)
-						+ " took " + timeUsed + "ms." ));
+						+ " took " + timeUsed + "ms. (> 100)" ));
 			}
 		}
 		catch (Throwable t)//make sure user gets a controlled response

@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface AssertUserRole {
-    String role();
+public @interface RequireOneOrMorePermissions {
+    String[] permission();
 }
