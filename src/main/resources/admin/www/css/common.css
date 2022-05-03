@@ -212,3 +212,29 @@ body.waiting * {
 .deactivated {
     display: none !important;
 }
+
+.analyzer_application_tag { /* todo rename more generic */
+    width: auto;
+    height: auto;
+    font-size: 10px;
+    font-weight: 700;
+    color: #666;
+    background-color: #eaeaea;
+    float: left;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 0;
+    margin-right: 5px;
+    margin: 2px;
+}
+
+.analyzer_application_tag a {
+    padding: 4px;
+    padding-right: 5px;
+    margin-left: 3px;
+    margin-right: 2px;
+}
+
+.analyzer_application_tag a img {
+    width: 10px;
+}
