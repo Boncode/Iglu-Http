@@ -92,7 +92,7 @@ MenuWidget.prototype.writeHTML = function() {
 
 MenuWidget.prototype.getRequiredPermissions = function(treeItem) {
     if(typeof treeItem.require_one_of_permissions != 'undefined') {
-        return treeItem.require_one_of_permissions.split();
+        return treeItem.require_one_of_permissions.split(',');
     }
     return null;
 }
