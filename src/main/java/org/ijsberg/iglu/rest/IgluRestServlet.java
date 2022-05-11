@@ -10,6 +10,7 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.collection.ArraySupport;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.RestSupport;
@@ -17,7 +18,9 @@ import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.misc.StringSupport;
+import org.ijsberg.iglu.util.reflection.ReflectionSupport;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -156,6 +159,7 @@ public class IgluRestServlet extends HttpServlet {
 
     private Assembly assembly;
     private String agentName;
+    private Class agentClass;
     //FIXME allow for method overloading
     private Map<String, RestMethodData> invokeableMethods = new HashMap<>();
 
@@ -169,16 +173,8 @@ public class IgluRestServlet extends HttpServlet {
 
     public void setAgentType(String agentName, Class agentClass) {
         this.agentName = agentName;
+        this.agentClass = agentClass;
 
-        Method[] methods = agentClass.getDeclaredMethods();
-
-        for(Method method : methods) {
-            RequestPath requestPath = method.getAnnotation(RequestPath.class);
-            if(requestPath != null) {
-                String path = trimPath(requestPath.path());
-                addInvokeableMethod(path, new RestMethodData(requestPath, method, agentName));
-            }
-        }
     }
 
     public void setServiceComponent(Component serviceComponent, Class serviceClass) {
@@ -192,6 +188,33 @@ public class IgluRestServlet extends HttpServlet {
             }
         }
     }
+
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+
+        //TODO currently impl, should be in line with interface
+        String agentClassInitParam = config.getInitParameter("agentClass");
+        String agentNameInitParam = config.getInitParameter("agentName");
+        if(agentClassInitParam != null && agentNameInitParam != null) {
+            try {
+                agentClass = Class.forName(agentClassInitParam);
+            } catch (ClassNotFoundException e) {
+                throw new ResourceException("Cannot load class " + agentClassInitParam);
+            }
+            agentName = agentNameInitParam;
+        }
+
+        Method[] methods = agentClass.getDeclaredMethods();
+        for(Method method : methods) {
+            RequestPath requestPath = method.getAnnotation(RequestPath.class);
+            if(requestPath != null) {
+                String path = trimPath(requestPath.path());
+                addInvokeableMethod(path, new RestMethodData(requestPath, method, agentName));
+            }
+        }
+
+    }
+
 
     private void addInvokeableMethod(String path, RestMethodData restMethodData) {
         if(invokeableMethods.containsKey(path)) {
