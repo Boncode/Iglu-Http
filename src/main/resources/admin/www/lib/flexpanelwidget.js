@@ -36,16 +36,16 @@ FlexPanelWidget.prototype.constructFlexPanelWidget = function(settings, content)
 	this.titleBarFunctions = new Array();
 };
 
-FlexPanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString, tooltip, label) {
-    this.titleBarFunctions.push({className: className, onclickFunctionAsString: onclickFunctionAsString, tooltip: tooltip, label: label});
+FlexPanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString, tooltip, label, id) {// todo should take settings object instead of many parameters
+    this.titleBarFunctions.push({className: className, onclickFunctionAsString: onclickFunctionAsString, tooltip: tooltip, label: label, id: id});
 };
 
 FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
     var html = (this.titleBarFunctions.length == 0 ? '' : '<div class="widget_titlebar_container">');
-    for(var i in this.titleBarFunctions) {
-        html += '<div class="' + this.titleBarFunctions[i].className + '"' +
+    for(var i in this.titleBarFunctions) { // todo turn to elements instead of html string
+        html += '<div ' + (this.titleBarFunctions[i].id == null ? '' : ('id="' + this.id + '.' + this.titleBarFunctions[i].id + '" ')) + 'class="' + this.titleBarFunctions[i].className + '"' +
         (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' title="' + this.titleBarFunctions[i].tooltip + '"' : '') +
-        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + (typeof(this.titleBarFunctions[i].label) != 'undefined' ? this.titleBarFunctions[i].label : '') + '</div>';
+        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + ((this.titleBarFunctions[i].label !== null && this.titleBarFunctions[i].label !== undefined) ? this.titleBarFunctions[i].label : '') + '</div>';
     }
     html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
 
