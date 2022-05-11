@@ -36,8 +36,9 @@ FlexPanelWidget.prototype.constructFlexPanelWidget = function(settings, content)
 	this.titleBarFunctions = new Array();
 };
 
-FlexPanelWidget.prototype.addTitleBarFunction = function(className, onclickFunctionAsString, tooltip, label, id) {// todo should take settings object instead of many parameters
-    this.titleBarFunctions.push({className: className, onclickFunctionAsString: onclickFunctionAsString, tooltip: tooltip, label: label, id: id});
+
+FlexPanelWidget.prototype.addTitleBarFunction = function(settings) {
+    this.titleBarFunctions.push(settings);
 };
 
 FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
