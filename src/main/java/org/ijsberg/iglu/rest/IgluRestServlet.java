@@ -204,15 +204,18 @@ public class IgluRestServlet extends HttpServlet {
             agentName = agentNameInitParam;
         }
 
-        Method[] methods = agentClass.getDeclaredMethods();
-        for(Method method : methods) {
-            RequestPath requestPath = method.getAnnotation(RequestPath.class);
-            if(requestPath != null) {
-                String path = trimPath(requestPath.path());
-                addInvokeableMethod(path, new RestMethodData(requestPath, method, agentName));
+        if(agentClass != null) {
+            Method[] methods = agentClass.getDeclaredMethods();
+            for (Method method : methods) {
+                RequestPath requestPath = method.getAnnotation(RequestPath.class);
+                if (requestPath != null) {
+                    String path = trimPath(requestPath.path());
+                    addInvokeableMethod(path, new RestMethodData(requestPath, method, agentName));
+                }
             }
+        } else {
+            System.out.println(new LogEntry(Level.DEBUG, "No agent class found for servlet: " + this.getServletInfo()));
         }
-
     }
 
 
