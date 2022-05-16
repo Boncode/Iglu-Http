@@ -36,6 +36,7 @@ public class MenuItem extends JsonData {
 		addHtmlEscapedStringAttribute("id", id);
 		addHtmlEscapedStringAttribute("label", label);
 		addAttribute("link", links);
+		addStringAttribute("htmlType", "div");
 	}
 
 	public MenuItem setExpertMode() {
@@ -91,6 +92,16 @@ public class MenuItem extends JsonData {
 
 	public MenuItem addCssIconClassName(String iconClassName) {
 		addHtmlEscapedStringAttribute("iconClass", iconClassName);
+		return this;
+	}
+
+	public MenuItem setHtmlType(String htmlType) {
+		addStringAttribute("htmlType", htmlType);
+		return this;
+	}
+
+	public MenuItem addOninput(String oninput) {
+		addStringAttribute("oninput", oninput);
 		return this;
 	}
 }
