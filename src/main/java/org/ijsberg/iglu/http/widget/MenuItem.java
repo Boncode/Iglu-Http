@@ -104,4 +104,10 @@ public class MenuItem extends JsonData {
 		addStringAttribute("oninput", oninput);
 		return this;
 	}
+
+	public MenuItem addPlaceholder(String placeholder) {
+		addStringAttribute("placeholder", placeholder);
+		return this;
+	}
+
 }

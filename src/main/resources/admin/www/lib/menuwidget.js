@@ -165,6 +165,10 @@ MenuWidget.prototype.addItem = function(item, container) {
         itemDiv.setAttribute('oninput', item.oninput);
     }
 
+    if(typeof item.placeholder != 'undefined') {
+        itemDiv.setAttribute('placeholder', item.placeholder);
+    }
+
 	if(typeof(item.item_class_name) != 'undefined') {
 		itemDiv.className = item.item_class_name;
 	}
