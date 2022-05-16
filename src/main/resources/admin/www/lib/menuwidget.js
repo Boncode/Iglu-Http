@@ -97,9 +97,20 @@ MenuWidget.prototype.getRequiredPermissions = function(treeItem) {
     return null;
 }
 
+MenuWidget.prototype.getRequireLoggedIn = function(treeItem) {
+    if(typeof treeItem.require_logged_in != 'undefined') {
+        return treeItem.require_logged_in;
+    }
+    return false;
+}
+
 MenuWidget.prototype.itemIsVisible = function(treeItem) {
-   var requiredPermissions = this.getRequiredPermissions(treeItem);
-   if( typeof this.grantedPermissions != 'undefined' &&
+    var requireLoggedIn = this.getRequireLoggedIn(treeItem);
+    if (requireLoggedIn && currentUser == null) {
+       return false;
+    }
+    var requiredPermissions = this.getRequiredPermissions(treeItem);
+    if( typeof this.grantedPermissions != 'undefined' &&
         this.grantedPermissions != null &&
         requiredPermissions != null) {
         for(var j in requiredPermissions) {
