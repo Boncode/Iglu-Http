@@ -172,12 +172,19 @@ public class IgluRestServlet extends HttpServlet {
     }
 
     public void setAgentType(String agentName, Class agentClass) {
+        if(agentClass.isInterface()) {
+            throw new ConfigurationException("agentClass " + agentClass.getSimpleName() + " cannot be an interface");
+        }
         this.agentName = agentName;
         this.agentClass = agentClass;
 
     }
 
     public void setServiceComponent(Component serviceComponent, Class serviceClass) {
+
+        if(serviceClass.isInterface()) {
+            throw new ConfigurationException("serviceClass " + serviceClass.getSimpleName() + " cannot be an interface");
+        }
         Method[] methods = serviceClass.getDeclaredMethods();
 
         for(Method method : methods) {

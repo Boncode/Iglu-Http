@@ -48,6 +48,8 @@ public @interface RequestPath {
 
     String path();
 
+    String description() default "";
+
 	RequestMethod method();
 
 	WebContentType returnType() default WebContentType.TXT;

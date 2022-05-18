@@ -32,7 +32,7 @@ public class UserAgentImpl implements UserAgent {
 	private Session session;
 
 	public static AgentFactory<UserAgent> getAgentFactory(Cluster cluster) {
-		return new BasicAgentFactory<UserAgent>(cluster, USER_AGENT_NAME) {
+		return new BasicAgentFactory<>(cluster, USER_AGENT_NAME) {
 			public UserAgent createAgentImpl() {
 				return new UserAgentImpl();
 			}
