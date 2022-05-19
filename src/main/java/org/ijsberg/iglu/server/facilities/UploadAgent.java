@@ -19,7 +19,7 @@
 
 package org.ijsberg.iglu.server.facilities;
 
-import org.ijsberg.iglu.rest.RequestPath;
+import org.ijsberg.iglu.rest.Endpoint;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,10 +27,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ijsberg.iglu.rest.RequestPath.ParameterType.REQUEST_RESPONSE;
-import static org.ijsberg.iglu.rest.RequestPath.ParameterType.VOID;
-import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.GET;
-import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.POST;
+import static org.ijsberg.iglu.rest.Endpoint.ParameterType.REQUEST_RESPONSE;
+import static org.ijsberg.iglu.rest.Endpoint.ParameterType.VOID;
+import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
+import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
 import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
 
@@ -38,10 +38,10 @@ import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
  */
 public interface UploadAgent {
 
-    @RequestPath(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
+    @Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
 	List<String> getDownloadableFileNames();
 
-    @RequestPath(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
+    @Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
     void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res);
 
     String readMultiPartUpload(HttpServletRequest request, Properties properties, String fileName) throws IOException;
@@ -52,17 +52,17 @@ public interface UploadAgent {
 
 	long getContentLength();
 
-    @RequestPath(inputType = VOID, path = "progress", method = GET, returnType = JSON)
+    @Endpoint(inputType = VOID, path = "progress", method = GET, returnType = JSON)
     String getProgress();
 
-    @RequestPath(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
+    @Endpoint(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
     String cancelUpload();
 
 	boolean isUploadCancelled();
 
     boolean isUploadInProgress();
 
-    @RequestPath(inputType = VOID, path = "reset", method = GET)
+    @Endpoint(inputType = VOID, path = "reset", method = GET)
     void reset();
 
 	String getProgress(String jsFunction);

@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface RequestPath {
+public @interface Endpoint {
 
 	enum ParameterType {
 		VOID,
@@ -44,6 +44,12 @@ public @interface RequestPath {
 
 	ParameterType inputType() default ParameterType.MAPPED;
 
+	/**
+	 * If primary input type is raw, e.g. in case of a file upload,
+	 *   parameters can be passed on a query string.
+	 *   Processing will then be done according to the secondary input type.
+	 * @return
+	 */
 	ParameterType secondInputType() default ParameterType.VOID;
 
     String path();

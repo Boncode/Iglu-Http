@@ -18,7 +18,6 @@ import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.misc.StringSupport;
-import org.ijsberg.iglu.util.reflection.ReflectionSupport;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -33,9 +32,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.ijsberg.iglu.logging.Level.TRACE;
-import static org.ijsberg.iglu.rest.RequestPath.ParameterType.*;
-import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.POST;
-import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.PUT;
+import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
+import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
+import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.PUT;
 import static org.ijsberg.iglu.util.http.HttpEncodingSupport.urlEncodeXSSRiskCharacters;
 import static org.ijsberg.iglu.util.mail.WebContentType.HTML;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
@@ -54,7 +53,7 @@ public class IgluRestServlet extends HttpServlet {
     private class RestMethodData {
 
         Method method;
-        RequestPath requestPath;
+        Endpoint endpoint;
         String[] requiredRight;
 //        String requiredAccessRight;
         //rest method can either be invoked on:
@@ -62,35 +61,35 @@ public class IgluRestServlet extends HttpServlet {
         //or by retrieving stateful agent by:
         String agentName;
 
-        RestMethodData(RequestPath requestPath, Method method, String agentName) {
-            this.requestPath = requestPath;
+        RestMethodData(Endpoint endpoint, Method method, String agentName) {
+            this.endpoint = endpoint;
             this.method = method;
             this.agentName = agentName;
-            configure(requestPath, method);
+            configure(endpoint, method);
         }
 
-        RestMethodData(RequestPath requestPath, Method method, Component serviceComponent) {
-            this.requestPath = requestPath;
+        RestMethodData(Endpoint endpoint, Method method, Component serviceComponent) {
+            this.endpoint = endpoint;
             this.method = method;
             this.serviceComponent = serviceComponent;
-            configure(requestPath, method);
+            configure(endpoint, method);
         }
 
         private WebContentType getResponseContentType() {
-            return requestPath.returnType();
+            return endpoint.returnType();
         }
 
-        private void configure(RequestPath requestPath, Method method) {
+        private void configure(Endpoint endpoint, Method method) {
             Class<?>[] parameterTypes = method.getParameterTypes();
             Class<?> returnType = method.getReturnType();
-            RequestPath.ParameterType inputType = requestPath.inputType();
+            Endpoint.ParameterType inputType = endpoint.inputType();
             if(inputType == VOID) {
 
             } else if(inputType == RAW) {
                 //TODO validation not exhaustive
                 //RAW (icw PUT or POST) allows for additional parameters past
-                if(requestPath.secondInputType() == MAPPED || requestPath.secondInputType() == FROM_PATH) {
-                    if (requestPath.parameters().length + 1 /*raw bytes*/ != parameterTypes.length) {
+                if(endpoint.secondInputType() == MAPPED || endpoint.secondInputType() == FROM_PATH) {
+                    if (endpoint.parameters().length + 1 /*raw bytes*/ != parameterTypes.length) {
                         throw new ConfigurationException("please define " + (parameterTypes.length - 1) + " extra input parameters method " + method.getName());
                     }
                 }
@@ -99,7 +98,7 @@ public class IgluRestServlet extends HttpServlet {
                 //
             }
             else if(inputType == MAPPED) {
-                if(requestPath.parameters().length != parameterTypes.length) {
+                if(endpoint.parameters().length != parameterTypes.length) {
                     throw new ConfigurationException("please define " + parameterTypes.length + " input parameters for method " + method.getName());
                 }
             } else if(inputType == REQUEST_RESPONSE) {
@@ -111,7 +110,7 @@ public class IgluRestServlet extends HttpServlet {
                 if(inputType == PROPERTIES && !Properties.class.isAssignableFrom(parameterTypes[0])) {
                     throw new ConfigurationException("input type " + inputType + " requires 1 parameter of type Properties method " + method.getName());
                 }
-                if(inputType == JSON_POST && requestPath.method() != POST) {
+                if(inputType == JSON_POST && endpoint.method() != POST) {
                     throw new ConfigurationException("input type " + inputType + " requires invocation by method " + POST + " method " + method.getName());
                 }
             }
@@ -132,10 +131,10 @@ public class IgluRestServlet extends HttpServlet {
                 if (user != null) {
                     System.out.println(new LogEntry(TRACE,"checking rights for " + user.getId() + " (" + CollectionSupport.format(user.getGroupNames(), ",") + ")"));
                     if (!user.hasOneOfRights(requiredRight)) {
-                        throw new RestException("not authorized for endpoint " + this.requestPath.path(), 403);
+                        throw new RestException("not authorized for endpoint " + this.endpoint.path(), 403);
                     }
                 } else {
-                    throw new RestException("not authenticated for endpoint " + this.requestPath.path(), 401);
+                    throw new RestException("not authenticated for endpoint " + this.endpoint.path(), 401);
                 }
             }
         }
@@ -152,7 +151,7 @@ public class IgluRestServlet extends HttpServlet {
         }
 
         public String toString() {
-            return requestPath.path() + " mapped to " + method.getName();
+            return endpoint.path() + " mapped to " + method.getName();
         }
 
     }
@@ -188,10 +187,10 @@ public class IgluRestServlet extends HttpServlet {
         Method[] methods = serviceClass.getDeclaredMethods();
 
         for(Method method : methods) {
-            RequestPath requestPath = method.getAnnotation(RequestPath.class);
-            if(requestPath != null) {
-                String path = trimPath(requestPath.path());
-                addInvokeableMethod(path, new RestMethodData(requestPath, method, serviceComponent));
+            Endpoint endpoint = method.getAnnotation(Endpoint.class);
+            if(endpoint != null) {
+                String path = trimPath(endpoint.path());
+                addInvokeableMethod(path, new RestMethodData(endpoint, method, serviceComponent));
             }
         }
     }
@@ -214,10 +213,10 @@ public class IgluRestServlet extends HttpServlet {
         if(agentClass != null) {
             Method[] methods = agentClass.getDeclaredMethods();
             for (Method method : methods) {
-                RequestPath requestPath = method.getAnnotation(RequestPath.class);
-                if (requestPath != null) {
-                    String path = trimPath(requestPath.path());
-                    addInvokeableMethod(path, new RestMethodData(requestPath, method, agentName));
+                Endpoint endpoint = method.getAnnotation(Endpoint.class);
+                if (endpoint != null) {
+                    String path = trimPath(endpoint.path());
+                    addInvokeableMethod(path, new RestMethodData(endpoint, method, agentName));
                 }
             }
         } else {
@@ -252,51 +251,51 @@ public class IgluRestServlet extends HttpServlet {
 
     private static Object[] getParameters(HttpServletRequest request, RestMethodData methodData) throws IOException {
 
-        if(methodData.requestPath.inputType() == VOID || methodData.requestPath.inputType() == REQUEST_RESPONSE) {
+        if(methodData.endpoint.inputType() == VOID || methodData.endpoint.inputType() == REQUEST_RESPONSE) {
             return new Object[0];
         }
-        RequestParameter[] declaredParameters = methodData.requestPath.parameters();
-        if(methodData.requestPath.method() == POST || methodData.requestPath.method() == PUT) {
+        RequestParameter[] declaredParameters = methodData.endpoint.parameters();
+        if(methodData.endpoint.method() == POST || methodData.endpoint.method() == PUT) {
             //@@@
             byte[] postData = readPostData(request);
  //           RequestParameter parameter = declaredParameters[0];
 
-            if(methodData.requestPath.inputType() == JSON_POST) {
+            if(methodData.endpoint.inputType() == JSON_POST) {
                 ObjectMapper mapper = new ObjectMapper();
                 Object obj = null;
                 try {
                     obj = mapper.readValue(postData, methodData.method.getParameterTypes()[0]);
                 } catch(IOException e) {
-                    throw new FatalException("unable to read post data '" + postData + "' for parameter type " + methodData.method.getParameterTypes()[0] + " while invoking " + methodData.requestPath, e);
+                    throw new FatalException("unable to read post data '" + postData + "' for parameter type " + methodData.method.getParameterTypes()[0] + " while invoking " + methodData.endpoint, e);
                 }
                 return new Object[]{obj};
             }
-            if(methodData.requestPath.inputType() == PROPERTIES) {
+            if(methodData.endpoint.inputType() == PROPERTIES) {
                 Properties properties = ServletSupport.convertUrlEncodedData(new String(postData));
                 return new Object[]{properties};
             }
-            if(methodData.requestPath.inputType() == RAW) {
-                Object[] additionalParams = getInputObjectsFromRequest(request, methodData, methodData.requestPath.secondInputType());
+            if(methodData.endpoint.inputType() == RAW) {
+                Object[] additionalParams = getInputObjectsFromRequest(request, methodData, methodData.endpoint.secondInputType());
                 Object[] result = new Object[1 + additionalParams.length];
                 System.arraycopy(additionalParams, 0, result, 1, additionalParams.length);
                 result[0] = postData;
                 return result;
             }
-            if(methodData.requestPath.inputType() == STRING) {
+            if(methodData.endpoint.inputType() == STRING) {
                 return new Object[]{new String(postData)};
             }
-            if(methodData.requestPath.inputType() == MAPPED) {
+            if(methodData.endpoint.inputType() == MAPPED) {
                 Object[] result = getObjectsFromQueryString(declaredParameters, new String(postData));
                 return result;
             }
             //STRING
             return new Object[]{new String(postData)};
         } else { //GET
-            Object[] result = getInputObjectsFromRequest(request, methodData, methodData.requestPath.inputType());
+            Object[] result = getInputObjectsFromRequest(request, methodData, methodData.endpoint.inputType());
             //System.out.println("initial input: " + ArraySupport.format(result, ","));
-            if(methodData.requestPath.secondInputType() != null) {
+            if(methodData.endpoint.secondInputType() != null) {
 
-                Object[] additionalInput = getInputObjectsFromRequest(request, methodData, methodData.requestPath.secondInputType());
+                Object[] additionalInput = getInputObjectsFromRequest(request, methodData, methodData.endpoint.secondInputType());
                //System.out.println("additional input: " + ArraySupport.format(additionalInput, ","));
 
                 result = ArraySupport.join(result, additionalInput);
@@ -316,9 +315,9 @@ public class IgluRestServlet extends HttpServlet {
         return result;
     }
 
-    private static Object[] getInputObjectsFromRequest(HttpServletRequest request, RestMethodData methodData, RequestPath.ParameterType parameterType) throws UnsupportedEncodingException {
+    private static Object[] getInputObjectsFromRequest(HttpServletRequest request, RestMethodData methodData, Endpoint.ParameterType parameterType) throws UnsupportedEncodingException {
         if(parameterType == FROM_PATH) {
-            String path = trimPath(request.getPathInfo()).substring(methodData.requestPath.path().length());
+            String path = trimPath(request.getPathInfo()).substring(methodData.endpoint.path().length());
             path = trimPath(path);
             //System.out.println("PATH: " + path);
             return path.split("/");
@@ -336,7 +335,7 @@ public class IgluRestServlet extends HttpServlet {
         }
         if(parameterType == MAPPED) {
             if(request.getQueryString() != null) {
-                RequestParameter[] declaredParameters = methodData.requestPath.parameters();
+                RequestParameter[] declaredParameters = methodData.endpoint.parameters();
                 Object[] result = getObjectsFromQueryString(declaredParameters, request.getQueryString());
                 return result;
             }
@@ -372,7 +371,7 @@ public class IgluRestServlet extends HttpServlet {
                 contentType = restMethodData.getResponseContentType();
                 restMethodData.assertUserAuthorized();
                 try {
-                    if(restMethodData.requestPath.inputType() == REQUEST_RESPONSE) {
+                    if(restMethodData.endpoint.inputType() == REQUEST_RESPONSE) {
 //                    if(contentType == EVENT_STREAM) {
                         result = restMethodData.getComponent().invoke(restMethodData.method.getName(), servletRequest, servletResponse);
                         return;
@@ -410,7 +409,7 @@ public class IgluRestServlet extends HttpServlet {
             if (errorResult != null) {
                 result = errorResult.toString();
                 servletResponse.setStatus((Integer) errorResult.getAttribute("status"));
-            } else if (!(result instanceof String) && restMethodData.requestPath.returnType() == JSON) {
+            } else if (!(result instanceof String) && restMethodData.endpoint.returnType() == JSON) {
                 ObjectMapper mapper = new ObjectMapper();
                 result = mapper.writeValueAsString(result);
             }

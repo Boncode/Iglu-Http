@@ -27,7 +27,7 @@ import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.AllowPublicAccess;
-import org.ijsberg.iglu.rest.RequestPath;
+import org.ijsberg.iglu.rest.Endpoint;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.MultiPartReader;
@@ -44,10 +44,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ijsberg.iglu.rest.RequestPath.ParameterType.REQUEST_RESPONSE;
-import static org.ijsberg.iglu.rest.RequestPath.ParameterType.VOID;
-import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.GET;
-import static org.ijsberg.iglu.rest.RequestPath.RequestMethod.POST;
+import static org.ijsberg.iglu.rest.Endpoint.ParameterType.REQUEST_RESPONSE;
+import static org.ijsberg.iglu.rest.Endpoint.ParameterType.VOID;
+import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
+import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
 import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
 
@@ -112,7 +112,7 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@RequestPath(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
+	@Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
 	public List<String> getDownloadableFileNames() {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
 		System.out.println("getDownloadDir(): " + getDownloadDir());
@@ -125,7 +125,7 @@ public class UploadAgentImpl implements UploadAgent {
 */
 	@Override
 	@AllowPublicAccess
-	@RequestPath(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
 //		System.out.println("UPLOAD ==================================================");
 //		readMultiPartUpload(req, new Properties(), "configurations/analysis-server/upload/uploads/");
@@ -267,7 +267,7 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@RequestPath(inputType = VOID, path = "progress", method = GET, returnType = JSON)
+	@Endpoint(inputType = VOID, path = "progress", method = GET, returnType = JSON)
 	public String getProgress() {
 		JsonData retval = new JsonData();
 		JsonData jsonData = new JsonData();
@@ -279,7 +279,7 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@RequestPath(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
+	@Endpoint(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
 	public String cancelUpload() {
 		System.out.println(new LogEntry(Level.VERBOSE, "cancelling upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
 		if(reader != null) {
@@ -304,7 +304,7 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@RequestPath(inputType = VOID, path = "reset", method = GET)
+	@Endpoint(inputType = VOID, path = "reset", method = GET)
 	public void reset() {
 		System.out.println(new LogEntry(Level.VERBOSE, "resetting upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
 		if(reader != null) {
