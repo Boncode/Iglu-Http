@@ -56,8 +56,6 @@ import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
  */
 public class UploadAgentImpl implements UploadAgent {
 
-	public static final String UPLOAD_AGENT_NAME = "UploadAgent";
-
 	private MultiPartReader reader;
 	private boolean readingUpload;
 	private boolean isUploadCancelled = false;
@@ -69,6 +67,16 @@ public class UploadAgentImpl implements UploadAgent {
 	private String downloadSubDir = "downloads";
 
 	private boolean sendEmail = false;
+
+	public static final String UPLOAD_AGENT_NAME = "UploadAgent";
+
+	public static AgentFactory<UploadAgent> getAgentFactory(Cluster cluster, Properties agentProperties) {
+		return new BasicAgentFactory<>(cluster, UPLOAD_AGENT_NAME, agentProperties) {
+			public UploadAgent createAgentImpl() {
+				return new UploadAgentImpl(getAgentProperties());
+			}
+		};
+	}
 
 	public UploadAgentImpl(Properties agentProperties) {
 		this.properties = agentProperties;
@@ -84,15 +92,6 @@ public class UploadAgentImpl implements UploadAgent {
 
 	public void setRequestRegistry(RequestRegistry requestRegistry) {
 		this.requestRegistry = requestRegistry;
-	}
-
-
-	public static AgentFactory<UploadAgent> getAgentFactory(Cluster cluster, Properties agentProperties) {
-		return new BasicAgentFactory<UploadAgent>(cluster, UPLOAD_AGENT_NAME, agentProperties) {
-			public UploadAgent createAgentImpl() {
-				return new UploadAgentImpl(getAgentProperties());
-			}
-		};
 	}
 
 
@@ -115,26 +114,20 @@ public class UploadAgentImpl implements UploadAgent {
 	@Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
 	public List<String> getDownloadableFileNames() {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
-		System.out.println("getDownloadDir(): " + getDownloadDir());
+		System.out.println(new LogEntry("getDownloadDir(): " + getDownloadDir()));
 		return fileCollection.getFileNames();
 	}
 
-/*	@RequestPath(inputType = STRING, path = "calculate_next_execution_time", method = GET, returnType = TXT, parameters = {
-			@RequestParameter(name = "cronUnixDef")
-	})
-*/
 	@Override
 	@AllowPublicAccess
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
-//		System.out.println("UPLOAD ==================================================");
-//		readMultiPartUpload(req, new Properties(), "configurations/analysis-server/upload/uploads/");
-		readMultiPartUpload(req, new Properties(), uploadRootDir);
+		readMultiPartUpload(req);
 	}
 
 
 	//TODO reconsider "synchronized" : should probably be confined to code starting with: if(readingUpload) {
-	public synchronized String readMultiPartUpload(HttpServletRequest req, Properties properties, String directoryName) {
+	public synchronized String readMultiPartUpload(HttpServletRequest req) {
 
 		isUploadCancelled = false;
 
@@ -156,8 +149,8 @@ public class UploadAgentImpl implements UploadAgent {
 
 			readingUpload = true;
 			try {
-				System.out.println(new LogEntry(Level.VERBOSE, "about to read upload in " + directoryName + '/' + getUserDir()));
-				reader = new MultiPartReader(req, directoryName + '/' + getUserDir());
+				System.out.println(new LogEntry(Level.VERBOSE, "about to read upload in " + uploadRootDir + '/' + getUserDir()));
+				reader = new MultiPartReader(req, uploadRootDir + '/' + getUserDir());
 				//TODO exception if file missing
 				reader.readMultipartUpload();
 				System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " done"));

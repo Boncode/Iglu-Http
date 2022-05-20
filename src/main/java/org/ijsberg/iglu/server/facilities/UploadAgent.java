@@ -38,31 +38,24 @@ import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
  */
 public interface UploadAgent {
 
-    @Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
 	List<String> getDownloadableFileNames();
 
-    @Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
     void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res);
 
-    String readMultiPartUpload(HttpServletRequest request, Properties properties, String fileName) throws IOException;
-
-	//String readMultiPartUpload(HttpServletRequest request, Properties properties) throws IOException;
+    //String readMultiPartUpload(HttpServletRequest request, Properties properties, String fileName) throws IOException;
 
 	long getBytesRead();
 
 	long getContentLength();
 
-    @Endpoint(inputType = VOID, path = "progress", method = GET, returnType = JSON)
     String getProgress();
 
-    @Endpoint(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
     String cancelUpload();
 
 	boolean isUploadCancelled();
 
     boolean isUploadInProgress();
 
-    @Endpoint(inputType = VOID, path = "reset", method = GET)
     void reset();
 
 	String getProgress(String jsFunction);

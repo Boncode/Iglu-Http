@@ -143,10 +143,20 @@ public class IgluRestServlet extends HttpServlet {
             if(serviceComponent != null) {
                 return serviceComponent;
             } else {
-                return assembly.getCoreCluster().getInternalComponents().
-                        get("AccessManager").getProxy(AccessManager.class).
-                        getCurrentRequest().getSession(true).
-                        getAgent(agentName);
+                try {
+                    return assembly.getCoreCluster().getInternalComponents().
+                            get("AccessManager").getProxy(AccessManager.class).
+                            getCurrentRequest().getSession(true).
+                            getAgent(agentName);
+                } catch (NullPointerException e) {
+                    System.out.println(assembly.getCoreCluster().getInternalComponents());
+                    System.out.println(assembly.getCoreCluster().getInternalComponents().
+                            get("AccessManager").getProxy(AccessManager.class));
+                    System.out.println(assembly.getCoreCluster().getInternalComponents().
+                            get("AccessManager").getProxy(AccessManager.class).
+                            getCurrentRequest());
+                    return null;
+                }
             }
         }
 
@@ -162,12 +172,9 @@ public class IgluRestServlet extends HttpServlet {
     //FIXME allow for method overloading
     private Map<String, RestMethodData> invokeableMethods = new HashMap<>();
 
-    private List<String> accessRightNames;
-
-    public void setAssembly(Assembly assembly, String[] accessRightNames) {
+    public void setAssembly(Assembly assembly) {
         this.assembly = assembly;
         accessManager = assembly.getCoreCluster().getFacade().getProxy("AccessManager", AccessManager.class);
-        this.accessRightNames = Arrays.asList(accessRightNames);
     }
 
     public void setAgentType(String agentName, Class agentClass) {
