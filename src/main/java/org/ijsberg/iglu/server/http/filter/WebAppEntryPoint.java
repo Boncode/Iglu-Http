@@ -206,7 +206,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		syncUserPrefs = (syncUserPrefsStr != null ? Boolean.valueOf(syncUserPrefsStr) : false);
 
 		String loginRequiredStr = conf.getInitParameter("login_required");
-		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false);
+		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false); // TODO should default to true
 		loginPath = conf.getInitParameter("login_path");
 
 		//pass_session_id_secure
