@@ -111,7 +111,8 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON)
+	@Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON,
+		description = "Returns a list of downloadable files.")
 	public List<String> getDownloadableFileNames() {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
 		System.out.println(new LogEntry("getDownloadDir(): " + getDownloadDir()));
@@ -120,7 +121,8 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST,
+		description = "Uploads and processes data.")
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
 		readMultiPartUpload(req, new String[]{"*"});
 	}
@@ -260,7 +262,8 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "progress", method = GET, returnType = JSON)
+	@Endpoint(inputType = VOID, path = "progress", method = GET, returnType = JSON,
+		description = "Returns the amount of bytes read and the amount of bytes to read in total.")
 	public String getProgress() {
 		JsonData retval = new JsonData();
 		JsonData jsonData = new JsonData();
@@ -272,7 +275,8 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "cancel", method = GET, returnType = TXT)
+	@Endpoint(inputType = VOID, path = "cancel", method = GET, returnType = TXT,
+		description = "Cancels the upload.")
 	public String cancelUpload() {
 		System.out.println(new LogEntry(Level.VERBOSE, "cancelling upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
 		if(reader != null) {
@@ -297,7 +301,8 @@ public class UploadAgentImpl implements UploadAgent {
 
 	@Override
 	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "reset", method = GET)
+	@Endpoint(inputType = VOID, path = "reset", method = GET,
+		description = "Resets the upload.")
 	public void reset() {
 		System.out.println(new LogEntry(Level.VERBOSE, "resetting upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
 		if(reader != null) {
