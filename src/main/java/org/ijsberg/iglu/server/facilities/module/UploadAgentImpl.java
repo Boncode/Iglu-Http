@@ -122,12 +122,12 @@ public class UploadAgentImpl implements UploadAgent {
 	@AllowPublicAccess
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST)
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
-		readMultiPartUpload(req);
+		readMultiPartUpload(req, new String[]{"*"});
 	}
 
 
 	//TODO reconsider "synchronized" : should probably be confined to code starting with: if(readingUpload) {
-	public synchronized String readMultiPartUpload(HttpServletRequest req) {
+	public synchronized String readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions) {
 
 		isUploadCancelled = false;
 
@@ -150,7 +150,7 @@ public class UploadAgentImpl implements UploadAgent {
 			readingUpload = true;
 			try {
 				System.out.println(new LogEntry(Level.VERBOSE, "about to read upload in " + uploadRootDir + '/' + getUserDir()));
-				reader = new MultiPartReader(req, uploadRootDir + '/' + getUserDir());
+				reader = new MultiPartReader(req, uploadRootDir + '/' + getUserDir(), allowedFormatsWildcardExpressions);
 				//TODO exception if file missing
 				reader.readMultipartUpload();
 				System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " done"));

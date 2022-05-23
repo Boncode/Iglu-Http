@@ -20,6 +20,8 @@
 package org.ijsberg.iglu.util.http;
 
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.rest.RestException;
+import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
 
@@ -55,16 +57,27 @@ public class MultiPartReader {
 	private OutputStream partialCopyOutputStream;
 	private File uploadFile;
 
+	private String[] allowedFormatsWildcardExpressions;
 
 	/**
 	 *
 	 * @param request
 	 * @param uploadDir path to the directory where to store read files
 	 */
-	public MultiPartReader(ServletRequest request, String uploadDir) {
+	public MultiPartReader(ServletRequest request, String uploadDir, String[] allowedFormatsWildcardExpressions) {
 		this.request = request;
 		this.uploadDir = uploadDir;
 		contentLength = request.getContentLength();
+		this.allowedFormatsWildcardExpressions = allowedFormatsWildcardExpressions;
+	}
+
+	private void assertFileNameAllowed(String fullFileName) {
+		for(String wildcardExp : allowedFormatsWildcardExpressions) {
+			if(PatternMatchingSupport.valueMatchesWildcardExpression(fullFileName, wildcardExp)) {
+				return;
+			}
+		}
+		throw new RestException("file " + fullFileName + " not allowed to be uploaded", 403);
 	}
 
 	public long getBytesRead() {
@@ -116,6 +129,7 @@ public class MultiPartReader {
 			readPropertiesUntilEmptyLine();
 			//TODO fullFileName may be empty in which case storage output stream cannot be opened
 
+			assertFileNameAllowed(fullFileName);
 
 			bytesRead += bytesReadAsLine;
 			bytesReadAsLine = input.readLine(line, 0, BUFFER_SIZE);
