@@ -238,3 +238,181 @@ body.waiting * {
 .analyzer_application_tag a img {
     width: 10px;
 }
+
+
+.properties_input_tags {
+    flex: 2;
+    color: #666;
+    padding: 4px;
+    min-height: 30px;
+    height: auto;
+    margin-right: 40px;
+    margin-left: 4px;
+    border: none;
+}
+
+
+
+.properties_textarea {
+    flex: 3;
+    margin: 8px;
+    height: 46px;
+    border: none;
+    background-color: var(--background-color);
+    padding: 7px 15px;
+    color: var(--text-color);
+    margin-right: 40px;
+}
+
+body.dark .properties_textarea {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+}
+
+.properties_flex_row {
+    display: flex;
+    flex: 1;
+}
+
+.properties_flex_button_wrapper {
+    flex: 1;
+    vertical-align: middle;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.properties_flex_button {
+    flex: 1;
+    line-height: 1.7;
+    background-color:#4e4e4e;
+    height:46px;
+    margin: 8px;
+    float: right;
+    margin-right: 40px;
+    margin-left: 4px;
+    cursor: pointer;
+    color: var(--heading-color);
+}
+
+.properties_editor_button {
+    background-color: var(--boncode-green);
+    width: auto;
+    height: auto;
+    padding: 5px;
+    border: none;
+    opacity: 0.5;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.properties_editor_button:hover {
+    opacity: 0.8;
+}
+
+.properties_editor_button:active {
+    opacity: 0.5;
+}
+
+.properties_editor_menu {
+    position: absolute;
+    width: 30px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+body.dark .properties_input {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+}
+
+.properties_label {
+    flex: 2;
+    line-height: 62px;
+    font-size: 10pt;
+    color: var(--heading-color);
+    padding-left: 40px;
+}
+
+body.dark .properties_label, body.dark .properties_label_tags {
+    color: var(--heading-color-dark);
+}
+
+.properties_label_tags {
+    flex: 2;
+    padding: 17px 0px;
+    font-weight: 600;
+    color: #444;
+    padding-left: 40px;
+}
+
+.properties_header {
+    flex: 1;
+    font-weight: 500;
+    font-size: 18px;
+    margin: 4px;
+    margin-left: 40px;
+}
+
+.properties_input {
+   flex: 3;
+   margin: 8px;
+   height: 46px;
+   border: none;
+   background-color: var(--background-color);
+   padding: 0px 15px 0px 15px;
+   color: var(--text-color);
+   margin-right: 40px;
+}
+
+.properties_input_vcs {
+   flex: 2;
+   color: #333;
+   margin: 4px;
+   margin-right: 40px;
+   padding: 4px;
+   padding-bottom: 5px;
+   border: 1px solid #a9a9a9;
+   line-height: 1.7;
+}
+
+.analyzer_properties_button:hover {
+    border: 1px solid rgb(5,19,35);
+}
+
+.analyzer_properties_button:active {
+    background-color: rgb(5,19,35);
+}
+
+.analyzer_properties_button img {
+    width: 10px;
+    margin-right: 7px;
+}
+
+.analyzer_properties_container {
+    height: auto;
+    flex: 3;
+    position: relative;
+}
+
+body.dark .analyzer_properties_container {
+    background: var(--widget-background-color-dark);
+}
+
+body.dark .analyzer_properties_button {
+    background: #333;
+}
+
+.analyzer_properties_button {
+    margin-left: 40px;
+    padding: 5px;
+    color: #eee;
+    padding-right: 10px;
+    padding-left: 10px;
+    width: auto;
+    background: #777;
+    border: 1px solid rgba(0,0,0,0);
+    height: auto;
+    border-radius: 3px;
+}
