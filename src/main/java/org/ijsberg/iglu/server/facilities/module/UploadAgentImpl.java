@@ -28,8 +28,11 @@ import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.AllowPublicAccess;
 import org.ijsberg.iglu.rest.Endpoint;
+import org.ijsberg.iglu.rest.RestException;
+import org.ijsberg.iglu.server.facilities.FileNameChecker;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
+import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.MultiPartReader;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.FSFileCollection;
@@ -54,7 +57,7 @@ import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
 
 /**
  */
-public class UploadAgentImpl implements UploadAgent {
+public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	private MultiPartReader reader;
 	private boolean readingUpload;
@@ -65,6 +68,8 @@ public class UploadAgentImpl implements UploadAgent {
 	private String targetDir;
 	private String uploadRootDir = "uploads";
 	private String downloadSubDir = "downloads";
+
+	private String[] allowedFormatsWildcardExpressions;
 
 	private boolean sendEmail = false;
 
@@ -131,7 +136,10 @@ public class UploadAgentImpl implements UploadAgent {
 	//TODO reconsider "synchronized" : should probably be confined to code starting with: if(readingUpload) {
 	public synchronized String readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions) {
 
+		this.allowedFormatsWildcardExpressions = allowedFormatsWildcardExpressions;
 		isUploadCancelled = false;
+
+		Exception uploadFailedExc = null;
 
 		System.out.println(new LogEntry("about to read multipart upload, content-type: " + req.getContentType()));
 
@@ -152,14 +160,16 @@ public class UploadAgentImpl implements UploadAgent {
 			readingUpload = true;
 			try {
 				System.out.println(new LogEntry(Level.VERBOSE, "about to read upload in " + uploadRootDir + '/' + getUserDir()));
-				reader = new MultiPartReader(req, uploadRootDir + '/' + getUserDir(), allowedFormatsWildcardExpressions);
+				reader = new MultiPartReader(req, uploadRootDir + '/' + getUserDir(), this);
 				//TODO exception if file missing
 				reader.readMultipartUpload();
 				System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " done"));
 			} catch (Exception e) {
+				uploadFailedExc = e;
 				isUploadCancelled = true;
 				System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " failed or was interrupted", e));
 				//TODO exception if file missing
+				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed with message: " + e.getMessage()));
 			}
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
@@ -175,6 +185,10 @@ public class UploadAgentImpl implements UploadAgent {
 			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed or cancelled."));
 		}
 		readingUpload = false;
+
+		if(uploadFailedExc != null && uploadFailedExc instanceof RestException) {
+			throw (RestException)uploadFailedExc;
+		}
 		return "DONE";
 	}
 
@@ -193,7 +207,7 @@ public class UploadAgentImpl implements UploadAgent {
 				IgluProperties metadata = new IgluProperties();
 				metadata.setProperty("userId", user.getId());
 				if(!user.getGroupNames().isEmpty()) {
-					metadata.setProperty("group", CollectionSupport.format(user.getGroupNames(), ","));
+					metadata.setProperty("groups", CollectionSupport.format(user.getGroupNames(), ","));
 				}
 				metadata.setProperty("isAdmin", "" + user.hasRole(AccessConstants.ADMIN_ROLE_NAME));
 				IgluProperties.saveProperties(metadata, permanentFileName + ".metadata.properties");
@@ -255,6 +269,8 @@ public class UploadAgentImpl implements UploadAgent {
 		retval.addAttribute("progress", jsonData);
 		jsonData.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
 		jsonData.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
+		jsonData.addAttribute("isUploadCancelled", isUploadCancelled);
+
 		return JsonSupport.toMessage(jsFunction, "progress", retval);
 	}
 
@@ -270,6 +286,7 @@ public class UploadAgentImpl implements UploadAgent {
 		retval.addAttribute("progress", jsonData);
 		jsonData.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
 		jsonData.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
+		jsonData.addAttribute("isUploadCancelled", isUploadCancelled);
 		return jsonData.toString();
 	}
 
@@ -315,4 +332,13 @@ public class UploadAgentImpl implements UploadAgent {
 		isUploadCancelled = false;
 	}
 
+	@Override
+	public void assertFileNameAllowed(String fullFileName) {
+		for(String wildcardExp : allowedFormatsWildcardExpressions) {
+			if(PatternMatchingSupport.valueMatchesWildcardExpression(fullFileName, wildcardExp)) {
+				return;
+			}
+		}
+		throw new RestException("file " + fullFileName + " not allowed to be uploaded", 403);
+	}
 }
