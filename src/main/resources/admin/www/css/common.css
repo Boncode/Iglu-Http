@@ -133,6 +133,10 @@ body.dark .boncode_table_large {
     background-color: var(--widget-background-color-dark);
 }
 
+.boncode_table_large.boncode_table_large_narrow tbody td,
+.boncode_table_large.boncode_table_large_narrow thead th {
+    line-height: 15px;
+}
 
 /* Filter */
 
@@ -172,6 +176,14 @@ body.dark .projects_table_filter:focus {
 
 body.dark .clickable_row:hover {
     cursor: pointer;
+    background-color: var(--leaf-hover-dark);
+}
+
+.hover_row:hover {
+    background-color: var(--leaf-hover);
+}
+
+body.dark .hover_row:hover {
     background-color: var(--leaf-hover-dark);
 }
 
