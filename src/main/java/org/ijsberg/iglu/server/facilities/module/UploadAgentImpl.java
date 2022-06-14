@@ -28,6 +28,7 @@ import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.AllowPublicAccess;
 import org.ijsberg.iglu.rest.Endpoint;
+import org.ijsberg.iglu.rest.InternalEndpoint;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.http.MultiPartReader;
@@ -261,6 +262,7 @@ public class UploadAgentImpl implements UploadAgent {
 
 
 	@Override
+	@InternalEndpoint
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "progress", method = GET, returnType = JSON,
 		description = "Returns the amount of bytes read and the amount of bytes to read in total.")
@@ -274,6 +276,7 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	@Override
+	@InternalEndpoint
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "cancel", method = GET, returnType = TXT,
 		description = "Cancels the upload.")
@@ -300,6 +303,7 @@ public class UploadAgentImpl implements UploadAgent {
 	}
 
 	@Override
+	@InternalEndpoint
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "reset", method = GET,
 		description = "Resets the upload.")
