@@ -28,8 +28,8 @@ import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.AllowPublicAccess;
 import org.ijsberg.iglu.rest.Endpoint;
-import org.ijsberg.iglu.rest.SystemEndpoint;
 import org.ijsberg.iglu.rest.RestException;
+import org.ijsberg.iglu.rest.SystemEndpoint;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
@@ -39,14 +39,16 @@ import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.FSFileCollection;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
+import org.ijsberg.iglu.util.io.model.FileCollectionDto;
+import org.ijsberg.iglu.util.io.model.FileDto;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.REQUEST_RESPONSE;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.VOID;
@@ -119,10 +121,12 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON,
 		description = "Returns a list of downloadable files.")
-	public List<String> getDownloadableFileNames() {
+	public FileCollectionDto getDownloadableFileNames() {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
 		System.out.println(new LogEntry("getDownloadDir(): " + getDownloadDir()));
-		return fileCollection.getFileNames();
+		return new FileCollectionDto(fileCollection.getFileNames().stream()
+				.map(FileDto::new)
+				.collect(Collectors.toList()));
 	}
 
 	@Override

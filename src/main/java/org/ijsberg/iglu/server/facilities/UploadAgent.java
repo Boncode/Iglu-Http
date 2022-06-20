@@ -19,26 +19,16 @@
 
 package org.ijsberg.iglu.server.facilities;
 
-import org.ijsberg.iglu.rest.Endpoint;
+import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-
-import static org.ijsberg.iglu.rest.Endpoint.ParameterType.REQUEST_RESPONSE;
-import static org.ijsberg.iglu.rest.Endpoint.ParameterType.VOID;
-import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
-import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
-import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
-import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
 
 /**
  */
 public interface UploadAgent {
 
-	List<String> getDownloadableFileNames();
+	FileCollectionDto getDownloadableFileNames();
 
     void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res);
 
