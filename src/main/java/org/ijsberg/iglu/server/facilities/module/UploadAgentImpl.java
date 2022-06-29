@@ -94,20 +94,12 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		sendEmail = Boolean.parseBoolean(properties.getProperty("send_email", "" + sendEmail));
 	}
 
-
 	public void setProperties(Properties properties) {
 	}
 
 	public void setRequestRegistry(RequestRegistry requestRegistry) {
 		this.requestRegistry = requestRegistry;
 	}
-
-
-/*	@Override
-	public String readMultiPartUpload(HttpServletRequest request, Properties properties) throws IOException {
-		return readMultiPartUpload(request, properties, null);
-	}
-*/
 
 	private String getUserDir() {
 		return ServletSupport.getUserDir(requestRegistry);
@@ -137,8 +129,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		readMultiPartUpload(req, new String[]{"*"});
 	}
 
-
-	//TODO reconsider "synchronized" : should probably be confined to code starting with: if(readingUpload) {
 	public synchronized String readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions) {
 
 		this.allowedFormatsWildcardExpressions = allowedFormatsWildcardExpressions;
@@ -236,19 +226,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
 
 		requestRegistry.dropMessage("System", new MailMessage(getUserDir() + " : upload notification", message));
-
-/*		new Executable() {
-			@Override
-			protected Object execute() throws Throwable {
-				try {
-					new EMail("BONcat Upload Server", "bls@service.bon-code.nl", "bls@bon-code.nl", "file upload notification",
-							message).mail();
-				} catch (Exception e) {
-					System.out.println(new LogEntry(Level.CRITICAL,"sending notification failed", e));
-				}
-				return null;
-			}
-		}.executeAsync();*/
 	}
 
 	@Override
@@ -278,8 +255,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 		return JsonSupport.toMessage(jsFunction, "progress", retval);
 	}
-
-
 
 	@Override
 	@SystemEndpoint
