@@ -20,6 +20,7 @@
 package org.ijsberg.iglu.server.facilities;
 
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
+import org.ijsberg.iglu.util.io.model.UserUploadedFilesDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +30,10 @@ import javax.servlet.http.HttpServletResponse;
 public interface UploadAgent {
 
 	FileCollectionDto getDownloadableFileNames();
+
+    UserUploadedFilesDto getAllUploadedFileNames();
+
+    void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response);
 
     void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res);
 

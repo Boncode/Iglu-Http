@@ -26,14 +26,12 @@ import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
-import org.ijsberg.iglu.rest.AllowPublicAccess;
-import org.ijsberg.iglu.rest.Endpoint;
-import org.ijsberg.iglu.rest.RestException;
-import org.ijsberg.iglu.rest.SystemEndpoint;
+import org.ijsberg.iglu.rest.*;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
+import org.ijsberg.iglu.util.http.DownloadSupport;
 import org.ijsberg.iglu.util.http.MultiPartReader;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.FSFileCollection;
@@ -41,15 +39,18 @@ import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 import org.ijsberg.iglu.util.io.model.FileDto;
+import org.ijsberg.iglu.util.io.model.UserUploadedFilesDto;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
+import static org.ijsberg.iglu.access.Permissions.X;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.REQUEST_RESPONSE;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.VOID;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
@@ -130,6 +131,46 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		return new FileCollectionDto(fileCollection.getFileNames().stream()
 				.map(FileDto::new)
 				.collect(Collectors.toList()));
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@Endpoint(inputType = VOID, path = "all_uploaded_files", method = GET, returnType = JSON,
+			description = "Returns a list of files uploaded by all users.")
+	public UserUploadedFilesDto getAllUploadedFileNames() {
+		File uploadRootFile = new File(uploadRootDir);
+		Map<String, FileCollectionDto> map = new HashMap<>();
+		for (File userDir : uploadRootFile.listFiles()) {
+			List<FileDto> fileDtos = new ArrayList<>();
+			for (File uploadedFile : userDir.listFiles()) {
+				if (uploadedFile.isDirectory()) {
+					continue;
+				}
+				fileDtos.add(new FileDto(uploadedFile.getName()));
+			}
+			map.put(userDir.getName(), new FileCollectionDto(fileDtos));
+		}
+		return new UserUploadedFilesDto(map);
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "download_uploaded_file", method = GET,
+			description = "Downloads specified file uploaded by specified user.")
+	public void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response) {
+		// /download_uploaded_file/customerName/fileName
+		String[] path = req.getPathInfo().split("/");
+		String customerName = path[2];
+		String fileName = path[3];
+		String resourcePath = uploadRootDir + "/" + customerName + "/" + fileName;
+
+		try {
+			DownloadSupport.downloadFile(response, resourcePath);
+		} catch (IOException e) {
+			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", resourcePath), e));
+			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage()));
+			response.setStatus(500);
+		}
 	}
 
 	@Override
