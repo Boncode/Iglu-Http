@@ -161,8 +161,10 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		String fileName = path[3];
 		String resourcePath = uploadRootDir + "/" + customerName + "/" + fileName;
 
-		try {
-			DownloadSupport.downloadFile(response, resourcePath);
+		File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
+		DownloadSupport.setResponseDownloadMetaData(response, downloadable);
+		try (InputStream input = new FileInputStream(resourcePath)) {
+			StreamSupport.absorbInputStream(input, response.getOutputStream());
 		} catch (IOException e) {
 			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", resourcePath), e));
 			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage()));
