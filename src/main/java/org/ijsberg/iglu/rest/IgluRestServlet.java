@@ -292,8 +292,7 @@ public class IgluRestServlet extends HttpServlet {
                 return new Object[]{new String(postData)};
             }
             if(methodData.endpoint.inputType() == MAPPED) {
-                Object[] result = getObjectsFromQueryString(declaredParameters, new String(postData));
-                return result;
+                return getObjectsFromQueryString(declaredParameters, request.getQueryString());
             }
             //STRING
             return new Object[]{new String(postData)};
