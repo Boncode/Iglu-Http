@@ -428,3 +428,18 @@ body.dark .analyzer_properties_button {
     height: auto;
     border-radius: 3px;
 }
+
+.analyzer_project_button {
+    width: 12px;
+    cursor: pointer;
+    float: right;
+    padding: 0px 4px;
+}
+
+.analyzer_project_button:hover {
+    color: var(--menu-text-color);
+}
+
+.button_delete {
+    color: var(--boncode-red);
+}
