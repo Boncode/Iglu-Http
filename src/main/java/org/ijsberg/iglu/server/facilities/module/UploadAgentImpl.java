@@ -37,6 +37,7 @@ import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.FSFileCollection;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
+import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 import org.ijsberg.iglu.util.io.model.FileDto;
 import org.ijsberg.iglu.util.io.model.UserUploadedFilesDto;
@@ -44,15 +45,13 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
 import static org.ijsberg.iglu.access.Permissions.X;
-import static org.ijsberg.iglu.rest.Endpoint.ParameterType.REQUEST_RESPONSE;
-import static org.ijsberg.iglu.rest.Endpoint.ParameterType.VOID;
+import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
@@ -131,6 +130,24 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		return new FileCollectionDto(fileCollection.getFileNames().stream()
 				.map(FileDto::new)
 				.collect(Collectors.toList()));
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@Endpoint(inputType = MAPPED, path = "delete_uploaded_file", method = POST,
+			description = "Deletes the given file uploaded by the given user.",
+			parameters = {
+				@RequestParameter(name = "customerName"),
+				@RequestParameter(name = "fileName"),
+			})
+	public void deleteUploadedFile(String customerName, String fileName) {
+		File toDelete = new File(uploadRootDir + "/" + customerName + "/" + fileName);
+		System.out.println(new LogEntry(Level.VERBOSE, "deleting uploaded client file " + toDelete));
+		try {
+			FileSupport.deleteFile(toDelete);
+		} catch (IOException e) {
+			System.out.println(new LogEntry(Level.CRITICAL, "unable to delete " + toDelete));
+		}
 	}
 
 	@Override

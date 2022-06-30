@@ -33,6 +33,8 @@ public interface UploadAgent {
 
     UserUploadedFilesDto getAllUploadedFileNames();
 
+    void deleteUploadedFile(String customerName, String fileName);
+
     void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response);
 
     void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res);
