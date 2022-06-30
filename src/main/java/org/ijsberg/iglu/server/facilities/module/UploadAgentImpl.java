@@ -73,6 +73,8 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	private String uploadRootDir = "uploads";
 	private String downloadSubDir = "downloads";
 
+	private String uploadSuccessMessage = "Upload success! The file will be processed shortly.";
+
 	private String[] allowedFormatsWildcardExpressions;
 
 	private boolean sendEmail = false;
@@ -92,6 +94,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		targetDir = properties.getProperty("target_dir");
 		downloadSubDir = properties.getProperty("download_sub_dir", downloadSubDir);
 		uploadRootDir = properties.getProperty("upload_root_dir", uploadRootDir);
+		uploadSuccessMessage = properties.getProperty("upload_success_message", uploadSuccessMessage);
 		sendEmail = Boolean.parseBoolean(properties.getProperty("send_email", "" + sendEmail));
 	}
 
@@ -270,7 +273,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		} else {
 			System.out.println(new LogEntry("notification disabled"));
 		}
-		requestRegistry.dropMessageToCurrentUser(new EventMessage("uploadDone", "Upload success! The file will be processed shortly."));
+		requestRegistry.dropMessageToCurrentUser(new EventMessage("uploadDone", uploadSuccessMessage));
 	}
 
 	private void notifyAsync(FileData fileData) {
@@ -279,19 +282,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
 
 		requestRegistry.dropMessage("System", new MailMessage(getUserDir() + " : upload notification", message));
-
-/*		new Executable() {
-			@Override
-			protected Object execute() throws Throwable {
-				try {
-					new EMail("BONcat Upload Server", "bls@service.bon-code.nl", "bls@bon-code.nl", "file upload notification",
-							message).mail();
-				} catch (Exception e) {
-					System.out.println(new LogEntry(Level.CRITICAL,"sending notification failed", e));
-				}
-				return null;
-			}
-		}.executeAsync();*/
 	}
 
 	@Override
