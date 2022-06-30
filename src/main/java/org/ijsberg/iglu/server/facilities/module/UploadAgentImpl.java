@@ -97,20 +97,12 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		sendEmail = Boolean.parseBoolean(properties.getProperty("send_email", "" + sendEmail));
 	}
 
-
 	public void setProperties(Properties properties) {
 	}
 
 	public void setRequestRegistry(RequestRegistry requestRegistry) {
 		this.requestRegistry = requestRegistry;
 	}
-
-
-/*	@Override
-	public String readMultiPartUpload(HttpServletRequest request, Properties properties) throws IOException {
-		return readMultiPartUpload(request, properties, null);
-	}
-*/
 
 	private String getUserDir() {
 		return ServletSupport.getUserDir(requestRegistry);
@@ -200,8 +192,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		readMultiPartUpload(req, new String[]{"*"});
 	}
 
-
-	//TODO reconsider "synchronized" : should probably be confined to code starting with: if(readingUpload) {
 	public synchronized String readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions) {
 
 		this.allowedFormatsWildcardExpressions = allowedFormatsWildcardExpressions;
@@ -328,8 +318,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 		return JsonSupport.toMessage(jsFunction, "progress", retval);
 	}
-
-
 
 	@Override
 	@SystemEndpoint
