@@ -130,6 +130,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	}
 
 	@Override
+	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = MAPPED, path = "delete_file", method = POST,
 			description = "Deletes the given file.",
@@ -149,6 +150,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	}
 
 	@Override
+	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = VOID, path = "all_uploaded_files", method = GET, returnType = JSON,
 			description = "Returns a list of files uploaded by all users.")
@@ -167,6 +169,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	}
 
 	@Override
+	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = VOID, path = "all_downloadable_client_files", method = GET, returnType = JSON,
 			description = "Returns a list of files downloadable by all users.")
@@ -191,6 +194,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	}
 
 	@Override
+	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "download_uploaded_file", method = GET,
 			description = "Downloads specified file uploaded by specified user.")
@@ -205,6 +209,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	}
 
 	@Override
+	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "download_downloadable_file", method = GET,
 			description = "Downloads specified file downloadable by specified user.")
