@@ -40,13 +40,17 @@ import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 import org.ijsberg.iglu.util.io.model.FileDto;
-import org.ijsberg.iglu.util.io.model.UserUploadedFilesDto;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
@@ -104,7 +108,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		this.requestRegistry = requestRegistry;
 	}
 
-	private String getUserDir() {
+	protected String getUserDir() {
 		return ServletSupport.getUserDir(requestRegistry);
 	}
 
@@ -120,25 +124,26 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
 		System.out.println(new LogEntry("getDownloadDir(): " + getDownloadDir()));
 		return new FileCollectionDto(fileCollection.getFileNames().stream()
-				.map(FileDto::new)
+				.map(fileName -> new FileDto(fileName, getUserDir()))
 				.collect(Collectors.toList()));
 	}
 
 	@Override
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
-	@Endpoint(inputType = MAPPED, path = "delete_uploaded_file", method = POST,
-			description = "Deletes the given file uploaded by the given user.",
+	@Endpoint(inputType = MAPPED, path = "delete_file", method = POST,
+			description = "Deletes the given file.",
 			parameters = {
-				@RequestParameter(name = "customerName"),
-				@RequestParameter(name = "fileName"),
+				@RequestParameter(name = "path")
 			})
-	public void deleteUploadedFile(String customerName, String fileName) {
-		File toDelete = new File(uploadRootDir + "/" + customerName + "/" + fileName);
+	public void deleteFile(String path) {
+		File toDelete = new File(uploadRootDir + "/" + path);
 		System.out.println(new LogEntry(Level.VERBOSE, "deleting uploaded client file " + toDelete));
 		try {
 			FileSupport.deleteFile(toDelete);
 		} catch (IOException e) {
-			System.out.println(new LogEntry(Level.CRITICAL, "unable to delete " + toDelete));
+			String msg = "unable to delete " + toDelete;
+			System.out.println(new LogEntry(Level.CRITICAL, msg));
+			throw new RestException(msg, 500);
 		}
 	}
 
@@ -146,20 +151,42 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = VOID, path = "all_uploaded_files", method = GET, returnType = JSON,
 			description = "Returns a list of files uploaded by all users.")
-	public UserUploadedFilesDto getAllUploadedFileNames() {
+	public FileCollectionDto getAllUploadedFileNames() {
 		File uploadRootFile = new File(uploadRootDir);
-		Map<String, FileCollectionDto> map = new HashMap<>();
+		List<FileDto> fileDtos = new ArrayList<>();
 		for (File userDir : uploadRootFile.listFiles()) {
-			List<FileDto> fileDtos = new ArrayList<>();
 			for (File uploadedFile : userDir.listFiles()) {
 				if (uploadedFile.isDirectory()) {
 					continue;
 				}
-				fileDtos.add(new FileDto(uploadedFile.getName()));
+				fileDtos.add(new FileDto(uploadedFile.getName(), userDir.getName()));
 			}
-			map.put(userDir.getName(), new FileCollectionDto(fileDtos));
 		}
-		return new UserUploadedFilesDto(map);
+		return new FileCollectionDto(fileDtos);
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@Endpoint(inputType = VOID, path = "all_downloadable_client_files", method = GET, returnType = JSON,
+			description = "Returns a list of files downloadable by all users.")
+	public FileCollectionDto getAllDownloadableClientFiles() {
+		File uploadRootFile = new File(uploadRootDir);
+		List<FileDto> downloadableFiles = new ArrayList<>();
+		for (File userDir : uploadRootFile.listFiles()) {
+			System.out.println(new LogEntry(Level.VERBOSE, "looking through user: " + userDir));
+			if (!userDir.isDirectory()) {
+				continue;
+			}
+			File userDownloadDirectory = new File(userDir.getPath() + "/downloads");
+			String customerName = userDir.getName();
+			for (File downloadableFile : userDownloadDirectory.listFiles()) {
+				System.out.println(new LogEntry(Level.VERBOSE, "looking through downloadable file: " + downloadableFile));
+				if (!downloadableFile.isDirectory()) {
+					downloadableFiles.add(new FileDto(downloadableFile.getName(), customerName));
+				}
+			}
+		}
+		return new FileCollectionDto(downloadableFiles);
 	}
 
 	@Override
@@ -173,7 +200,26 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		String fileName = path[3];
 		String resourcePath = uploadRootDir + "/" + customerName + "/" + fileName;
 
+		downloadFile(response, resourcePath);
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "download_downloadable_file", method = GET,
+			description = "Downloads specified file downloadable by specified user.")
+	public void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response) {
+		// /download_uploaded_file/customerName/fileName
+		String[] path = req.getPathInfo().split("/");
+		String customerName = path[2];
+		String fileName = path[3];
+		String resourcePath = uploadRootDir + "/" + customerName + "/downloads/" + fileName;
+
+		downloadFile(response, resourcePath);
+	}
+
+	private void downloadFile(HttpServletResponse response, String resourcePath) {
 		File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
+		System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", resourcePath)));
 		DownloadSupport.setResponseDownloadMetaData(response, downloadable);
 		try (InputStream input = new FileInputStream(resourcePath)) {
 			StreamSupport.absorbInputStream(input, response.getOutputStream());
@@ -189,10 +235,23 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST,
 		description = "Uploads and processes data.")
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
-		readMultiPartUpload(req, new String[]{"*"});
+		readMultiPartUpload(req, new String[]{"*"}, getUserDir());
 	}
 
-	public synchronized String readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions) {
+	@Override
+	@SystemEndpoint
+	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload_for_client", method = POST,
+		description = "Uploads and processes file to /downloads folder for the given client for them to download.")
+	public void readMultiPartUploadForClient(HttpServletRequest req, HttpServletResponse res) {
+		// /upload_for_client/customerName
+		String customerName = req.getPathInfo().split("/")[2];
+		System.out.println(new LogEntry(Level.DEBUG, String.format("uploading file for client %s", customerName)));
+		String destination = customerName + "/downloads";
+		readMultiPartUpload(req, new String[]{"*"}, destination);
+	}
+
+	public synchronized String readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions, String destinationPath) {
 
 		this.allowedFormatsWildcardExpressions = allowedFormatsWildcardExpressions;
 		isUploadCancelled = false;
@@ -217,8 +276,8 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 			readingUpload = true;
 			try {
-				System.out.println(new LogEntry(Level.VERBOSE, "about to read upload in " + uploadRootDir + '/' + getUserDir()));
-				reader = new MultiPartReader(req, uploadRootDir + '/' + getUserDir(), this);
+				System.out.println(new LogEntry(Level.VERBOSE, "about to read upload in " + uploadRootDir + '/' + destinationPath));
+				reader = new MultiPartReader(req, uploadRootDir + '/' + destinationPath, this);
 				//TODO exception if file missing
 				reader.readMultipartUpload();
 				System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " done"));

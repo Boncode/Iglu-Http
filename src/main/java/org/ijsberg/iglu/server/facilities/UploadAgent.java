@@ -20,7 +20,6 @@
 package org.ijsberg.iglu.server.facilities;
 
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
-import org.ijsberg.iglu.util.io.model.UserUploadedFilesDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,13 +30,19 @@ public interface UploadAgent {
 
 	FileCollectionDto getDownloadableFileNames();
 
-    UserUploadedFilesDto getAllUploadedFileNames();
+    FileCollectionDto getAllUploadedFileNames();
 
-    void deleteUploadedFile(String customerName, String fileName);
+    FileCollectionDto getAllDownloadableClientFiles();
+
+    void deleteFile(String path);
 
     void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response);
 
+    void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response);
+
     void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res);
+
+    void readMultiPartUploadForClient(HttpServletRequest req, HttpServletResponse res);
 
     //String readMultiPartUpload(HttpServletRequest request, Properties properties, String fileName) throws IOException;
 
