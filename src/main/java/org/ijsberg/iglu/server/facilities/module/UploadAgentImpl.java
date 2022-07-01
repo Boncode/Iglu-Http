@@ -40,6 +40,7 @@ import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 import org.ijsberg.iglu.util.io.model.FileDto;
+import org.ijsberg.iglu.util.mail.MimeTypeSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -220,7 +221,12 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	private void downloadFile(HttpServletResponse response, String resourcePath) {
 		File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
 		System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", resourcePath)));
-		DownloadSupport.setResponseDownloadMetaData(response, downloadable);
+
+		String fileName = downloadable.getName();
+		response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(fileName.substring(fileName.lastIndexOf('.') + 1)));
+		response.setContentLength((int) downloadable.length());
+		response.setHeader("Content-disposition", "attachment; filename=" + fileName);
+
 		try (InputStream input = new FileInputStream(resourcePath)) {
 			StreamSupport.absorbInputStream(input, response.getOutputStream());
 		} catch (IOException e) {

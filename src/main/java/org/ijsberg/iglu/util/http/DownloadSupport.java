@@ -2,9 +2,7 @@ package org.ijsberg.iglu.util.http;
 
 import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.io.FileSupport;
-import org.ijsberg.iglu.util.mail.MimeTypeSupport;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 public class DownloadSupport {
@@ -25,13 +23,6 @@ public class DownloadSupport {
         }
 
         return downloadable;
-    }
-
-    public static void setResponseDownloadMetaData(HttpServletResponse response, File downloadable) {
-        String fileName = downloadable.getName();
-        response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(fileName.substring(fileName.lastIndexOf('.') + 1)));
-        response.setContentLength((int) downloadable.length());
-        response.setHeader("Content-disposition", "attachment; filename=" + fileName);
     }
 
 }
