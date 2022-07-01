@@ -120,7 +120,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Override
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON,
-		description = "Returns a list of downloadable files.")
+		description = "Returns a list of downloadable files for the current user.")
 	public FileCollectionDto getDownloadableFileNames() {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
 		System.out.println(new LogEntry("getDownloadDir(): " + getDownloadDir()));
