@@ -12,16 +12,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
 
-    private String resourceDir;
+    protected String resourceDir;
     //TODO get from config
     private String includeMask = "*.zip";
     private FSFileCollection fileCollection;
 
-    protected Map<String, String> resources = new HashMap<>();
+    protected TreeMap<String, String> resources = new TreeMap<>();
 
 
     public void init(ServletConfig conf) throws ServletException {
@@ -34,7 +35,7 @@ public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
         mapResources(fileCollection);
     }
 
-    private void refresh() {
+    protected void refresh() {
         fileCollection.refreshFiles();
         mapResources(fileCollection);
     }
