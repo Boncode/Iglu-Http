@@ -29,6 +29,7 @@ import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.*;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
+import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.DownloadSupport;
@@ -138,7 +139,12 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				@RequestParameter(name = "path")
 			})
 	public void deleteFile(String path) {
-		File toDelete = new File(uploadRootDir + "/" + path);
+		File toDelete;
+		try {
+			toDelete = DownloadSupport.getDownloadableFile(uploadRootDir + "/" + path);
+		} catch (ResourceException e) {
+			throw new RestException("Cannot delete file", 403);
+		}
 		System.out.println(new LogEntry(Level.VERBOSE, "deleting uploaded client file " + toDelete));
 		try {
 			FileSupport.deleteFile(toDelete);
@@ -196,46 +202,37 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Override
 	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
-	@Endpoint(inputType = REQUEST_RESPONSE, path = "download_uploaded_file", method = GET,
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "uploaded_file", method = GET,
 			description = "Downloads specified file uploaded by specified user.")
 	public void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response) {
-		// /download_uploaded_file/customerName/fileName
 		String[] path = req.getPathInfo().split("/");
-		String customerName = path[2];
-		String fileName = path[3];
-		String resourcePath = uploadRootDir + "/" + customerName + "/" + fileName;
-
+		String resourcePath = uploadRootDir + "/" + path[2] + "/" + path[3];
 		downloadFile(response, resourcePath);
 	}
 
 	@Override
 	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
-	@Endpoint(inputType = REQUEST_RESPONSE, path = "download_downloadable_file", method = GET,
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "downloadable_file", method = GET,
 			description = "Downloads specified file downloadable by specified user.")
 	public void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response) {
-		// /download_uploaded_file/customerName/fileName
 		String[] path = req.getPathInfo().split("/");
-		String customerName = path[2];
-		String fileName = path[3];
-		String resourcePath = uploadRootDir + "/" + customerName + "/downloads/" + fileName;
-
+		String resourcePath = uploadRootDir + "/" + path[2] + "/downloads/" + path[3];
 		downloadFile(response, resourcePath);
 	}
 
 	private void downloadFile(HttpServletResponse response, String resourcePath) {
 		File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
-		System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", resourcePath)));
+		System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", downloadable.getName())));
 
-		String fileName = downloadable.getName();
-		response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(fileName.substring(fileName.lastIndexOf('.') + 1)));
+		response.setContentType(MimeTypeSupport.getMimeTypeForFileName(downloadable.getName()));
 		response.setContentLength((int) downloadable.length());
-		response.setHeader("Content-disposition", "attachment; filename=" + fileName);
+		response.setHeader("Content-disposition", "attachment; filename=" + downloadable.getName());
 
-		try (InputStream input = new FileInputStream(resourcePath)) {
+		try (InputStream input = new FileInputStream(downloadable)) {
 			StreamSupport.absorbInputStream(input, response.getOutputStream());
 		} catch (IOException e) {
-			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", resourcePath), e));
+			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", downloadable.getName()), e));
 			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage()));
 			response.setStatus(500);
 		}
