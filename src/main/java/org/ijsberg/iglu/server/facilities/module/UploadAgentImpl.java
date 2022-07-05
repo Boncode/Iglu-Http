@@ -163,12 +163,17 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	public FileCollectionDto getAllUploadedFileNames() {
 		File uploadRootFile = new File(uploadRootDir);
 		List<FileDto> fileDtos = new ArrayList<>();
-		for (File userDir : uploadRootFile.listFiles()) {
-			for (File uploadedFile : userDir.listFiles()) {
-				if (uploadedFile.isDirectory()) {
+		if (uploadRootFile.listFiles() != null) {
+			for (File userDir : uploadRootFile.listFiles()) {
+				if (userDir == null || userDir.listFiles() == null) {
 					continue;
 				}
-				fileDtos.add(new FileDto(uploadedFile.getName(), userDir.getName()));
+				for (File uploadedFile : userDir.listFiles()) {
+					if (uploadedFile == null || uploadedFile.isDirectory()) {
+						continue;
+					}
+					fileDtos.add(new FileDto(uploadedFile.getName(), userDir.getName()));
+				}
 			}
 		}
 		return new FileCollectionDto(fileDtos);
@@ -182,17 +187,21 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	public FileCollectionDto getAllDownloadableClientFiles() {
 		File uploadRootFile = new File(uploadRootDir);
 		List<FileDto> downloadableFiles = new ArrayList<>();
-		for (File userDir : uploadRootFile.listFiles()) {
-			System.out.println(new LogEntry(Level.VERBOSE, "looking through user: " + userDir));
-			if (!userDir.isDirectory()) {
-				continue;
-			}
-			File userDownloadDirectory = new File(userDir.getPath() + "/downloads");
-			String customerName = userDir.getName();
-			for (File downloadableFile : userDownloadDirectory.listFiles()) {
-				System.out.println(new LogEntry(Level.VERBOSE, "looking through downloadable file: " + downloadableFile));
-				if (!downloadableFile.isDirectory()) {
-					downloadableFiles.add(new FileDto(downloadableFile.getName(), customerName));
+		if (uploadRootFile.listFiles() != null) {
+			for (File userDir : uploadRootFile.listFiles()) {
+				System.out.println(new LogEntry(Level.VERBOSE, "looking through user: " + userDir));
+				if (userDir == null || !userDir.isDirectory()) {
+					continue;
+				}
+				File userDownloadDirectory = new File(userDir.getPath() + "/downloads");
+				String customerName = userDir.getName();
+				if (userDownloadDirectory.listFiles() != null) {
+					for (File downloadableFile : userDownloadDirectory.listFiles()) {
+						System.out.println(new LogEntry(Level.VERBOSE, "looking through downloadable file: " + downloadableFile));
+						if (!downloadableFile.isDirectory()) {
+							downloadableFiles.add(new FileDto(downloadableFile.getName(), customerName));
+						}
+					}
 				}
 			}
 		}
