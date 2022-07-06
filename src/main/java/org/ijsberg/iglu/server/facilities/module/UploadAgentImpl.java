@@ -189,7 +189,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		List<FileDto> downloadableFiles = new ArrayList<>();
 		if (uploadRootFile.listFiles() != null) {
 			for (File userDir : uploadRootFile.listFiles()) {
-				System.out.println(new LogEntry(Level.VERBOSE, "looking through user: " + userDir));
 				if (userDir == null || !userDir.isDirectory()) {
 					continue;
 				}
@@ -197,7 +196,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				String customerName = userDir.getName();
 				if (userDownloadDirectory.listFiles() != null) {
 					for (File downloadableFile : userDownloadDirectory.listFiles()) {
-						System.out.println(new LogEntry(Level.VERBOSE, "looking through downloadable file: " + downloadableFile));
 						if (!downloadableFile.isDirectory()) {
 							downloadableFiles.add(new FileDto(downloadableFile.getName(), customerName));
 						}
