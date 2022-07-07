@@ -121,7 +121,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Override
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON,
-		description = "Returns a list of downloadable files for the current user.")
+		description = "Retrieve a list of downloadable files for the current user.")
 	public FileCollectionDto getDownloadableFileNames() {
 		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
 		System.out.println(new LogEntry("getDownloadDir(): " + getDownloadDir()));
@@ -134,7 +134,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = MAPPED, path = "delete_file", method = POST,
-			description = "Deletes the given file.",
+			description = "Delete the given file.",
 			parameters = {
 				@RequestParameter(name = "path")
 			})
@@ -159,7 +159,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = VOID, path = "all_uploaded_files", method = GET, returnType = JSON,
-			description = "Returns a list of files uploaded by all users.")
+			description = "Retrieve a list of files uploaded by all users.")
 	public FileCollectionDto getAllUploadedFileNames() {
 		File uploadRootFile = new File(uploadRootDir);
 		List<FileDto> fileDtos = new ArrayList<>();
@@ -183,7 +183,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = VOID, path = "all_downloadable_client_files", method = GET, returnType = JSON,
-			description = "Returns a list of files downloadable by all users.")
+			description = "Retrieve a list of files retrievable by all users.")
 	public FileCollectionDto getAllDownloadableClientFiles() {
 		File uploadRootFile = new File(uploadRootDir);
 		List<FileDto> downloadableFiles = new ArrayList<>();
@@ -210,7 +210,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "uploaded_file", method = GET,
-			description = "Downloads specified file uploaded by specified user.")
+			description = "Retrieve specified file uploaded by specified user.")
 	public void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response) {
 		String[] path = req.getPathInfo().split("/");
 		String resourcePath = uploadRootDir + "/" + path[2] + "/" + path[3];
@@ -221,7 +221,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "downloadable_file", method = GET,
-			description = "Downloads specified file downloadable by specified user.")
+			description = "Retrieve specified file downloadable by specified user.")
 	public void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response) {
 		String[] path = req.getPathInfo().split("/");
 		String resourcePath = uploadRootDir + "/" + path[2] + "/downloads/" + path[3];
@@ -248,7 +248,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Override
 	@AllowPublicAccess
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST,
-		description = "Uploads and processes data.")
+		description = "Upload and process data.")
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
 		readMultiPartUpload(req, new String[]{"*"}, getUserDir());
 	}
@@ -257,7 +257,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload_for_client", method = POST,
-		description = "Uploads and processes file to /downloads folder for the given client for them to download.")
+		description = "Upload and process file to /downloads folder for the given user for them to retrieve.")
 	public void readMultiPartUploadForClient(HttpServletRequest req, HttpServletResponse res) {
 		// /upload_for_client/customerName
 		String customerName = req.getPathInfo().split("/")[2];
@@ -397,7 +397,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "progress", method = GET, returnType = JSON,
-		description = "Returns the amount of bytes read and the amount of bytes to read in total.")
+		description = "Retrieve the amount of bytes read and the amount of bytes to read in total.")
 	public String getProgress() {
 		JsonData retval = new JsonData();
 		JsonData jsonData = new JsonData();
@@ -412,7 +412,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "cancel", method = GET, returnType = TXT,
-		description = "Cancels the upload.")
+		description = "Cancel the upload.")
 	public String cancelUpload() {
 		System.out.println(new LogEntry(Level.VERBOSE, "cancelling upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
 		if(reader != null) {
@@ -439,7 +439,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@SystemEndpoint
 	@AllowPublicAccess
 	@Endpoint(inputType = VOID, path = "reset", method = GET,
-		description = "Resets the upload.")
+		description = "Reset the upload.")
 	public void reset() {
 		System.out.println(new LogEntry(Level.VERBOSE, "resetting upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
 		if(reader != null) {
