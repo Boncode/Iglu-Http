@@ -133,7 +133,7 @@ public class JsonData implements JsonDecorator {
 			}
 			i++;
 			if(i < attributes.size()) {
-				out.print(",");
+				out.print(",\n");
 			}
 		}
 		out.print(" }\n");
