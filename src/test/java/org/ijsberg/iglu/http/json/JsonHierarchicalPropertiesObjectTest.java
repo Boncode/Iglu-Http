@@ -20,9 +20,13 @@ public class JsonHierarchicalPropertiesObjectTest {
 	}
 
 	private static String result = "{\n" +
-			"  \"main\" : \"bogus\", \"sub\" : {\n" +
-			"  \"bar\" : \"hop\", \"foo\" : \"bla\", \"sub1\" : {\n" +
-			"  \"bar\" : \"hop1\", \"foo\" : \"bla1\" }\n" +
+			"  \"main\" : \"bogus\",\n" +
+			" \"sub\" : {\n" +
+			"  \"foo\" : \"bla\",\n" +
+			" \"bar\" : \"hop\",\n" +
+			" \"sub1\" : {\n" +
+			"  \"bar\" : \"hop1\",\n" +
+			" \"foo\" : \"bla1\" }\n" +
 			" }\n" +
 			" }\n";
 
