@@ -443,3 +443,8 @@ body.dark .analyzer_properties_button {
 .button_delete {
     color: var(--boncode-red);
 }
+
+.cell_permission_indicator {
+    justify-content: center;
+    display: flex;
+}
