@@ -374,6 +374,10 @@ public class IgluRestServlet extends HttpServlet {
             WebContentType contentType = HTML;
 
             if (restMethodData != null) {
+                if(restMethodData.method.getAnnotation(Deprecated.class) != null) {
+                    System.out.println(new LogEntry(Level.CRITICAL, "Deprecated endpoint called: " + path));
+                }
+
                 contentType = restMethodData.getResponseContentType();
                 restMethodData.assertUserAuthorized();
                 try {
