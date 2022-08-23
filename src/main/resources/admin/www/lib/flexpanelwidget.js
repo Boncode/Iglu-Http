@@ -96,9 +96,15 @@ FlexPanelWidget.prototype.writeHTML = function() {
         this.setHeaderContent();
 	}
 
-	var contentFrame = new FlexFrameWidget({
-        id : this.id + '_frame',
-        cssClassName : 'flexpanelcontentframe',
-	}, this.content);
-	this.subWidgets[this.id] = contentFrame;
+//    var contentFrame;
+//    if(!this.content instanceof FlexFrameWidget) {
+//        contentFrame = new FlexFrameWidget({
+//            id : this.id + '_frame',
+//            cssClassName : 'flexpanelcontentframe',
+//	    }, this.content);
+//    } else {
+//        console.debug('contentFrame is already a FlexFrameWidget (ChartWidget probably).');
+//        contentFrame = this.content;
+//    }
+//	this.subWidgets[this.id] = contentFrame;
 };

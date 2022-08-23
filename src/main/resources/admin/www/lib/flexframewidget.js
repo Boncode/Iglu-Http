@@ -90,20 +90,23 @@ FlexFrameWidget.prototype.addSubWidget = function(containerId, subWidget) {
 FlexFrameWidget.prototype.onDeploy = function() {
 
 	this.draw();
-	for(var containerId in this.subWidgets) {
-		var definedSubWidgets = this.subWidgets[containerId];
-		if(definedSubWidgets.length) {
-			for(var i = 0; i < definedSubWidgets.length; i++) {
-				WidgetManager.instance.deployWidgetInContainer(document.getElementById(containerId), definedSubWidgets[i]);
-			}
-		} else {
-			WidgetManager.instance.deployWidgetInContainer(document.getElementById(containerId), definedSubWidgets);
-		}
-	}
 
 	if(this.content && this.content.onDeploy != 'undefined') {
 		WidgetManager.instance.deployWidgetInContainer(this.element, this.content);
+	} else {
+	    for(var containerId in this.subWidgets) {
+    	    console.error(containerId);
+    		var definedSubWidgets = this.subWidgets[containerId];
+    		if(definedSubWidgets.length) {
+    			for(var i = 0; i < definedSubWidgets.length; i++) {
+    				WidgetManager.instance.deployWidgetInContainer(document.getElementById(containerId), definedSubWidgets[i]);
+    			}
+    		} else {
+    			WidgetManager.instance.deployWidgetInContainer(document.getElementById(containerId), definedSubWidgets);
+    		}
+    	}
 	}
+
     var onclick = this.onclick;
     if(this.onclick != null) {
         this.element.onclick = new Function(onclick);
