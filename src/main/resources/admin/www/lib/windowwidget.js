@@ -111,21 +111,26 @@ WindowWidget.prototype.writeHTML = function() {
 
 	titleFrame.stretchToOuterWidget(this, {'e':{'offset':20}});
 
-	var contentFrame = new FrameWidget({
-        id : this.id + '_frame',
-        cssClassName : 'panelcontentframe',
-        //top: 30,
-        //left: 5,
-        //width: (this.width - 10),
-        height: (this.height - 35)
-	}, this.content);
-	contentFrame.stretchToOuterWidget(this, {'e':{'offset':0}});
-	contentFrame.stretchToOuterWidget(this, {'s':{'offset':0}});
+//	var contentFrame = new FrameWidget({
+//        id : this.id + '_frame',
+//        cssClassName : 'panelcontentframe',
+//        //top: 30,
+//        //left: 5,
+//        //width: (this.width - 10),
+//        height: (this.height - 35)
+//	}, this.content);
+//	contentFrame.stretchToOuterWidget(this, {'e':{'offset':0}});
+//	contentFrame.stretchToOuterWidget(this, {'s':{'offset':0}});
+//
+//	this.addResizeListener(contentFrame, {'e':{'action':contentFrame.resizeEast, factor: 1}});
+//	this.addResizeListener(contentFrame, {'s':{'action':contentFrame.resizeSouth, factor: 1}});
+//	this.addResizeListener(contentFrame, {'n':{'action':contentFrame.resizeSouth, factor: 1}});
+//	this.addResizeListener(contentFrame, {'w':{'action':contentFrame.resizeEast, factor: 1}});
 
-	this.addResizeListener(contentFrame, {'e':{'action':contentFrame.resizeEast, factor: 1}});
-	this.addResizeListener(contentFrame, {'s':{'action':contentFrame.resizeSouth, factor: 1}});
-	this.addResizeListener(contentFrame, {'n':{'action':contentFrame.resizeSouth, factor: 1}});
-	this.addResizeListener(contentFrame, {'w':{'action':contentFrame.resizeEast, factor: 1}});
+    var contentFrame = new FlexFrameWidget({
+        id : this.id + '_frame',
+        cssClassName : 'flexpanelcontentframe',
+    }, this.content);
 
 	this.subWidgets[this.element.id] = contentFrame;
 };
