@@ -180,7 +180,7 @@ public class JsonData implements JsonDecorator {
 //				out.print("[ " + CollectionSupport.format((Collection) value, ", ") + " ]");
 			} else if (value instanceof String) {
 				if(((String) value).startsWith("\"") || "".equals(value)) {
-					line.append(escapeWithLineContinuation(getStringAttribute(attrName)));
+					line.append(getStringAttribute(attrName));
 				} else {
 					line.append(value);
 				}
