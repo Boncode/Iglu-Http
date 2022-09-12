@@ -251,6 +251,10 @@ body.waiting * {
     width: 10px;
 }
 
+body.dark .analyzer_application_tag {
+    background-color: rgb(66, 73, 83);
+    color: #eee;
+}
 
 .properties_input_tags {
     flex: 2;

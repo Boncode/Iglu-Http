@@ -20,26 +20,30 @@ public abstract class DownloadServlet extends HttpServlet {
 
     public void service(HttpServletRequest request, HttpServletResponse response) {
 
-        String pathInfo = request.getPathInfo();
-        if(pathInfo == null) {
-            pathInfo = "";
-        }
-        String resourcePath = getResourceDir() + '/' + pathInfo;
-
-        File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
+        File downloadable = getDownloadable(request);
 
         String fileName = downloadable.getName();
         response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(fileName.substring(fileName.lastIndexOf('.') + 1)));
         response.setContentLength((int) downloadable.length());
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);
 
-        try (InputStream input = new FileInputStream(resourcePath)) {
+        try (InputStream input = new FileInputStream(downloadable)) {
             StreamSupport.absorbInputStream(input, response.getOutputStream());
         } catch (IOException e) {
-            System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", resourcePath), e));
+            System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", downloadable.getName()), e));
             response.setStatus(500);
         }
 
+    }
+
+    protected File getDownloadable(HttpServletRequest request) {
+        String pathInfo = request.getPathInfo();
+        if(pathInfo == null) {
+            pathInfo = "";
+        }
+        String resourcePath = getResourceDir() + '/' + pathInfo;
+        File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
+        return downloadable;
     }
 
 }
