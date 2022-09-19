@@ -21,6 +21,11 @@ public class JsonData implements JsonDecorator {
 	public JsonData() {
 	}
 
+	public JsonData(JsonData jsonData) {
+		//NOTE: not an entire deep copy
+		attributes.putAll(jsonData.attributes);
+	}
+
 	public boolean isEmpty() {
 		return attributes.isEmpty();
 	}
