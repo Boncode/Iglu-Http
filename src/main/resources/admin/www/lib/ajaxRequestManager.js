@@ -55,6 +55,7 @@ function AjaxRequestManager()
 
 	this.ajaxRequestHistory = new Array();
 	this.loginUrl = null;
+	this.notAuthenticatedHandler = null;
 }
 
 function AjaxRequest(requestURL, callback, callbackInput, postData, multipart) {
@@ -69,6 +70,20 @@ function AjaxRequest(requestURL, callback, callbackInput, postData, multipart) {
 AjaxRequestManager.prototype.setLoginUrl = function(loginUrl)
 {
 	this.loginUrl = loginUrl;
+}
+
+AjaxRequestManager.prototype.handleNotAuthenticated = function()
+{
+    if(this.notAuthenticatedHandler !== null) {
+        this.notAuthenticatedHandler();
+    } else {
+        window.location.href = '/';
+    }
+}
+
+AjaxRequestManager.prototype.setNotAuthenticatedHandler = function(notAuthenticatedHandler)
+{
+    this.notAuthenticatedHandler = notAuthenticatedHandler;
 }
 
 AjaxRequestManager.prototype.checkAjaxSupport = function()
@@ -202,7 +217,7 @@ AjaxRequestManager.prototype.abortRequest = function(requestNr) {
 function dispatchResponse(requestNr)
 {
 	//	alert('handling result: ' + message);
-	//serverResponse.status: 200, 500, 503, 404
+	//serverResponse.status: 200, 500, 503, 404);
 
 	if (ajaxRequestManager.ajaxRequests[requestNr].readyState == 4 || ajaxRequestManager.ajaxRequests[requestNr].readyState == 'complete')
 	{
@@ -222,8 +237,7 @@ function dispatchResponse(requestNr)
 			alert('' + ajaxRequestManager.callbacks[requestNr] + ' is not a function');
 		} else {
 			if(ajaxRequestManager.redirectIfNotAuthenticated && ajaxRequestManager.ajaxRequests[requestNr].status == 401) {
-			    //alert('ajaxRequest callback:' + ajaxRequestManager.callbacks[requestNr]);
-				window.location.href = '/';
+                ajaxRequestManager.handleNotAuthenticated();
 			}
 
 /*			if(ajaxRequestManager.ajaxRequests[requestNr].status == 403) {
