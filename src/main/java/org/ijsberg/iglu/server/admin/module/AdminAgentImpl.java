@@ -180,7 +180,7 @@ public class AdminAgentImpl implements AdminAgent, SessionDestructionListener, L
 		String jsonString = null;
 		synchronized (logEntries) {
 			jsonString =
-				"[" + CollectionSupport.format("'", "'", logEntries, ",\n") + "\n];\n";
+				"[" + CollectionSupport.format("'", logEntries, "'", ",\n") + "\n];\n";
 			logEntries.clear();
 		}
 		return jsonString;
