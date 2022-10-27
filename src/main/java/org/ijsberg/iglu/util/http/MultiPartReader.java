@@ -134,7 +134,6 @@ public class MultiPartReader {
 			partialCopyOutputStream = getStorageOutputStream();
 
 			readUploadedFile(boundary, partialCopyOutputStream);
-			bytesRead += bytesReadAsLine;
 
 			if (fullFileName != null)
 			{
@@ -155,6 +154,8 @@ public class MultiPartReader {
 				System.out.println(new LogEntry("property found in multi-part data:"  + propertyName + '=' + propertyValue));
 			}
 			partialCopyOutputStream.close();
+
+			bytesRead += bytesReadAsLine;
 
 			fullFileName = null;
 		}
