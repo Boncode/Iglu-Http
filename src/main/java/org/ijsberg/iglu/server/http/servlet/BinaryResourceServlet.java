@@ -49,6 +49,11 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 			if(resourcePath.startsWith("/")) {
 				resourcePath = resourcePath.substring(1);
 			}
+			if("refresh".equals(resourcePath)) {
+				refresh();
+				response.setStatus(200);
+				return;
+			}
 
 			ServletOutputStream out = response.getOutputStream();
 			response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
@@ -68,5 +73,7 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 	}
 
 	public abstract byte[] getResource(String path) throws IOException, ServletException;
+
+	protected abstract void refresh();
 
 }

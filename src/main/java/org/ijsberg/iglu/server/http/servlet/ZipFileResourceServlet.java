@@ -60,4 +60,9 @@ public class ZipFileResourceServlet extends BinaryResourceServlet implements Zip
 		byte[] resource = FileSupport.getBinaryFromJar(documentRoot + path, zipFileName);
         return resource;
 	}
+
+	@Override
+	protected void refresh() {
+
+	}
 }

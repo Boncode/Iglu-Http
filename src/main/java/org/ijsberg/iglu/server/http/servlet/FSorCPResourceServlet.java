@@ -67,6 +67,11 @@ public class FSorCPResourceServlet extends BinaryResourceServlet {
 		return null;
 	}
 
+	@Override
+	protected void refresh() {
+
+	}
+
 	private boolean isAllowedContent(String servletPath) {
 		return allowedContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, allowedContentRegExp);
 	}

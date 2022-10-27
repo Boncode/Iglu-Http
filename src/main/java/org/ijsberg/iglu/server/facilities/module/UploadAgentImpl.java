@@ -311,11 +311,22 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 			isUploadCancelled = true; //TODO distinguish between failed and cancelled
 			readingUpload = false;
 			System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? "file: " + reader.getUploadFile() : "[ERROR:reader:null]" ) + " FAILED"));
-			if(reader.getUploadFile() != null) {
+			if(reader.getUploadFile() != null) { //FIXME fix nullpointer, especially if upload reset too soon (see other FIXME)
 				reader.getUploadFile().delete();
 			}
 			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed or cancelled."));
 		}
+/*
+
+DBG 20221021 09:42:21.433 about to read multipart upload, content-type: multipart/form-data; boundary=----WebKitFormBoundaryv08FadiFZr3WWvLL
+VBS 20221021 09:42:21.433 about to read upload in configurations/analysis-server/upload/uploads//admin
+VBS 20221021 09:42:21.465 resetting upload configurations/analysis-server/upload/uploads/admin/Zilveren Kruis.Configurations.osp
+VBS 20221021 09:42:21.465 cancelling upload configurations/analysis-server/upload/uploads/admin/Zilveren Kruis.Configurations.osp
+CRT 20221021 09:42:21.467 reading upload [ERROR:reader:null] failed or was interrupted
+java.io.IOException: Stream Closed
+IOException : Stream Closed
+
+ */
 		readingUpload = false;
 
 		if(uploadFailedExc != null && uploadFailedExc instanceof RestException) {
@@ -402,6 +413,13 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		JsonData retval = new JsonData();
 		JsonData jsonData = new JsonData();
 		retval.addAttribute("progress", jsonData);
+
+		//FIXME bytes read IS NOT bytes processed
+		//It seems to be the case that:
+		// - since an upload is reset after a file is considered uploaded
+		//			=> based on bytesRead
+		// - the process is reset to soon, disturbing the capture of the last bytes, resulting in errors
+
 		jsonData.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
 		jsonData.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
 		jsonData.addAttribute("isUploadCancelled", isUploadCancelled);
