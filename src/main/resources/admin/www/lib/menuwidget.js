@@ -159,7 +159,8 @@ MenuWidget.prototype.addItem = function(item, container) {
 		}
 	}
 	//TODO if item can be toggled
-	var itemDiv = document.createElement(item.htmlType);
+	let htmlType = item.htmlType || 'div';
+	var itemDiv = document.createElement(htmlType);
 
     if(typeof item.oninput != 'undefined') {
         itemDiv.setAttribute('oninput', item.oninput);
