@@ -170,6 +170,8 @@ public class IgluRestServlet extends HttpServlet {
     private String agentName;
     private Class agentClass;
     //FIXME allow for method overloading
+
+    //FIXME allow for http request method overloading
     private Map<String, RestMethodData> invokeableMethods = new HashMap<>();
 
     public void setAssembly(Assembly assembly) {
@@ -325,6 +327,9 @@ public class IgluRestServlet extends HttpServlet {
         if(parameterType == FROM_PATH) {
             String path = trimPath(request.getPathInfo()).substring(methodData.endpoint.path().length());
             path = trimPath(path);
+            if("".equals(path)) {
+                return new Object[0];
+            }
             //System.out.println("PATH: " + path);
             return path.split("/");
         }
