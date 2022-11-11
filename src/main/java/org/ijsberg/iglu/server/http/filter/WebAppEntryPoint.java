@@ -386,7 +386,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				//it's wrapped, so the exception must be thrown at the top entry point
 				ServletSupport.rethrow(t);
 			}
-			handleException(servletRequest, servletResponse, t);
+			handleException(servletRequest, (HttpServletResponse)servletResponse, t);
 		}
 		finally
 		{
@@ -467,7 +467,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 * @param response
 	 * @param cause
 	 */
-	public void handleException(ServletRequest request, ServletResponse response, Throwable cause) throws IOException, ServletException
+	public void handleException(ServletRequest request, HttpServletResponse response, Throwable cause) throws IOException, ServletException
 	{
 		List messageStack = new ArrayList();
 		messageStack.add("Request: " + request);
@@ -489,6 +489,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 						"Make sure you do so if your application is in a production environment.\n" +
 						"(in section [" + exceptionPagesSectionId + "])" +
 						"\n\n" + CollectionSupport.format(messageStack, "\n"), cause);
+				response.setStatus(500);
 			} else {
 				System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName + " can not be printed: response already committed", cause));
 			}
