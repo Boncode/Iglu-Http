@@ -33,7 +33,10 @@ public abstract class DownloadServlet extends HttpServlet {
             System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", downloadable.getName()), e));
             response.setStatus(500);
         }
+/*        catch (RuntimeException re) {
 
+        }
+*/
     }
 
     protected File getDownloadable(HttpServletRequest request) {
