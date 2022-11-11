@@ -92,7 +92,7 @@ WindowWidget.prototype.writeHTML = function() {
 
 	var result = '<div class="title_bar_inactive" id="' + this.id + '_header">' +
 					'<div class="paneltitleframe" id="' + this.id + '_title_frame"></div>' +
-					'<div class="close_icon" onclick="widgetmanager.destroyWidget(\'' + this.getId() + '\')"></div>' +
+					'<i class="close_icon bi bi-x" onclick="widgetmanager.destroyWidget(\'' + this.getId() + '\')"></div>' +
 				'</div>';
 	this.element.innerHTML = result;
 	this.dragActivationElement = document.getElementById(this.id + '_header');
