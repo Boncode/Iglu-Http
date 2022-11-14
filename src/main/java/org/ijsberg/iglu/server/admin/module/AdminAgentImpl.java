@@ -30,6 +30,7 @@ import org.ijsberg.iglu.util.collection.CollectionSupport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 
 /**
@@ -173,6 +174,11 @@ public class AdminAgentImpl implements AdminAgent, SessionDestructionListener, L
 	@Override
 	public int getLogLevelOrdinal() {
 		return logger.getLogLevelOrdinal();
+	}
+
+	@Override
+	public Properties getProperties() {
+		return null;
 	}
 
 	@Override

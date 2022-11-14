@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class LoggerServlet extends HttpServlet implements Logger {
 
@@ -70,5 +71,10 @@ public class LoggerServlet extends HttpServlet implements Logger {
     @Override
     public int getLogLevelOrdinal() {
         return logLevelOrdinal;
+    }
+
+    @Override
+    public Properties getProperties() {
+        return null;
     }
 }

@@ -9,3 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface SystemEndpoint {
 }
+
+//org.ijsberg.iglu.rest.SystemEndpoint
