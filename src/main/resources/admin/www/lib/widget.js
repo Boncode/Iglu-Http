@@ -53,7 +53,12 @@ Widget.prototype.cloneSettings = function(extraSettingsNames) {
     var clonedSettings = cloneAttributes(this.settings);
 
 	for(var name in this.settings) {
-      	clonedSettings[name] = JSON.parse(JSON.stringify(this[name]));
+	    if(typeof this[name] !== 'undefined') {
+      	    clonedSettings[name] = JSON.parse(JSON.stringify(this[name]));
+        } else {
+            console.warn('Trying to clone setting that does not exist in widget.');
+            console.warn(name);
+        }
     }
 	for(var i in extraSettingsNames) {
 	    if(typeof this[extraSettingsNames[i]] != 'undefined') {
