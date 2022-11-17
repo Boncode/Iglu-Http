@@ -444,8 +444,7 @@ public class IgluRestServlet extends HttpServlet {
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("text/plain");
             if(e instanceof RestException) {
-                //fixme set level back to debug after logging is no longer an issue
-                System.out.println(new LogEntry(Level.VERBOSE, "process request failed with predictable error", e));
+                System.out.println(new LogEntry(Level.DEBUG, "process request failed with predictable error", e));
                 respondWithError(response, restMethodData, ((RestException) e).getHttpStatusCode(), e.getMessage());
             } else {
                 System.out.println(new LogEntry(Level.CRITICAL, "processing request failed with server error", e));
