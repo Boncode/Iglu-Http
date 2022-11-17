@@ -29,6 +29,8 @@ FlexFrameWidget.MINIMUM_FRAME_HEIGHT = 20;
 subclass(FlexFrameWidget, Widget);
 
 FlexFrameWidget.prototype.constructFlexFrameWidget = function(settings, enclosedWidget) {
+    this.height = null;
+    this.width = null;
 
 	this.innerContainer;
 	this.content = null;
