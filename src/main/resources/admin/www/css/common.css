@@ -16,13 +16,7 @@
 
 body .boncode_table_small table tbody>tr:nth-child(odd),
 body .boncode_table_small table tbody>tr:nth-child(odd) {
-    background: var(--widget-table-secondary-row-color);
-}
-
-body.dark code[class*=language-],
-body.dark .boncode_table_small table tbody>tr:nth-child(odd),
-body.dark .boncode_table_small table tbody>tr:nth-child(odd) {
-  background: var(--widget-table-secondary-row-color-dark);
+    background: var(--widget-background-color-alternate);
 }
 
 .boncode_table_small span {
@@ -65,14 +59,8 @@ body.dark .boncode_table_small table tbody>tr:nth-child(odd) {
     position: sticky;
     top: 0;
     background-color: var(--widget-background-color);
-    border-bottom: 1px solid var(--menu-hairline);
+    border-bottom: 1px solid var(--hairline-color);
 }
-
-body.dark .boncode_table_large thead {
-    background-color: var(--widget-background-color-dark);
-    border-bottom: 1px solid var(--menu-hairline-dark);
-}
-
 
 .boncode_table_large thead tr {
     display: flex;
@@ -91,7 +79,7 @@ body.dark .boncode_table_large thead {
 }
 
 .boncode_table_large tbody tr {
-    border-top: 1px solid var(--table-hairline);
+    border-top: 1px solid var(--hairline-color);
     display: flex;
 }
 
@@ -114,23 +102,7 @@ body.dark .boncode_table_large thead {
 }
 
 .boncode_table_large .selected {
-    background-color: var(--leaf-selected) !important;
-}
-
-body.dark .boncode_table_large .selected {
-    background-color: var(--leaf-selected-dark) !important;
-}
-
-body.dark .boncode_table_large tbody, body.dark .boncode_table_large thead {
-    background-color: var(--widget-background-color-dark);
-}
-
-body.dark .boncode_table_large tbody tr {
-    border-top: 1px solid var(--table-hairline-dark);
-}
-
-body.dark .boncode_table_large {
-    background-color: var(--widget-background-color-dark);
+    background-color: var(--filetree-selected) !important;
 }
 
 .boncode_table_large.boncode_table_large_narrow tbody td,
@@ -139,13 +111,6 @@ body.dark .boncode_table_large {
 }
 
 /* Filter */
-
-body.dark .projects_table_filter {
-    border-color: var(--menu-hairline-dark);
-    background-color: var(--widget-background-color-dark);
-    color: var(--text-color-dark);
-}
-
 .projects_table_filter {
     padding: 4px 8px;
     font-size: 9pt;
@@ -153,7 +118,8 @@ body.dark .projects_table_filter {
     border: none;
     border-bottom-style: solid;
     border-bottom-width: 2px;
-    border-color: var(--menu-hairline);
+    border-color: var(--hairline-color);
+    color: inherit;
     outline: none;
     top: 0;
     background-color: var(--widget-background-color);
@@ -164,27 +130,14 @@ body.dark .projects_table_filter {
     border-color: var(--text-color);
 }
 
-body.dark .projects_table_filter:focus {
-    border-color: var(--text-color-dark);
-}
-
 /* General */
 .clickable_row:hover {
     cursor: pointer;
-    background-color: var(--leaf-hover);
-}
-
-body.dark .clickable_row:hover {
-    cursor: pointer;
-    background-color: var(--leaf-hover-dark);
+    background-color: var(--filetree-hover);
 }
 
 .hover_row:hover {
-    background-color: var(--leaf-hover);
-}
-
-body.dark .hover_row:hover {
-    background-color: var(--leaf-hover-dark);
+    background-color: var(--filetree-hover);
 }
 
 .clickable {
@@ -251,11 +204,6 @@ body.waiting * {
     width: 10px;
 }
 
-body.dark .analyzer_application_tag {
-    background-color: rgb(66, 73, 83);
-    color: #eee;
-}
-
 .properties_input_tags {
     flex: 2;
     color: #666;
@@ -280,10 +228,6 @@ body.dark .analyzer_application_tag {
     margin-right: 40px;
 }
 
-body.dark .properties_textarea {
-    background-color: var(--background-color-dark);
-    color: var(--text-color-dark);
-}
 
 .properties_flex_row {
     display: flex;
@@ -312,7 +256,7 @@ body.dark .properties_textarea {
 }
 
 .properties_editor_button {
-    background-color: var(--boncode-green);
+    background-color: var(--default-green);
     width: auto;
     height: auto;
     padding: 5px;
@@ -338,10 +282,6 @@ body.dark .properties_textarea {
     z-index: 1;
 }
 
-body.dark .properties_input {
-    background-color: var(--background-color-dark);
-    color: var(--text-color-dark);
-}
 
 .properties_label {
     flex: 2;
@@ -349,10 +289,6 @@ body.dark .properties_input {
     font-size: 10pt;
     color: var(--heading-color);
     padding-left: 40px;
-}
-
-body.dark .properties_label, body.dark .properties_label_tags {
-    color: var(--heading-color-dark);
 }
 
 .properties_label_tags {
@@ -412,14 +348,6 @@ body.dark .properties_label, body.dark .properties_label_tags {
     position: relative;
 }
 
-body.dark .analyzer_properties_container {
-    background: var(--widget-background-color-dark);
-}
-
-body.dark .analyzer_properties_button {
-    background: #333;
-}
-
 .analyzer_properties_button {
     margin-left: 40px;
     padding: 5px;
@@ -441,11 +369,11 @@ body.dark .analyzer_properties_button {
 }
 
 .analyzer_project_button:hover {
-    color: var(--menu-text-color);
+    color: var(--text-color-accent);
 }
 
 .button_delete {
-    color: var(--boncode-red);
+    color: var(--default-red);
 }
 
 .cell_permission_indicator {

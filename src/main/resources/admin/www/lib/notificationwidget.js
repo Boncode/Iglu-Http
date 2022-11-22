@@ -46,15 +46,15 @@ NotificationWidget.prototype.writeHTML = function() {
     switch(this.status) {
         case 'success':
             iconElement.className += ' bi bi-check-circle-fill';
-            iconElement.style.color = 'var(--boncode-green)';
+            iconElement.style.color = 'var(--default-green)';
             break;
         case 'failure':
             iconElement.className += ' bi bi-exclamation-triangle-fill';
-            iconElement.style.color = 'var(--boncode-red)';
+            iconElement.style.color = 'var(--default-red)';
             break;
         default:
             iconElement.className += ' bi bi-info-square-fill';
-            iconElement.style.color = 'var(--boncode-blue)';
+            iconElement.style.color = 'var(--default-blue)';
     }
 
     this.element.appendChild(iconElement);
