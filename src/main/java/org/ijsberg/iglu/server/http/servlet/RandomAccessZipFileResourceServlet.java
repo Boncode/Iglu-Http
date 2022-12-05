@@ -18,6 +18,7 @@ import java.util.TreeMap;
 public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
 
     protected String resourceDir;
+    protected String analysisSettingsDir;
     //TODO get from config
     private String includeMask = "*.zip";
     private FSFileCollection fileCollection;
@@ -29,8 +30,13 @@ public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
         super.init(conf);
         resourceDir = conf.getInitParameter("resource_dir");
         if(resourceDir == null) {
-            throw new ServletException("please provide paramater resource_dir");
+            throw new ServletException("please provide parameter resource_dir");
         }
+        analysisSettingsDir = conf.getInitParameter("project_configuration_dir");
+        if(analysisSettingsDir == null) {
+            throw new ServletException("please provide parameter project_configuration_dir");
+        }
+
         fileCollection = new FSFileCollection(resourceDir, new FileFilterRuleSet().setIncludeFilesWithNameMask("*.zip|*.jar"));
         mapResources(fileCollection);
     }
