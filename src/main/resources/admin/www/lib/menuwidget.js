@@ -38,8 +38,6 @@ function MenuWidget(id, content, callback, grantedPermissions) {
     this.expertMode = false;
 
     this.grantedPermissions = grantedPermissions;
-
-	//TODO initialize and invoke super
 }
 
 subclass(MenuWidget, WidgetContent);
@@ -62,10 +60,7 @@ MenuWidget.prototype.setSizeAndPosition = function() {
 
 MenuWidget.prototype.setExpertMode = function(value) {
 
-//item.toggleProperty_value == item.toggleProperty_off
-
     this.rememberToggleSettings(this.menu);
-
     this.expertMode = value;
 };
 
@@ -86,7 +81,7 @@ MenuWidget.prototype.writeHTML = function() {
 	    this.element.innerHTML = '';
 		this.createTree(this.menu, this.element, false);
 	}
-
+    this.translateTexts();
 };
 
 
@@ -105,6 +100,9 @@ MenuWidget.prototype.getRequireLoggedIn = function(treeItem) {
 }
 
 MenuWidget.prototype.itemIsVisible = function(treeItem) {
+    if(treeItem.disabled) {
+        return false;
+    }
     var requireLoggedIn = this.getRequireLoggedIn(treeItem);
     if (requireLoggedIn && currentUser == null) {
        return false;
@@ -157,6 +155,8 @@ MenuWidget.prototype.addItem = function(item, container) {
 		} else {
 		    itemLabel = createLinkWithIcon(item);
 		}
+	} else {
+	    itemLabel = '<span data-text-id="menu.' + item.id + '.label">' + (typeof alternativeLabel !== 'undefined' ? alternativeLabel : item.label) + '</span>';
 	}
 	//TODO if item can be toggled
 	let htmlType = item.htmlType || 'div';
@@ -174,6 +174,9 @@ MenuWidget.prototype.addItem = function(item, container) {
 		itemDiv.className = item.item_class_name;
 	}
 	container.appendChild(itemDiv);
+
+	itemDiv.innerHTML = itemLabel;
+
 	if(typeof(item.submenu) != 'undefined') {
 
 		var branchDiv = document.createElement('div');
@@ -188,7 +191,7 @@ MenuWidget.prototype.addItem = function(item, container) {
 			branchDiv.className = item.submenu_class_name;
 		}
 
-		itemDiv.innerHTML = itemLabel;
+//		itemDiv.innerHTML = itemLabel;
         if(item.label !== "" && this.containsVisibleItems(item.submenu)){
             itemDiv.innerHTML +=
                 '<span id="' + itemId + '.chevron">' +
@@ -199,13 +202,11 @@ MenuWidget.prototype.addItem = function(item, container) {
                 '<span id="' + itemId + '.chevron">' +
                 '</span>';
         }
-
-
 		itemDiv.appendChild(branchDiv);
 		this.createTree(item.submenu, branchDiv);
 	} else {
 	    itemDiv.setAttribute('id', itemId);
-		itemDiv.innerHTML = itemLabel;
+//		itemDiv.innerHTML = itemLabel;
 	}
 }
 

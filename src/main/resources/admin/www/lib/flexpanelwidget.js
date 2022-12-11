@@ -73,7 +73,7 @@ FlexPanelWidget.prototype.createEmptyHeader = function() {
 
 FlexPanelWidget.prototype.setHeaderContent = function() {
     if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div class="title">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml();
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title" title="' + this.content.title + '"><div class="title"  data-text-type="PHRASE">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml();
     } else {
         if(this.title != null) {
             this.header.innerHTML = this.title + this.createTitleBarFunctionHtml();

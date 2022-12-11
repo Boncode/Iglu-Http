@@ -73,6 +73,17 @@ Widget.prototype.getId = function()
 	return this.id;
 };
 
+Widget.prototype.translateTexts = function() {
+    console.log('translating texts in ' + this.id);
+    try {
+        iglu.common.Texts.instance.translateHtml(this.element);
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+
+
 Widget.prototype.makeInvisible = function()
 {
 //	alert('hidden:' + this.content + ':' + this.content.id);
@@ -163,6 +174,7 @@ Widget.prototype.display = function(content, element) {
 		}
 		domElement.style.visibility = this.visibility;
 	}
+	this.translateTexts();
 };
 
 Widget.prototype.evaluate = function(content, element) {
@@ -276,5 +288,6 @@ WidgetContent.prototype.writeHTML = function() {
 	if(this.element != null && typeof this.element != 'undefined') {
 		this.element.style.visibility = this.visibility;
 		this.element.innerHTML = this.content;
+		this.translateTexts();
 	}
 };
