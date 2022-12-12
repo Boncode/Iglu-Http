@@ -393,6 +393,8 @@ public class SimpleJettyServletContext implements Startable {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration.setSecureScheme("https");
 
+		httpConfiguration.setSendServerVersion(false);
+
 		//Resource resource = new PathResource(new File(keystoreLocation));
 
 		//SslContextFactory sslContextFactory = new SslContextFactory(keystoreLocation);
@@ -420,7 +422,9 @@ public class SimpleJettyServletContext implements Startable {
 	public void configureForHttp() {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		//httpConfiguration.setSecureScheme("https");
+		httpConfiguration.setSendServerVersion(false);
 
+		//httpConfigu.sendServerVersion=false
 
 		//final SslContextFactory sslContextFactory = new SslContextFactory(keyStorePath);
 		//sslContextFactory.setKeyStorePassword(keyStorePassword);
