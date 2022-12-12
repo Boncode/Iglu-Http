@@ -19,6 +19,10 @@
 
 package org.ijsberg.iglu.server.http.filter;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.access.*;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.http.client.AuthorizationBearer;
@@ -32,10 +36,6 @@ import org.ijsberg.iglu.util.misc.EncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
-import javax.servlet.*;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 

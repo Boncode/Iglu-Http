@@ -19,6 +19,7 @@
 
 package org.ijsberg.iglu.server.admin.module;
 
+import jakarta.servlet.Filter;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.access.component.StandardAccessManager;
 import org.ijsberg.iglu.configuration.Assembly;
@@ -36,8 +37,6 @@ import org.ijsberg.iglu.server.http.module.SimpleJettyServletContext;
 import org.ijsberg.iglu.usermanagement.UserManager;
 import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
 import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
-
-import javax.servlet.Filter;
 
 import static org.ijsberg.iglu.util.properties.IgluProperties.loadProperties;
 

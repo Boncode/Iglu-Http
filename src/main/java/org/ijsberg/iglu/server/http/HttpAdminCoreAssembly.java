@@ -1,5 +1,6 @@
 package org.ijsberg.iglu.server.http;
 
+import jakarta.servlet.Filter;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.access.component.StandardAccessManager;
@@ -17,7 +18,6 @@ import org.ijsberg.iglu.usermanagement.UserManager;
 import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
-import javax.servlet.Filter;
 import java.util.Properties;
 
 public class HttpAdminCoreAssembly extends StandardCoreAssembly {

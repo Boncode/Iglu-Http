@@ -19,10 +19,9 @@
 
 package org.ijsberg.iglu.server.facilities;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  */

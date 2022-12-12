@@ -21,6 +21,10 @@ package org.ijsberg.iglu.util.http;
 
 //import org.ijsberg.iglu.server.http.servlet.ServletRequestAbortedException;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.access.AuthenticationException;
 import org.ijsberg.iglu.access.Base64EncodedCredentials;
 import org.ijsberg.iglu.access.Request;
@@ -35,10 +39,6 @@ import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.mail.MimeTypeSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
 
-import javax.servlet.*;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.*;

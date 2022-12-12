@@ -20,6 +20,10 @@
 package org.ijsberg.iglu.server.http.module;
 
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContextListener;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -39,10 +43,6 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 import org.ijsberg.iglu.util.reflection.ReflectionSupport;
 import org.slf4j.impl.Slf4jHack;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.util.*;
 

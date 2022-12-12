@@ -1,6 +1,12 @@
 package org.ijsberg.iglu.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.FatalException;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.User;
@@ -19,17 +25,14 @@ import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.misc.StringSupport;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;

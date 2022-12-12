@@ -1,10 +1,10 @@
 package org.ijsberg.iglu.server.http.servlet;
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.util.http.ServletSupport;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 
 public class DownloadFromUserSpecificResourceDirServlet extends DownloadServlet {
 
