@@ -19,8 +19,8 @@
 
 package org.ijsberg.iglu.server.http.servlet;
 
-import javax.servlet.ServletException;
 
+import jakarta.servlet.ServletException;
 
 /**
  * This runtime exception is thrown to indicate that handling of a specific

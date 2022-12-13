@@ -19,15 +19,13 @@
 
 package org.ijsberg.iglu.util.http;
 
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
 import org.ijsberg.iglu.logging.LogEntry;
-import org.ijsberg.iglu.rest.RestException;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
-import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
 import java.io.*;
 
 /**

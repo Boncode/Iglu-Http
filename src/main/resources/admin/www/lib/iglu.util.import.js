@@ -1,36 +1,47 @@
 iglu.util.import = new Object();
 
+iglu.util.import.callSeqNr = 0;
+
+iglu.util.import.callData = new Array();
+
 iglu.util.import.loadJsonData = function(data, servletPath, callbackWhenDone, callbackInput) {
-	iglu.util.import.callbackWhenFilesLoaded = callbackWhenDone;
-	iglu.util.import.callbackInput = callbackInput;
-	iglu.util.import.nrofFilesToLoad = data.length;
-	console.debug(data);
+    var callSeqNr = iglu.util.import.callSeqNr++;
+    iglu.util.import.callData[callSeqNr] = new Object();
+	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded = callbackWhenDone;
+	iglu.util.import.callData[callSeqNr].callbackInput = callbackInput;
+	iglu.util.import.callData[callSeqNr].nrofFilesToLoad = data.length;
+//	console.debug(data);
 	for(var i in data) {
 	    try {
-		    ajaxRequestManager.doRequest((typeof servletPath != 'undefined' ? servletPath : './') + data[i][1], new Function("jsonData", iglu.util.import.getJsonParseFunctionText(data[i][0])));
+		    ajaxRequestManager.doRequest(
+		        (typeof servletPath != 'undefined' && servletPath != null ? servletPath : './') + data[i][1],
+		        new Function("jsonData", iglu.util.import.getJsonParseFunctionText(data[i][0],callSeqNr)));
         } catch(e) {
             console.error('unable to perform request ' + servletPath + ': ' + e.message);
-            console.log(data[i][0]);
+            console.error(data[i][0]);
         }
 	}
 }
 
-iglu.util.import.getJsonParseFunctionText = function(varName) {
+iglu.util.import.getJsonParseFunctionText = function(varName, callSeqNr) {
 	return "try { " +
 		varName + " = JSON.parse(jsonData);" +
 		"} catch (e) {" +
 			"console.error('cannot parse ' + jsonData + ' for var " + varName + " with message: ' + e.message);" +
 		"}" +
-		"iglu.util.import.checkNrofFilesToLoad();"
+		"iglu.util.import.checkNrofFilesToLoad(" + callSeqNr + ");"
 }
 
-iglu.util.import.checkNrofFilesToLoad = function() {
-	iglu.util.import.nrofFilesToLoad--;
-	if(iglu.util.import.nrofFilesToLoad == 0 && typeof iglu.util.import.callbackWhenFilesLoaded != 'undefined') {
-    	iglu.util.import.callbackWhenFilesLoaded.call(this, iglu.util.import.callbackInput);
+iglu.util.import.checkNrofFilesToLoad = function(callSeqNr) {
+	iglu.util.import.callData[callSeqNr].nrofFilesToLoad--;
+	if(iglu.util.import.callData[callSeqNr].nrofFilesToLoad == 0 && typeof iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded != 'undefined') {
+    	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded.call(this, iglu.util.import.callData[callSeqNr].callbackInput);
 	}
 }
 
+
+
+//TODO jsonData should be textData or data, used only once, unclear code
 
 iglu.util.import.loadTextData = function(data, servletPath, callbackWhenDone, callbackInput) {
 	console.debug(data);

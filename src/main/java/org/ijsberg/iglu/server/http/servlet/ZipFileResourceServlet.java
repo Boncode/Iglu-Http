@@ -19,12 +19,12 @@
 
 package org.ijsberg.iglu.server.http.servlet;
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.io.FileSupport;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**

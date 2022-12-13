@@ -110,4 +110,7 @@ public class MenuItem extends JsonData {
 		return this;
 	}
 
+	public String getId() {
+		return getStringAttribute("id");
+	}
 }

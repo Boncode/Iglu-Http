@@ -401,9 +401,12 @@ function createLink(item, alternativeLabel) {
 		}
 	}
 
+    var itemLabel = '<span data-text-id="menu.' + item.id + '.label">' + (typeof alternativeLabel !== 'undefined' ? alternativeLabel : item.label) + '</span>';
+
+
 	if(onclick.length > 0) {
-		return '<a onclick="' + onclick + '">' + (typeof alternativeLabel !== 'undefined' ? alternativeLabel : item.label) + toggleIndication + '</a>';
+		return '<a onclick="' + onclick + '">' + itemLabel + toggleIndication + '</a>';
 	} else {
-		return item.label;
+		return itemLabel;
 	}
 }

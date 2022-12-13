@@ -1,17 +1,15 @@
 package org.ijsberg.iglu.server.http.servlet;
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.io.*;
 import org.ijsberg.iglu.util.misc.StringSupport;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 

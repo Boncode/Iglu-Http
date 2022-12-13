@@ -19,6 +19,8 @@
 
 package org.ijsberg.iglu.server.facilities.module;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.access.*;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
@@ -44,8 +46,6 @@ import org.ijsberg.iglu.util.io.model.FileDto;
 import org.ijsberg.iglu.util.mail.MimeTypeSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

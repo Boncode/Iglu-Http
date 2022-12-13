@@ -1,6 +1,7 @@
 package org.ijsberg.iglu.http.client;
 
-import javax.servlet.http.HttpServletRequest;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public class AuthorizationBearer implements HttpHeader {
 
