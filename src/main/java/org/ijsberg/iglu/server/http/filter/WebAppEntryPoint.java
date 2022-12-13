@@ -97,6 +97,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	private boolean passSessionIdSecure = false;
 
 	private IgluProperties additionalHeaders = new IgluProperties();
+	private IgluProperties additionalHeadersNoLogin = new IgluProperties();
 	private IgluProperties additionalStaticContentHeaders = new IgluProperties();
 
 
@@ -229,13 +230,14 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		while(initParamNames.hasMoreElements()) {
 			String initParamName = (String)initParamNames.nextElement();
 			if(initParamName.startsWith("header.")) {
-				additionalHeaders.setProperty(initParamName.substring(7), conf.getInitParameter(initParamName));
+				additionalHeaders.setProperty(initParamName.substring("header.".length()), conf.getInitParameter(initParamName));
+			}
+			if(initParamName.startsWith("login_page_header.")) {
+				additionalHeadersNoLogin.setProperty(initParamName.substring("login_page_header.".length()), conf.getInitParameter(initParamName));
 			}
 			if(initParamName.startsWith("static_content_header.")) {
 				additionalStaticContentHeaders.setProperty(initParamName.substring("static_content_header.".length()), conf.getInitParameter(initParamName));
 			}
-			//additionalStaticContentHeaders
-			//static_content_header
 		}
 	}
 
@@ -289,17 +291,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		//TODO IP addresses can be obtained when request is passed by Apache (reverse proxy) from header X-Forwarded-For
 		//TODO IP blocking should be added
 
-		for(String header : additionalHeaders.toOrderedMap().keySet()) {
-			String additionalHeaderValue = additionalHeaders.getProperty(header);
-			if(isStaticContent(getPath(servletRequest))) {
-				//System.out.println(getPath(servletRequest) + " MATCHES " + staticContentRegExp);
-				if(additionalStaticContentHeaders.containsKey(header)) {
-					additionalHeaderValue = additionalStaticContentHeaders.getProperty(header);
-				}
-			}
-			((HttpServletResponse)servletResponse).addHeader(header, additionalHeaderValue);
-		}
-
 		servletRequest.setCharacterEncoding("UTF-8");
 		httpRequest.set(servletRequest);
 		httpResponse.set(servletResponse);
@@ -314,9 +305,9 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			if("".equals(userId)) {
 				userId = null;
 			}
- 			//if(accessManager != null) {
-				appRequest = accessManager.bindRequest(this);
-			//}
+
+			appRequest = accessManager.bindRequest(this);
+
 			Session session;
 			if(sessionToken != null) {
 				session = appRequest.resolveSession(sessionToken, userId);
@@ -331,13 +322,10 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			if(session == null) {
 				System.out.println(new LogEntry(Level.VERBOSE, "no session yet for IP " + ((HttpServletRequest)servletRequest).getHeader("X-Forwarded-For")));
 			}
-/*
-			if (this.syncUserPrefs && appRequest.getTimesEntered() == 0) {
-				//pass user preferences here
-				ServletSupport.importCookieValues(servletRequest,  appRequest.getUserSettings());
-				ServletSupport.exportCookieValues(servletResponse,  appRequest.getUserSettings(), "/", userPrefsMaxAge, Arrays.asList(new String[]{SESSION_TOKEN_KEY}));
-			}
-*/
+
+			//set response headers
+			setResponseHeaders(servletRequest, servletResponse, session);
+
 			//if a user logged in, the user id must be stored
 			if(userId == null)
 			{
@@ -350,8 +338,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 			if(loginRequired) {
 				User user = appRequest.getUser();
-				//String pathInfo;
-				//String servletPath =
 				String pathInfo = getPath(servletRequest);
 
 				if(user == null && contentNotPublic(pathInfo)) {
@@ -363,9 +349,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 					}
 				}
 			}
-
-			//role based access control
-	//		checkAccess(servletRequest,  appRequest);
 
 			long start = System.currentTimeMillis();
 
@@ -390,14 +373,28 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		}
 		finally
 		{
-/*			if(loggingEnabled)
-			{
-				application.log(new PageVisitLogEntry((HttpServletRequest) servletRequest));
-			}
-			application.releaseRequest();  */
 			if(accessManager != null) {
 				accessManager.releaseRequest();
 			}
+		}
+	}
+
+	private void setResponseHeaders(ServletRequest servletRequest, ServletResponse servletResponse, Session session) {
+		for(String header : additionalHeaders.toOrderedMap().keySet()) {
+			String additionalHeaderValue = additionalHeaders.getProperty(header);
+			if(isStaticContent(getPath(servletRequest))) {
+				//System.out.println(getPath(servletRequest) + " MATCHES " + staticContentRegExp);
+				if(additionalStaticContentHeaders.containsKey(header)) {
+					additionalHeaderValue = additionalStaticContentHeaders.getProperty(header);
+				}
+			}
+			//check user logged in
+			if(session != null && session.getUser() == null) {
+				if(additionalHeadersNoLogin.containsKey(header)) {
+					additionalHeaderValue = additionalHeadersNoLogin.getProperty(header);
+				}
+			}
+			((HttpServletResponse)servletResponse).addHeader(header, additionalHeaderValue);
 		}
 	}
 
