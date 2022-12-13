@@ -74,7 +74,7 @@ Widget.prototype.getId = function()
 };
 
 Widget.prototype.translateTexts = function() {
-    console.log('translating texts in ' + this.id);
+    console.debug('translating texts in ' + this.id);
     try {
         iglu.common.Texts.instance.translateHtml(this.element);
     } catch(e) {
