@@ -29,11 +29,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
+import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
 import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
@@ -57,7 +55,7 @@ public class IgluRestServlet extends HttpServlet {
 
         Method method;
         Endpoint endpoint;
-        String[] requiredRight;
+        String[] requiredPermissions;
 //        String requiredAccessRight;
         //rest method can either be invoked on:
         Component serviceComponent;
@@ -119,21 +117,25 @@ public class IgluRestServlet extends HttpServlet {
             }
             RequireOneOrMorePermissions requireOneOrMorePermissions = method.getAnnotation(RequireOneOrMorePermissions.class);
             if(requireOneOrMorePermissions != null) {
-                requiredRight = requireOneOrMorePermissions.permission();
+                List<String> requiredPermissionsTemp = new ArrayList<>(Arrays.asList(requireOneOrMorePermissions.permission()));
+                if (!requiredPermissionsTemp.contains(FULL_CONTROL)){
+                    requiredPermissionsTemp.add(FULL_CONTROL);
+                }
+                requiredPermissions = requiredPermissionsTemp.toArray(new String[0]);
             } else {
                 AllowPublicAccess allowPublicAccess = method.getAnnotation(AllowPublicAccess.class);
                 if(allowPublicAccess == null) {
-                    requiredRight = new String[]{"x"};//AccessConstants.ADMIN_ROLE_NAME;
+                    requiredPermissions = new String[]{"x"};//AccessConstants.ADMIN_ROLE_NAME;
                 }
             }
         }
 
         public void assertUserAuthorized() {
-            if(requiredRight != null) {
+            if(requiredPermissions != null) {
                 User user = accessManager.getCurrentRequest().getUser();
                 if (user != null) {
                     System.out.println(new LogEntry(TRACE,"checking rights for " + user.getId() + " (" + CollectionSupport.format(user.getGroupNames(), ",") + ")"));
-                    if (!user.hasOneOfRights(requiredRight)) {
+                    if (!user.hasOneOfRights(requiredPermissions)) {
                         throw new RestException("not authorized for endpoint " + this.endpoint.path(), 403);
                     }
                 } else {
