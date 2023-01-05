@@ -302,6 +302,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " failed or was interrupted", e));
 				//TODO exception if file missing
 				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed with message: " + e.getMessage()));
+				cancelUpload();
 			}
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
@@ -311,7 +312,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 			isUploadCancelled = true; //TODO distinguish between failed and cancelled
 			readingUpload = false;
 			System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? "file: " + reader.getUploadFile() : "[ERROR:reader:null]" ) + " FAILED"));
-			if(reader.getUploadFile() != null) { //FIXME fix nullpointer, especially if upload reset too soon (see other FIXME)
+			if(reader != null && reader.getUploadFile() != null) { //FIXME fix nullpointer, especially if upload reset too soon (see other FIXME)
 				reader.getUploadFile().delete();
 			}
 			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed or cancelled."));

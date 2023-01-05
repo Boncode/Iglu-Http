@@ -50,7 +50,9 @@ public class FSorCPResourceServlet extends BinaryResourceServlet {
 
 		allowedContentRegExp = conf.getInitParameter("allowed_content_reg_exp");
 		if(allowedContentRegExp == null) {
-			allowedContentRegExp = "(.*\\.html|.*\\.ico|.*\\.js|.*\\.css|.*\\.json|.*\\.svg|.*\\.png|.*\\.woff2|.*\\.ttf)";
+			allowedContentRegExp =
+					"(.*\\.html|.*\\.ico|.*\\.js|.*\\.css|.*\\.json|.*\\.svg|.*\\.png|.*\\.woff2|.*\\.ttf" +
+							"|.*\\.jpg|.*\\.jpeg|.*\\.gif)";
 		}
 	}
 
