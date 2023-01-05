@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -19,6 +20,15 @@ public class JsonData implements JsonDecorator {
 	private LinkedHashMap<String, Object> attributes = new LinkedHashMap<String, Object>();
 
 	public JsonData() {
+	}
+
+	public JsonData(IgluProperties properties) {
+		for(String rootKey : properties.getRootKeys()) {
+			addStringAttribute(rootKey, properties.getProperty(rootKey));
+		}
+		for(String subsectionKey : properties.getSubsectionKeys()) {
+			addAttribute(subsectionKey, new JsonData(properties.getSubsection(subsectionKey)));
+		}
 	}
 
 	public JsonData(JsonData jsonData) {
