@@ -21,13 +21,12 @@ Widget.prototype.constructWidget = function(settings) {
 	if(typeof settings == 'undefined') {
         throw 'widget ' + this.constructor.name + ' must have settings';
 	}
-	this.refreshSettings(settings);
+    this.source_load_action = 'display';
+    this.autoRefreshInterval = 0;
+    this.refreshSettings(settings);
 	if(this.id == null) {
         throw 'widget ' + this.constructor.name + ' must have an id';
 	}
-	this.source_load_action = 'display';
-	this.autoRefreshInterval = 0;
-
 }
 
 Widget.prototype.refreshSettings = function(settings) {
@@ -278,6 +277,9 @@ WidgetContent.prototype.refresh = function() {
 	    if(typeof this[this.source_load_action] != 'undefined') {
 		    ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
 		} else if (typeof window[this.source_load_action] != 'undefined') {
+		    //TODO support namespaces in this.source_load_action for window methods
+		    // e.g.: Common.randomMethod needs to be supported, however, this needs to be split up and
+		    // tree search in window object to window[Common][randomMethod]
 		    ajaxRequestManager.doRequest(this.source, window[this.source_load_action], this);
 		}
 	}
