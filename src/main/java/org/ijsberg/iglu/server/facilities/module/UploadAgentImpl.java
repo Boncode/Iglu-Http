@@ -40,16 +40,12 @@ import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.FSFileCollection;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
-import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 import org.ijsberg.iglu.util.io.model.FileDto;
-import org.ijsberg.iglu.util.mail.MimeTypeSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -214,7 +210,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	public void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response) {
 		String[] path = req.getPathInfo().split("/");
 		String resourcePath = uploadRootDir + "/" + path[2] + "/" + path[3];
-		downloadFile(response, resourcePath);
+		DownloadSupport.downloadFile(response, resourcePath);
 	}
 
 	@Override
@@ -225,25 +221,25 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	public void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response) {
 		String[] path = req.getPathInfo().split("/");
 		String resourcePath = uploadRootDir + "/" + path[2] + "/downloads/" + path[3];
-		downloadFile(response, resourcePath);
+		DownloadSupport.downloadFile(response, resourcePath);
 	}
 
-	private void downloadFile(HttpServletResponse response, String resourcePath) {
-		File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
-		System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", downloadable.getName())));
-
-		response.setContentType(MimeTypeSupport.getMimeTypeForFileName(downloadable.getName()));
-		response.setContentLength((int) downloadable.length());
-		response.setHeader("Content-disposition", "attachment; filename=" + downloadable.getName());
-
-		try (InputStream input = new FileInputStream(downloadable)) {
-			StreamSupport.absorbInputStream(input, response.getOutputStream());
-		} catch (IOException e) {
-			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", downloadable.getName()), e));
-			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage()));
-			response.setStatus(500);
-		}
-	}
+//	private void downloadFile(HttpServletResponse response, String resourcePath) {
+//		File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
+//		System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", downloadable.getName())));
+//
+//		response.setContentType(MimeTypeSupport.getMimeTypeForFileName(downloadable.getName()));
+//		response.setContentLength((int) downloadable.length());
+//		response.setHeader("Content-disposition", "attachment; filename=" + downloadable.getName());
+//
+//		try (InputStream input = new FileInputStream(downloadable)) {
+//			StreamSupport.absorbInputStream(input, response.getOutputStream());
+//		} catch (IOException e) {
+//			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", downloadable.getName()), e));
+//			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage()));
+//			response.setStatus(500);
+//		}
+//	}
 
 	@Override
 	@AllowPublicAccess
