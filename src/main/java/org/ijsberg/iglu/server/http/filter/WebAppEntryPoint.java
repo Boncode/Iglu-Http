@@ -39,6 +39,8 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 import java.io.IOException;
 import java.util.*;
 
+import static org.eclipse.jetty.http.HttpCookie.SAME_SITE_STRICT_COMMENT;
+
 
 /**
  * This filter can be used as point of entry into a web application.
@@ -180,6 +182,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
 		cookie.setSecure(passSessionIdSecure);
+		cookie.setComment(SAME_SITE_STRICT_COMMENT);
 		cookie.setMaxAge(-1);//expire when browser closes
 		((HttpServletResponse)response).addCookie(cookie);
 	}
