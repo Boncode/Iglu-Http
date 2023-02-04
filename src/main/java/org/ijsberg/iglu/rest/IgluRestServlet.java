@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
+import static org.ijsberg.iglu.logging.Level.CRITICAL;
 import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
@@ -62,6 +63,8 @@ public class IgluRestServlet extends HttpServlet {
         //or by retrieving stateful agent by:
         String agentName;
 
+        boolean allowScriptSnippets;
+
         RestMethodData(Endpoint endpoint, Method method, String agentName) {
             this.endpoint = endpoint;
             this.method = method;
@@ -84,6 +87,7 @@ public class IgluRestServlet extends HttpServlet {
             Class<?>[] parameterTypes = method.getParameterTypes();
             Class<?> returnType = method.getReturnType();
             Endpoint.ParameterType inputType = endpoint.inputType();
+            allowScriptSnippets = method.isAnnotationPresent(AllowScriptSnippets.class);
             if(inputType == VOID) {
 
             } else if(inputType == RAW) {
@@ -434,7 +438,7 @@ public class IgluRestServlet extends HttpServlet {
                 result = mapper.writeValueAsString(result);
             }
 
-            out.print(result != null ? result.toString() : "");
+            out.print(result != null ? purgeXSS(result.toString(), restMethodData) : "");
                     //TODO return type JSON
                     //(restMethodData.requestPath.returnType() == VOID ? "" : "null"));
         } catch(Exception e) {
@@ -442,6 +446,26 @@ public class IgluRestServlet extends HttpServlet {
         }
         System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
                 " finished in " + (System.currentTimeMillis() - start) + " ms"));
+    }
+
+    public static String purgeXSS(String stringResponse, RestMethodData restMethodData) {
+        int start = 0;
+        int index = 0;
+        if(!restMethodData.allowScriptSnippets && stringResponse.indexOf('<', start) != -1) {
+            String stringResponseLowerCase = stringResponse.toLowerCase();
+            if(stringResponseLowerCase.contains("script")) {
+                stringResponseLowerCase = StringSupport.replaceAll(stringResponseLowerCase, new String[]{"\t", " "}, new String[]{"",""});
+                while((index = stringResponseLowerCase.indexOf("</script>", start)) > 0) {
+                    start++;
+                    if(stringResponseLowerCase.charAt(index - 1) != '>') {
+                        System.out.println(new LogEntry(CRITICAL, "script entry not empty for " + restMethodData.endpoint.path(), stringResponseLowerCase.substring(0, index + 50)));
+                        return StringSupport.replaceAll(stringResponse, new String[]{"<",">"},new String[]{"&lt;","&gt;"});
+                    }
+                }
+            }
+        }
+        return stringResponse;
+        //return stringResponse.replace("<", "&lt;AAP");
     }
 
     public void handleException(RestMethodData restMethodData, HttpServletResponse response, Exception e) throws IOException {
