@@ -167,12 +167,15 @@ AjaxRequestManager.prototype.doRequest = function(requestURL, callback, callback
 //internal function
 AjaxRequestManager.prototype.sendGETRequest = function(ajaxRequest, url) {
 	ajaxRequest.open('GET', url, true);
+	//TODO do not use for GET
+	this.setCrsfToken(ajaxRequest, url);
 	ajaxRequest.send(null);
 }
 
 //internal function
 AjaxRequestManager.prototype.sendPOSTRequest = function(ajaxRequest, url, postData, async, contentType) {
 	ajaxRequest.open('POST', url, async);
+	this.setCrsfToken(ajaxRequest, url);
 	ajaxRequest.setRequestHeader("Content-Type", typeof(contentType) == 'undefined' ? "application/x-www-form-urlencoded; charset=UTF-8" : contentType + "; charset=UTF-8");
 	ajaxRequest.send(postData);
 }
@@ -180,8 +183,19 @@ AjaxRequestManager.prototype.sendPOSTRequest = function(ajaxRequest, url, postDa
 //internal function
 AjaxRequestManager.prototype.sendMultiPartRequest = function(ajaxRequest, url, postData) {
 	ajaxRequest.open('POST', url, true);
+	this.setCrsfToken(ajaxRequest, url);
 	ajaxRequest.setRequestHeader("Content-Type", "multipart/form-data; charset=UTF-8");
 	ajaxRequest.send(postData);
+}
+
+AjaxRequestManager.prototype.setCrsfToken = function(ajaxRequest, url) {
+	ajaxRequest.url = url;
+	if(typeof AjaxRequestManager.X_CSRF_Token != 'undefined' && AjaxRequestManager.X_CSRF_Token != null) {
+//	    console.debug('X-CSRF-Token:' + AjaxRequestManager.X_CSRF_Token);
+	    ajaxRequest.setRequestHeader('X-CSRF-Token', AjaxRequestManager.X_CSRF_Token);
+	} else {
+//	    console.debug('NO X-CSRF-Token:' + url);
+	}
 }
 
 AjaxRequestManager.prototype.createAjaxRequest = function(handler) {
@@ -222,6 +236,13 @@ function dispatchResponse(requestNr)
 	if (ajaxRequestManager.ajaxRequests[requestNr].readyState == 4 || ajaxRequestManager.ajaxRequests[requestNr].readyState == 'complete')
 	{
 		this.totalNrofResponses++;
+
+        var X_CSRF_Token = ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader('X-CSRF-Token');
+        if(typeof X_CSRF_Token != 'undefined' && X_CSRF_Token != null) {
+            AjaxRequestManager.X_CSRF_Token = X_CSRF_Token;
+        }
+//		console.debug('====----==-=================   ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader:' + ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader('Referrer-Policy'));
+//		console.debug('============================  ' + ajaxRequestManager.ajaxRequests[requestNr].url + ' ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader:' + ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader('X-CSRF-Token'));
 
 /*		if(ajaxRequestManager.callbackInputObjects[requestNr] != null) {
 			if(typeof ajaxRequestManager.callbackInputObjects[requestNr].handleAjaxResponse != 'undefined') {

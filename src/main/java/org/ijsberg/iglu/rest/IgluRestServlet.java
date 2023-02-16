@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.FatalException;
 import org.ijsberg.iglu.access.AccessManager;
+import org.ijsberg.iglu.access.Request;
+import org.ijsberg.iglu.access.Session;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.configuration.Assembly;
 import org.ijsberg.iglu.configuration.Component;
@@ -32,11 +34,12 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
+import static org.ijsberg.iglu.http.client.Constants.ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN;
+import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
 import static org.ijsberg.iglu.logging.Level.CRITICAL;
 import static org.ijsberg.iglu.logging.Level.TRACE;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
-import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
-import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.PUT;
+import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.*;
 import static org.ijsberg.iglu.util.http.HttpEncodingSupport.urlEncodeXSSRiskCharacters;
 import static org.ijsberg.iglu.util.mail.WebContentType.HTML;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
@@ -65,6 +68,8 @@ public class IgluRestServlet extends HttpServlet {
 
         boolean allowScriptSnippets;
 
+        boolean bypassCsrfCheck;
+
         RestMethodData(Endpoint endpoint, Method method, String agentName) {
             this.endpoint = endpoint;
             this.method = method;
@@ -88,6 +93,7 @@ public class IgluRestServlet extends HttpServlet {
             Class<?> returnType = method.getReturnType();
             Endpoint.ParameterType inputType = endpoint.inputType();
             allowScriptSnippets = method.isAnnotationPresent(AllowScriptSnippets.class);
+            bypassCsrfCheck = method.isAnnotationPresent(BypassCsrfCheck.class);
             if(inputType == VOID) {
 
             } else if(inputType == RAW) {
@@ -153,10 +159,12 @@ public class IgluRestServlet extends HttpServlet {
                 return serviceComponent;
             } else {
                 try {
-                    return assembly.getCoreCluster().getInternalComponents().
+/*                    return assembly.getCoreCluster().getInternalComponents().
                             get("AccessManager").getProxy(AccessManager.class).
                             getCurrentRequest().getSession(true).
                             getAgent(agentName);
+*/
+                    return accessManager.getCurrentRequest().getSession(true).getAgent(agentName);
                 } catch (NullPointerException e) {
                     System.out.println(assembly.getCoreCluster().getInternalComponents());
                     System.out.println(assembly.getCoreCluster().getInternalComponents().
@@ -173,6 +181,9 @@ public class IgluRestServlet extends HttpServlet {
             return endpoint.path() + " mapped to " + method.getName();
         }
 
+        public boolean bypassCsrfCheck() {
+            return bypassCsrfCheck;
+        }
     }
 
     private Assembly assembly;
@@ -364,11 +375,38 @@ public class IgluRestServlet extends HttpServlet {
         return new Object[0];
     }
 
+    private void checkCsrfToken(HttpServletRequest request, RestMethodData restMethodData) {
+        if(restMethodData.endpoint.method() != GET && !restMethodData.bypassCsrfCheck()) {
+            Request userRequest = accessManager.getCurrentRequest();
+            if (userRequest.hasSession()) {
+                Session session = userRequest.getSession(false);
+
+//                System.out.println("SessionResolvedByToken:" + Boolean.parseBoolean("" + session.getAttribute(ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN)));
+//                System.out.println("X-CSRF-Token http-header:" + request.getHeader(HEADER_X_CSRF_TOKEN));
+//                System.out.println("X-CSRF-Token session:" + session.getAttribute(HEADER_X_CSRF_TOKEN));
+
+                if (!Boolean.parseBoolean("" + session.getAttribute(ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN))) {
+                    String csrfTokenFromSession = (String) session.getAttribute(HEADER_X_CSRF_TOKEN);
+                    if (csrfTokenFromSession != null) {
+                        String csrfTokenFromHeader = request.getHeader(HEADER_X_CSRF_TOKEN);
+                        if (!csrfTokenFromSession.equals(csrfTokenFromHeader)) {
+                            System.out.println(new LogEntry(CRITICAL, "could not verify request origin for request " + request.getPathInfo()));
+                            throw new RestException("could not verify request origin", 401);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public void service(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException {
 
         long start = System.currentTimeMillis();
+
+
         RestMethodData restMethodData = null;
+
+
         try {
             System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo()));
 
@@ -384,6 +422,8 @@ public class IgluRestServlet extends HttpServlet {
 
             String path = urlEncodeXSSRiskCharacters(trimPath(pathInfo));
             restMethodData = getRestMethodData(path);
+
+            checkCsrfToken(servletRequest, restMethodData);
 
             WebContentType contentType = HTML;
 

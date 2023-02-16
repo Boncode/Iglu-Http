@@ -28,11 +28,13 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.http.client.AuthorizationBearer;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.rest.RestException;
 import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
+import org.ijsberg.iglu.util.misc.KeyGenerator;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
@@ -40,6 +42,8 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.eclipse.jetty.http.HttpCookie.SAME_SITE_STRICT_COMMENT;
+import static org.ijsberg.iglu.http.client.Constants.ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN;
+import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
 
 
 /**
@@ -79,7 +83,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	private HashMap exceptionPages = new HashMap();
 //	private List exceptionsHandled = new ArrayList();
 	//debug mode
-	private boolean printUnhandledExceptions = true;
+	private boolean printUnhandledExceptions = false;
 
 	private ThreadLocal httpRequest = new ThreadLocal();
 	private ThreadLocal httpResponse = new ThreadLocal();
@@ -293,6 +297,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 		//TODO IP addresses can be obtained when request is passed by Apache (reverse proxy) from header X-Forwarded-For
 		//TODO IP blocking should be added
+		String pathInfo = getPath(servletRequest);
 
 		servletRequest.setCharacterEncoding("UTF-8");
 		httpRequest.set(servletRequest);
@@ -317,6 +322,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			} else {
 				try {
 					session = getAccessByToken((HttpServletRequest) servletRequest, appRequest);
+					//TODO CSRF should not be enforced
 				} catch (Exception e) {
 					System.out.println(new LogEntry(Level.CRITICAL, "error while obtaining session by token", e));
 					session = null;
@@ -341,7 +347,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 			if(loginRequired) {
 				User user = appRequest.getUser();
-				String pathInfo = getPath(servletRequest);
 
 				if(user == null && contentNotPublic(pathInfo)) {
 					System.out.println(new LogEntry("" + pathInfo + " == " + loginPath));
@@ -357,6 +362,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 			//delegate request
 			chain.doFilter(servletRequest, servletResponse);
+
+			passCsrfToken(servletResponse, pathInfo);
 
 			long timeUsed = System.currentTimeMillis() - start;
 			if(timeUsed > 100) {
@@ -381,6 +388,35 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			}
 		}
 	}
+
+	/**
+	 * Adds a token to AjaxRequestManager to prevent Cross Script Request Forgery.
+	 * The IgluRestServlet performs a check if the CSRF-token is valid.
+	 * We assume that the AjaxRequestManager client-side and the IgluRestServlet server-side are used for client-server interaction.
+	 *
+	 * @param servletResponse
+	 * @param pathInfo
+	 * @throws IOException
+	 */
+	private void passCsrfToken(ServletResponse servletResponse, String pathInfo) throws IOException {
+		Request request = accessManager.getCurrentRequest();
+		String csrfToken = null;
+		if (request.hasSession() && !isStaticContent(pathInfo)) {
+			Session session = request.getSession(false);
+			csrfToken = (String)session.getAttribute(HEADER_X_CSRF_TOKEN);
+			if(csrfToken == null) {
+				csrfToken = KeyGenerator.generateKey(60);
+				session.setAttribute(HEADER_X_CSRF_TOKEN, csrfToken);
+			}
+			((HttpServletResponse)servletResponse).addHeader(HEADER_X_CSRF_TOKEN, csrfToken);
+
+//			servletResponse.getOutputStream().println("AjaxRequestManager." + StringSupport.replaceAll(HEADER_X_CSRF_TOKEN, "-", "_") + " = '" + csrfToken + "';");
+		}
+
+/*		if (pathInfo.endsWith("/ajaxRequestManager.js") && csrfToken != null) {
+				servletResponse.getOutputStream().println("AjaxRequestManager." + StringSupport.replaceAll(HEADER_X_CSRF_TOKEN, "-", "_") + " = '" + csrfToken + "';");
+		}
+*/	}
 
 	private void setResponseHeaders(ServletRequest servletRequest, ServletResponse servletResponse, Session session) {
 		for(String header : additionalHeaders.toOrderedMap().keySet()) {
@@ -419,10 +455,19 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				accessManager.createSession(authorizationBearer.getToken(), new Properties());
 				session = request.resolveSession(authorizationBearer.getToken(), credentials.getUserId());
 				User user = session.login(credentials);
-				System.out.println(new LogEntry(Level.TRACE, "session created " + user));
+				if (user != null) {
+					System.out.println(new LogEntry(Level.TRACE, "session created for user: " + user));
+					session.setAttribute(ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN, true);
+				} else {
+					session = null;
+					System.out.println(new LogEntry(Level.CRITICAL, "session not created because login failed for token containing user ID " + credentials.getUserId()));
+				}
 			} else {
 				System.out.println(new LogEntry(Level.TRACE, "session resolved " + session.getUser()));
+				session.setAttribute(ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN, true);
 			}
+		}
+		if(session != null) {
 		}
 		return session;
 	}
@@ -444,13 +489,12 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		throw new ConfigurationException("XOR key unavailable");
 	}
 
-
 	private boolean contentNotPublic(String servletPath) {
 		return (publicContentRegExp == null || !PatternMatchingSupport.valueMatchesRegularExpression(servletPath, publicContentRegExp));
 	}
 
 	private boolean isStaticContent(String servletPath) {
-		return staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp);
+		return !(servletPath.endsWith("/ajaxRequestManager.js")) && staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp);
 	}
 
 
@@ -481,18 +525,27 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			return;
 		}
 
- 		//print error to screen
+		if(cause instanceof RestException)
+		{
+			if(!response.isCommitted())	{
+				response.getOutputStream().println(((RestException)cause).getMessage());
+				response.setStatus(((RestException)cause).getHttpStatusCode());
+			}
+		}
+
+		System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName, cause));
+
+		//print error to screen
 		if(this.printUnhandledExceptions) {
 			if(!response.isCommitted())	{
-				System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName, cause));
 				ServletSupport.printException(response, "An exception occurred for which no exception page is defined.\n" +
 						"Make sure you do so if your application is in a production environment.\n" +
 						"(in section [" + exceptionPagesSectionId + "])" +
 						"\n\n" + CollectionSupport.format(messageStack, "\n"), cause);
 				response.setStatus(500);
-			} else {
+			}/* else {
 				System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName + " can not be printed: response already committed", cause));
-			}
+			}*/
 		}
 	}
 

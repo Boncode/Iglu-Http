@@ -51,8 +51,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
-import static org.ijsberg.iglu.access.Permissions.X;
+import static org.ijsberg.iglu.access.Permissions.*;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
@@ -242,7 +241,8 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 //	}
 
 	@Override
-	@AllowPublicAccess
+	@RequireOneOrMorePermissions(permission = {R})
+	@BypassCsrfCheck
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST,
 		description = "Upload and process data.")
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {

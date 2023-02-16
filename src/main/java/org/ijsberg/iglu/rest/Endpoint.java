@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Endpoint {
 
-	enum ParameterType {
+    enum ParameterType {
 		VOID,
 		JSON_POST,
 		STRING,
