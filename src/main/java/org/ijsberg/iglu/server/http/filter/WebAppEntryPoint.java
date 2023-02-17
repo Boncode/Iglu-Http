@@ -494,7 +494,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	}
 
 	private boolean isStaticContent(String servletPath) {
-		return !(servletPath.endsWith("/ajaxRequestManager.js")) && staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp);
+		return /*!(servletPath.endsWith("/ajaxRequestManager.js")) &&*/ staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp);
 	}
 
 

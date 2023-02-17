@@ -63,7 +63,7 @@ import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
  */
 public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
-	private MultiPartReader reader;
+	MultiPartReader reader;
 	private boolean readingUpload;
 	private boolean isUploadCancelled = false;
 	private RequestRegistry requestRegistry;
@@ -223,22 +223,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		DownloadSupport.downloadFile(response, resourcePath);
 	}
 
-//	private void downloadFile(HttpServletResponse response, String resourcePath) {
-//		File downloadable = DownloadSupport.getDownloadableFile(resourcePath);
-//		System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", downloadable.getName())));
-//
-//		response.setContentType(MimeTypeSupport.getMimeTypeForFileName(downloadable.getName()));
-//		response.setContentLength((int) downloadable.length());
-//		response.setHeader("Content-disposition", "attachment; filename=" + downloadable.getName());
-//
-//		try (InputStream input = new FileInputStream(downloadable)) {
-//			StreamSupport.absorbInputStream(input, response.getOutputStream());
-//		} catch (IOException e) {
-//			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", downloadable.getName()), e));
-//			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage()));
-//			response.setStatus(500);
-//		}
-//	}
 
 	@Override
 	@RequireOneOrMorePermissions(permission = {R})
@@ -251,6 +235,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	@Override
 	@SystemEndpoint
+	@BypassCsrfCheck
 	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload_for_client", method = POST,
 		description = "Upload and process file to /downloads folder for the given user for them to retrieve.")
@@ -262,84 +247,59 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		readMultiPartUpload(req, new String[]{"*"}, destination);
 	}
 
-	public synchronized String readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions, String destinationPath) {
+	private static final Object lock = new Object();
 
-		this.allowedFormatsWildcardExpressions = allowedFormatsWildcardExpressions;
-		isUploadCancelled = false;
-
-		Exception uploadFailedExc = null;
-
+	public void readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions, String destinationPath) {
 		System.out.println(new LogEntry("about to read multipart upload, content-type: " + req.getContentType()));
-
-		if (req.getContentType() != null && req.getContentType().startsWith("multipart/form-data"))
-		{
-			//TODO content type contains boundary
-			//context is the container for all submitted data
-			//read the multipart uploadstream
-			//data and files are set as attributes
-			//ServletSupport.readMultipartUpload(req);
-
-			if(readingUpload) {
-				System.out.println(new LogEntry(Level.VERBOSE, "can not process upload: UploadAgent still busy with " +
-						(reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
-				return "BUSY";
+		if (req.getContentType() != null && req.getContentType().startsWith("multipart/form-data")) {
+			synchronized (lock) {
+				if (readingUpload) {
+					System.out.println(new LogEntry(Level.VERBOSE, "can not process upload: UploadAgent still busy"));
+					return;
+				}
+				readingUpload = true;
+				isUploadCancelled = false;
 			}
 
-			readingUpload = true;
+			File uploadedFile = null;
+
+			this.allowedFormatsWildcardExpressions = allowedFormatsWildcardExpressions;
+
 			try {
 				System.out.println(new LogEntry(Level.VERBOSE, "about to read upload in " + uploadRootDir + '/' + destinationPath));
 				reader = new MultiPartReader(req, uploadRootDir + '/' + destinationPath, this);
 				//TODO exception if file missing
-				reader.readMultipartUpload();
-				System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " done"));
-			} catch (Exception e) {
-				uploadFailedExc = e;
-				isUploadCancelled = true;
-				System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " failed or was interrupted", e));
+				uploadedFile = reader.readMultipartUpload();
+				System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + uploadedFile + " done"));
+			} catch (Exception e) { //TODO try IOException
 				//TODO exception if file missing
-				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed with message: " + e.getMessage()));
+				if(!isUploadCancelled) {
+					System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + uploadedFile + " failed or was interrupted", e));
+					requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed with message: " + e.getMessage()));
+				}
 				cancelUpload();
+				reader = null;
+				return;
 			}
-		}
-		System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" ) + " ended"));
-		if(reader != null && reader.getUploadFile() != null && !isUploadCancelled) {
-			postProcess();
+			if (!isUploadCancelled) {
+				postProcess(uploadedFile);
+			}
+			synchronized (lock) {
+				reader = null;
+				readingUpload = false;
+			}
 		} else {
-			isUploadCancelled = true; //TODO distinguish between failed and cancelled
-			readingUpload = false;
-			System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + (reader != null ? "file: " + reader.getUploadFile() : "[ERROR:reader:null]" ) + " FAILED"));
-			if(reader != null && reader.getUploadFile() != null) { //FIXME fix nullpointer, especially if upload reset too soon (see other FIXME)
-				reader.getUploadFile().delete();
-			}
-			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed or cancelled."));
+			System.out.println(new LogEntry(Level.CRITICAL, "cannot process upload for content type " + req.getContentType()));
 		}
-/*
-
-DBG 20221021 09:42:21.433 about to read multipart upload, content-type: multipart/form-data; boundary=----WebKitFormBoundaryv08FadiFZr3WWvLL
-VBS 20221021 09:42:21.433 about to read upload in configurations/analysis-server/upload/uploads//admin
-VBS 20221021 09:42:21.465 resetting upload configurations/analysis-server/upload/uploads/admin/Zilveren Kruis.Configurations.osp
-VBS 20221021 09:42:21.465 cancelling upload configurations/analysis-server/upload/uploads/admin/Zilveren Kruis.Configurations.osp
-CRT 20221021 09:42:21.467 reading upload [ERROR:reader:null] failed or was interrupted
-java.io.IOException: Stream Closed
-IOException : Stream Closed
-
- */
-		readingUpload = false;
-
-		if(uploadFailedExc != null && uploadFailedExc instanceof RestException) {
-			throw (RestException)uploadFailedExc;
-		}
-		return "DONE";
 	}
 
-	private void postProcess() {
-		File uploadedFile = reader.getUploadFile();
+	private void postProcess(File uploadedFile) {
 		FileData fileData = new FileData(uploadedFile.getPath());
 		if(targetDir != null) {
 			String tmpFileName = targetDir + "/ignore.tmp";
 			String permanentFileName = targetDir + "/" + fileData.getFileName();
 			try {
-				FileSupport.copyFile(reader.getUploadFile(), tmpFileName, true);
+				FileSupport.copyFile(uploadedFile, tmpFileName, true);
 				File file = new File(tmpFileName);
 				//make file appear as atomic as possible
 				file.renameTo(new File(permanentFileName));
@@ -375,16 +335,20 @@ IOException : Stream Closed
 
 	@Override
 	public long getBytesRead() {
-		if(reader != null) {
-			return reader.getBytesRead();
+		synchronized (lock) {
+			if (reader != null) {
+				return reader.getBytesRead();
+			}
 		}
 		return 0;
 	}
 
 	@Override
 	public long getContentLength() {
-		if(reader != null) {
-			return reader.getContentLength();
+		synchronized (lock) {
+			if (reader != null) {
+				return reader.getContentLength();
+			}
 		}
 		return 0;
 	}
@@ -410,13 +374,6 @@ IOException : Stream Closed
 		JsonData retval = new JsonData();
 		JsonData jsonData = new JsonData();
 		retval.addAttribute("progress", jsonData);
-
-		//FIXME bytes read IS NOT bytes processed
-		//It seems to be the case that:
-		// - since an upload is reset after a file is considered uploaded
-		//			=> based on bytesRead
-		// - the process is reset to soon, disturbing the capture of the last bytes, resulting in errors
-
 		jsonData.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
 		jsonData.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
 		jsonData.addAttribute("isUploadCancelled", isUploadCancelled);
@@ -426,15 +383,17 @@ IOException : Stream Closed
 	@Override
 	@SystemEndpoint
 	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "cancel", method = GET, returnType = TXT,
+	@Endpoint(inputType = VOID, path = "cancel", method = POST, returnType = TXT,
 		description = "Cancel the upload.")
 	public String cancelUpload() {
-		System.out.println(new LogEntry(Level.VERBOSE, "cancelling upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
-		if(reader != null) {
-			reader.cancel();
+		System.out.println(new LogEntry(Level.VERBOSE, "cancelling upload"));
+		synchronized (lock) {
+			if (reader != null) {
+				reader.cancel();
+			}
+			readingUpload = false;
+			isUploadCancelled = true;
 		}
-		readingUpload = false;
-		isUploadCancelled = true;
 		return "";
 	}
 
@@ -453,18 +412,17 @@ IOException : Stream Closed
 	@Override
 	@SystemEndpoint
 	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "reset", method = GET,
+	@Endpoint(inputType = VOID, path = "reset", method = POST,
 		description = "Reset the upload.")
 	public void reset() {
-		System.out.println(new LogEntry(Level.VERBOSE, "resetting upload " + (reader != null ? reader.getUploadFile() : "[ERROR:reader:null]" )));
-		if(reader != null) {
-			if(readingUpload) {
+		System.out.println(new LogEntry(Level.VERBOSE, "resetting upload"));
+		synchronized (lock) {
+			if (readingUpload) {
 				cancelUpload();
 			}
-			reader = null;
+//			readingUpload = false;
+			isUploadCancelled = false;
 		}
-		readingUpload = false;
-		isUploadCancelled = false;
 	}
 
 	@Override

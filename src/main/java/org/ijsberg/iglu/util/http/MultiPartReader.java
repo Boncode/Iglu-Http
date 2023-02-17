@@ -21,6 +21,7 @@ package org.ijsberg.iglu.util.http;
 
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletRequest;
+import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
 import org.ijsberg.iglu.util.io.FileData;
@@ -87,7 +88,7 @@ public class MultiPartReader {
 	 * @throws IOException
 	 * @see org.ijsberg.iglu.util.io.FileData
 	 */
-	public long readMultipartUpload() throws IOException
+	public File readMultipartUpload() throws IOException
 	{
 		input = request.getInputStream();
 		//the next variable stores all post data and is useful for debug purposes
@@ -159,7 +160,7 @@ public class MultiPartReader {
 		}
 		System.out.println(new LogEntry("post data retrieved from multi-part data: " + bytesRead + " bytes"));
 
-		return bytesRead;
+		return uploadFile;
 	}
 
 	private void readUploadedFile(String boundary, OutputStream partialCopyOutputStream) throws IOException {
@@ -266,22 +267,29 @@ public class MultiPartReader {
 
 	public void cancel() {
 
+		if(input != null) {
+			try {
+				input.close();
+			} catch (IOException e) {
+				System.out.println(new LogEntry(Level.VERBOSE, "error when closing upload stream", e));
+			}
+		}
 		if(partialCopyOutputStream != null) {
 			try {
 				partialCopyOutputStream.close();
 			} catch (IOException e) {
-				//
+				System.out.println(new LogEntry(Level.VERBOSE, "error when closing upload stream", e));
 			}
-			if(uploadFile != null) {
-				uploadFile.delete();
-			}
-			bytesRead = 0;
-			contentLength = 0;
 		}
+		if(uploadFile != null) {
+			uploadFile.delete();
+		}
+		bytesRead = 0;
+		contentLength = 0;
 	}
 
 
-	public File getUploadFile() {
+/*	public File getUploadFile() {
 		return uploadFile;
-	}
+	}*/
 }

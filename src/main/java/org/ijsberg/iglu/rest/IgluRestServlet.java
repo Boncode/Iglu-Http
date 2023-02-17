@@ -316,6 +316,9 @@ public class IgluRestServlet extends HttpServlet {
             if(methodData.endpoint.inputType() == MAPPED) {
                 return getObjectsFromQueryString(declaredParameters, request.getQueryString());
             }
+            if(methodData.endpoint.inputType() == FROM_PATH) {
+                return getInputObjectsFromPath(request, methodData);
+            }
             //STRING
             return new Object[]{new String(postData)};
         } else { //GET
@@ -345,13 +348,7 @@ public class IgluRestServlet extends HttpServlet {
 
     private static Object[] getInputObjectsFromRequest(HttpServletRequest request, RestMethodData methodData, Endpoint.ParameterType parameterType) throws UnsupportedEncodingException {
         if(parameterType == FROM_PATH) {
-            String path = trimPath(request.getPathInfo()).substring(methodData.endpoint.path().length());
-            path = trimPath(path);
-            if("".equals(path)) {
-                return new Object[0];
-            }
-            //System.out.println("PATH: " + path);
-            return path.split("/");
+            return getInputObjectsFromPath(request, methodData);
         }
         if(parameterType == PROPERTIES) {
             Properties properties = ServletSupport.getPropertiesFromRequest(request);
@@ -373,6 +370,16 @@ public class IgluRestServlet extends HttpServlet {
         }
         //VOID
         return new Object[0];
+    }
+
+    private static Object[] getInputObjectsFromPath(HttpServletRequest request, RestMethodData methodData) {
+        String path = trimPath(request.getPathInfo()).substring(methodData.endpoint.path().length());
+        path = trimPath(path);
+        if("".equals(path)) {
+            return new Object[0];
+        }
+        //System.out.println("PATH: " + path);
+        return path.split("/");
     }
 
     private void checkCsrfToken(HttpServletRequest request, RestMethodData restMethodData) {
