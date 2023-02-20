@@ -315,6 +315,11 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			}
 
 			appRequest = accessManager.bindRequest(this);
+			try {
+				appRequest.setAttribute("IP-Address", ((HttpServletRequest) servletRequest).getHeader("X-Forwarded-For"));
+			} catch (Throwable t) {
+				System.out.println(new LogEntry("retrieving IP-adddress failed", t));
+			}
 
 			Session session;
 			if(sessionToken != null) {
