@@ -32,8 +32,8 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
     private void createAdminLayer() {
 
         //TODO user must replace standard password
-
-        admin = createCluster("admin");
+        //JM: possible backdoor disabled
+/*        admin = createCluster("admin");
 
         admin.connect("Logger", new StandardComponent(logger), Logger.class);
         admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, IgluProperties.loadProperties("admin/config/upload_agent.properties"))));
@@ -79,6 +79,7 @@ public class HttpAdminCoreAssembly extends StandardCoreAssembly {
         admin.connect("Assembly", new StandardComponent(this));
         admin.connect("ServiceCluster", new StandardComponent(admin), Cluster.class);
         admin.connect("CoreCluster", new StandardComponent(core));
+*/
     }
 
 }

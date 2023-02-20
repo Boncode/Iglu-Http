@@ -430,11 +430,12 @@ public class IgluRestServlet extends HttpServlet {
             String path = urlEncodeXSSRiskCharacters(trimPath(pathInfo));
             restMethodData = getRestMethodData(path);
 
-            checkCsrfToken(servletRequest, restMethodData);
 
             WebContentType contentType = HTML;
 
             if (restMethodData != null) {
+                checkCsrfToken(servletRequest, restMethodData);
+
                 if(restMethodData.method.getAnnotation(Deprecated.class) != null) {
                     System.out.println(new LogEntry(Level.CRITICAL, "Deprecated endpoint called: " + path));
                 }
@@ -463,7 +464,7 @@ public class IgluRestServlet extends HttpServlet {
                     throw new FatalException("unable to invoke method " + restMethodData.method.getName(), e);
                 }
             } else {
-                errorResult = RestSupport.createResponse(404, "no endpoint found for path " + path);
+                errorResult = RestSupport.createResponse(404, "no endpoint");
             }
 
             result = purgeResponse(result);
