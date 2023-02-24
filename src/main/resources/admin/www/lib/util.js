@@ -113,7 +113,8 @@ function getMouseOffsetFromElementPosition(target, event)
 {
 	event = event || window.event;
 
-	var docPos = getElementPositionInPage(target);
+//	var docPos = getElementPositionInPage(target);
+	var docPos = getElementPositionInWindow(target);
 	var mousePos = getMousePositionInWindow(event);
 	return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
 }

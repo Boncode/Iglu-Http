@@ -23,8 +23,8 @@ function FlexFrameWidget(settings, enclosedWidget) {
 	this.constructFlexFrameWidget(settings, enclosedWidget);
 }
 
-FlexFrameWidget.MINIMUM_FRAME_WIDTH = 100;
-FlexFrameWidget.MINIMUM_FRAME_HEIGHT = 20;
+//FlexFrameWidget.MINIMUM_FRAME_WIDTH = 100;
+//FlexFrameWidget.MINIMUM_FRAME_HEIGHT = 20;
 
 subclass(FlexFrameWidget, Widget);
 
