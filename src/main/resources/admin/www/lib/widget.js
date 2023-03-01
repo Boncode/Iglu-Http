@@ -281,7 +281,7 @@ WidgetContent.prototype.refresh = function() {
 		    let currentPlaceInFunctionPath = window;
 		    for (let i=0; i<functionPathArray.length;i++) {
 		        currentPlaceInFunctionPath = currentPlaceInFunctionPath[functionPathArray[i]];
-		        if (typeof currentPlaceInFunctionPath != 'undefined') {
+		        if (typeof currentPlaceInFunctionPath === 'undefined') {
 		            return;
 		        }
 		    }
