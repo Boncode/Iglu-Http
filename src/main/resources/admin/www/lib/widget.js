@@ -286,7 +286,7 @@ WidgetContent.prototype.refresh = function() {
 		    for (let i=0; i<functionPathArray.length;i++) {
 		        currentPlaceInFunctionPath = currentPlaceInFunctionPath[functionPathArray[i]];
 		        if (typeof currentPlaceInFunctionPath === 'undefined') {
-		            console.error('The source_load_action: '+ this.source_load_action + ', for widget: ' + this.id + ' does not exist. Error occurred for function part: ' + currentPlaceInFunctionPath
+		            console.error('The source_load_action: \''+ this.source_load_action + '\', for widget: \'' + this.id + '\' does not exist.'
 		            + '\nCheck for typo\'s or if the function is publicly available');
 		            return;
 		        }
