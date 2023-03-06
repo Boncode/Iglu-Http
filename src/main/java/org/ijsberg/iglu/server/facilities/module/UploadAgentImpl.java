@@ -138,7 +138,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		try {
 			toDelete = DownloadSupport.getDownloadableFile(uploadRootDir + "/" + path);
 		} catch (ResourceException e) {
-			throw new RestException("Cannot delete file", 403);
+			throw new RestException("Cannot delete file: " + e.getMessage(), 403);
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "deleting uploaded client file " + toDelete));
 		try {
