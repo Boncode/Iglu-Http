@@ -380,3 +380,25 @@ body.waiting * {
     justify-content: center;
     display: flex;
 }
+
+.inline_icon_wrapper {
+    flex: 0 1 30px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.clickable_icon {
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0);
+    transition: background-color .1s ease-in-out;
+}
+
+.clickable_icon:hover {
+    background-color: var(--icon-background-hover);
+}
+
+.clickable_icon:active {
+    background-color: var(--icon-background-active);
+}
