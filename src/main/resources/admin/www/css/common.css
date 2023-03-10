@@ -105,11 +105,6 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     background-color: var(--filetree-selected) !important;
 }
 
-.boncode_table_large.boncode_table_large_narrow tbody td,
-.boncode_table_large.boncode_table_large_narrow thead th {
-    line-height: 15px;
-}
-
 /* Filter */
 .projects_table_filter {
     padding: 4px 8px;
