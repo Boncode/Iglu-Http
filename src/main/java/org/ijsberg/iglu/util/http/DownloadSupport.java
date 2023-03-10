@@ -1,7 +1,8 @@
 package org.ijsberg.iglu.util.http;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.ijsberg.iglu.access.EventMessage;
+import org.ijsberg.iglu.messaging.MessageStatus;
+import org.ijsberg.iglu.messaging.module.EventMessage;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
@@ -53,7 +54,7 @@ public class DownloadSupport {
             StreamSupport.absorbInputStream(input, response.getOutputStream());
         } catch (IOException e) {
             System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", fileName), e));
-            requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage()));
+            requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage(), MessageStatus.FAILURE));
             response.setStatus(500);
         }
     }

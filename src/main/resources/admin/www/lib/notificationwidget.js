@@ -1,7 +1,7 @@
 
 function NotificationWidget(settings, content) {
 	this.cssClassName = 'notification';
-    this.status = typeof settings.status === 'undefined' ? 'info' : settings.status;
+    this.status = typeof settings.status === 'undefined' ? 'INFO' : settings.status;
 	this.constructNotificationWidget(settings, content);
 }
 
@@ -43,7 +43,9 @@ NotificationWidget.prototype.writeHTML = function() {
     var iconElement = document.createElement('i');
     iconElement.className = 'notification_icon';
 
-    switch(this.status) {
+    let statusIgnoreCase = this.status.toLowerCase();
+
+    switch(statusIgnoreCase) {
         case 'success':
             iconElement.className += ' bi bi-check-circle-fill';
             iconElement.style.color = 'var(--default-green)';

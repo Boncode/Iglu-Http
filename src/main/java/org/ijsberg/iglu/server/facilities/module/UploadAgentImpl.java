@@ -28,6 +28,9 @@ import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.messaging.MessageStatus;
+import org.ijsberg.iglu.messaging.module.EventMessage;
+import org.ijsberg.iglu.messaging.module.MailMessage;
 import org.ijsberg.iglu.rest.*;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
@@ -275,7 +278,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				//TODO exception if file missing
 				if(!isUploadCancelled) {
 					System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + uploadedFile + " failed or was interrupted", e));
-					requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed with message: " + e.getMessage()));
+					requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed with message: " + e.getMessage(), MessageStatus.FAILURE));
 				}
 				cancelUpload();
 				reader = null;
@@ -314,7 +317,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				uploadedFile.delete();
 			} catch (IOException e) {
 				System.out.println(new LogEntry(Level.CRITICAL, "cannot move file (or metadata) to target dir", e));
-				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed. A problem occurred while moving the file."));
+				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed. A problem occurred while moving the file.", MessageStatus.FAILURE));
 			}
 		}
 		if(sendEmail) {
@@ -322,7 +325,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		} else {
 			System.out.println(new LogEntry("notification disabled"));
 		}
-		requestRegistry.dropMessageToCurrentUser(new EventMessage("uploadDone", uploadSuccessMessage));
+		requestRegistry.dropMessageToCurrentUser(new EventMessage("uploadDone", uploadSuccessMessage, MessageStatus.SUCCESS));
 	}
 
 	private void notifyAsync(FileData fileData) {
