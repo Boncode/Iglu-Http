@@ -17,6 +17,7 @@ iglu.common.Texts.instance = new iglu.common.Texts();
 
 iglu.common.Texts.prototype.load = function(jsonTextObject) {
     var languageId = jsonTextObject.languageId;
+    //alert(languageId);
     if(this.texts[languageId] == null) {
         this.texts[languageId] = new Object(0);
     }
@@ -43,8 +44,8 @@ iglu.common.Texts.prototype.translateHtml = function(domElement) {
     //alert(translatableElements + ' : ' + translatableElements.length);
     translatableElements.forEach((translatableElement) => {
         //alert('=> ' + translatableElement);
-//        alert('=> ' + translatableElement.dataset.textId);
         var text = this.get(this.currentLanguageId, translatableElement.dataset.textId);
+        //alert(translatableElement.dataset.textId + ' => ' + text);
         if(text != null) {
             if(typeof translatableElement.languageId == 'undefined') {
                 //store default text in case user toggles back
