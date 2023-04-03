@@ -58,17 +58,21 @@ iglu.common.Texts.prototype.translateHtml = function(domElement) {
 
     translatableElements = domElement.querySelectorAll('[data-text-type]');
     translatableElements.forEach((translatableElement) => {
-        var commonPhrase = translatableElement.innerHTML;
-
-        var commonPhraseId = 'phrase.' + commonPhrase.toLowerCase().split(' ').join('_');
+        let commonPhrase = translatableElement.innerHTML;
+        let commonPhraseId;
+        if(typeof translatableElement.dataset.textId === 'undefined') {
+            translatableElement.dataset.textId = 'phrase.' + commonPhrase.toLowerCase().split(' ').join('_');;
+        }
+        commonPhraseId = translatableElement.dataset.textId;
+        console.error(commonPhraseId);
         //alert('=> ' + translatableElement);
 //        alert('=> ' + translatableElement.dataset.textId);
-        var text = this.get(this.currentLanguageId, commonPhraseId);
+        let text = this.get(this.currentLanguageId, commonPhraseId);
  //       console.debug('found text ' + text + 'for phrase id ' + commonPhraseId);
         if(text != null) {
             if(typeof translatableElement.languageId == 'undefined') {
                 //store default text in case user toggles back
-                this.texts[iglu.common.Texts.defaultLanguageId][translatableElement.dataset.textId] = translatableElement.innerHTML;
+                this.texts[iglu.common.Texts.defaultLanguageId][commonPhraseId] = translatableElement.innerHTML;
             }
             translatableElement.languageId = this.currentLanguageId;
             translatableElement.innerHTML = text;
