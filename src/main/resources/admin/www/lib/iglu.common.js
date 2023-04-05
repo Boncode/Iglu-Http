@@ -64,7 +64,6 @@ iglu.common.Texts.prototype.translateHtml = function(domElement) {
             translatableElement.dataset.textId = 'phrase.' + commonPhrase.toLowerCase().split(' ').join('_');;
         }
         commonPhraseId = translatableElement.dataset.textId;
-        console.error(commonPhraseId);
         //alert('=> ' + translatableElement);
 //        alert('=> ' + translatableElement.dataset.textId);
         let text = this.get(this.currentLanguageId, commonPhraseId);
