@@ -73,7 +73,6 @@ function dragWidget(event) {
 		var mousePos = getMousePositionInPage(event);
         //must be used if part of the page scrolled
 //		var mousePos = getMousePositionInWindow(event);
-        console.debug(widgetmanager.draggedWidget);
 		widgetmanager.draggedWidget.setPosition(mousePos.x - widgetmanager.mouseOffset.x, mousePos.y - widgetmanager.mouseOffset.y);
 	}
 }
