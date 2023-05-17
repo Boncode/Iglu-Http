@@ -77,7 +77,48 @@ iglu.common.Texts.prototype.translateHtml = function(domElement) {
             translatableElement.innerHTML = text;
         }
     })
+}
 
+iglu.common.convertIgluPropertiesToMap = function(propertiesStringData) {
+    var igluPropertiesMap = new Map();
 
+    //JM 30-08-2021 please keep in mind that we also run on Linux
+    var dataWithoutWindowsCR = propertiesStringData.split('\r').join('');
+    var lines = dataWithoutWindowsCR.split('\n');
 
+    for(var i in lines) {
+        if(lines[i].includes('#') || lines[i] === '') { // ignore iglu comment or empty property line
+            continue;
+        } else {
+            var lineContent = lines[i].split('=');
+            igluPropertiesMap.set(lineContent[0], iglu.common.getIgluPropertyValue(lineContent[1]));
+        }
+    }
+    return igluPropertiesMap;
+}
+
+iglu.common.getIgluPropertyValue = function(valueString) {
+    if(valueString.startsWith('[') && valueString.endsWith(']')) {
+        //create array of values
+        return valueString.split('[')[1].split(']')[0].split(',').map(item => item.trim());
+    }
+    return valueString;
+}
+
+iglu.common.convertIgluPropertiesMapToString = function(igluPropertiesMap) {
+    let igluPropertiesString = '';
+    for(const [key, value] of AnalysisUtil.currentProjectConfiguration.properties.entries()) {
+        if(Array.isArray(value)) {
+            igluPropertiesString += key + '=' + '[' + value.toString() + ']';
+        } else {
+            igluPropertiesString += key + '=' + value;
+        }
+        igluPropertiesString += '\n';
+    }
+
+    //lmao hack
+    if(igluPropertiesString.endsWith('\n')) {
+        igluPropertiesString = igluPropertiesString.substring(0, igluPropertiesString.length-1);
+    }
+    return igluPropertiesString;
 }
