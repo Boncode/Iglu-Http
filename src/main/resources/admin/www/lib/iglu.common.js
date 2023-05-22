@@ -90,8 +90,9 @@ iglu.common.convertIgluPropertiesToMap = function(propertiesStringData) {
         if(lines[i].includes('#') || lines[i] === '') { // ignore iglu comment or empty property line
             continue;
         } else {
-            var lineContent = lines[i].split('=');
-            igluPropertiesMap.set(lineContent[0], iglu.common.getIgluPropertyValue(lineContent[1]));
+            let lineContent = lines[i].split('=');
+            let lineValue = iglu.common.getIgluPropertyValue(lineContent[1]);
+            igluPropertiesMap.set(lineContent[0], lineValue);
         }
     }
     return igluPropertiesMap;
@@ -100,7 +101,12 @@ iglu.common.convertIgluPropertiesToMap = function(propertiesStringData) {
 iglu.common.getIgluPropertyValue = function(valueString) {
     if(valueString.startsWith('[') && valueString.endsWith(']')) {
         //create array of values
-        return valueString.split('[')[1].split(']')[0].split(',').map(item => item.trim());
+        let rawArrayString = valueString.split('[')[1].split(']')[0];
+        if("" === rawArrayString) {
+            return [];
+        }
+        let splitArray = rawArrayString.split(',');
+        return splitArray.map(item => item.trim());
     }
     return valueString;
 }
