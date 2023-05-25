@@ -17,7 +17,6 @@ iglu.common.Texts.instance = new iglu.common.Texts();
 
 iglu.common.Texts.prototype.load = function(jsonTextObject) {
     var languageId = jsonTextObject.languageId;
-    //alert(languageId);
     if(this.texts[languageId] == null) {
         this.texts[languageId] = new Object(0);
     }
@@ -32,7 +31,6 @@ iglu.common.Texts.prototype.get = function(languageId, textId) {
         return null;
     }
     if(this.texts[languageId][textId] == null) {
-//        console.error('"' + textId + '" : ""');
         return null;
     }
     return this.texts[languageId][textId];
@@ -41,12 +39,9 @@ iglu.common.Texts.prototype.get = function(languageId, textId) {
 
 iglu.common.Texts.prototype.translateHtml = function(domElement) {
     let translatableElements = domElement.querySelectorAll('[data-text-id]');
-    //alert(translatableElements + ' : ' + translatableElements.length);
     translatableElements.forEach((translatableElement) => {
-        //alert('=> ' + translatableElement);
         var text = this.get(this.currentLanguageId, translatableElement.dataset.textId);
-        //alert(translatableElement.dataset.textId + ' => ' + text);
-        if(text != null) {
+        if(text != null && text != '') {
             if(typeof translatableElement.languageId == 'undefined') {
                 //store default text in case user toggles back
                 this.texts[iglu.common.Texts.defaultLanguageId][translatableElement.dataset.textId] = translatableElement.innerHTML;
@@ -64,11 +59,8 @@ iglu.common.Texts.prototype.translateHtml = function(domElement) {
             translatableElement.dataset.textId = 'phrase.' + commonPhrase.toLowerCase().split(' ').join('_');;
         }
         commonPhraseId = translatableElement.dataset.textId;
-        //alert('=> ' + translatableElement);
-//        alert('=> ' + translatableElement.dataset.textId);
         let text = this.get(this.currentLanguageId, commonPhraseId);
- //       console.debug('found text ' + text + 'for phrase id ' + commonPhraseId);
-        if(text != null) {
+        if(text != null && text != '') {
             if(typeof translatableElement.languageId == 'undefined') {
                 //store default text in case user toggles back
                 this.texts[iglu.common.Texts.defaultLanguageId][commonPhraseId] = translatableElement.innerHTML;
