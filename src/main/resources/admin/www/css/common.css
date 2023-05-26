@@ -377,7 +377,7 @@ body.waiting * {
 }
 
 .inline_icon_wrapper {
-    flex: 0 1 30px;
+    flex: 0 0 30px;
     display: flex;
     justify-content: center;
     flex-direction: column;
