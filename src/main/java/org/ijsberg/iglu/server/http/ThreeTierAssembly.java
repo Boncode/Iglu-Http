@@ -7,13 +7,15 @@ import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
+import org.ijsberg.iglu.messaging.MessageBroker;
+import org.ijsberg.iglu.messaging.module.BasicMessageBroker;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
 import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
 
 import java.util.Properties;
 
 /**
- * Created by jeroe on 06/01/2018.
+ * Created by jeroen on 06/01/2018.
  */
 public abstract class ThreeTierAssembly extends BasicAssembly {
 
@@ -33,16 +35,27 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         createLayers(properties);
     }
 
-    public ThreeTierAssembly(Properties properties, Component ssoAccessManager) {
+/*    public ThreeTierAssembly(Properties properties, Component accessManager) {
         super(properties);
-        accessManager = ssoAccessManager;
+        this.accessManager = accessManager;
+        createLayers(properties);
+    }*/
+
+    /*
+    public ThreeTierAssembly(Properties properties, Component accessManager, Component scheduler) {
+        super(properties);
+        this.accessManager = accessManager;
+        this.scheduler = scheduler;
         createLayers(properties);
     }
-
-    public ThreeTierAssembly(Properties properties, Component ssoAccessManager, Component scheduler) {
+*/
+    public ThreeTierAssembly(Properties properties, Component[] providedComponents) {
         super(properties);
-        accessManager = ssoAccessManager;
-        this.scheduler = scheduler;
+        this.accessManager = providedComponents[0];
+        this.scheduler = providedComponents[1];
+        if(providedComponents.length > 2) {
+            this.messageBroker = providedComponents[2];
+        }
         createLayers(properties);
     }
 
@@ -87,9 +100,14 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
             accessManager = new StandardComponent(standardAccessManager);
         }
 
-        //Component requestManagerComponent = new StandardComponent(accessManager);
         core.connect("AccessManager", accessManager, RequestRegistry.class, AccessManager.class);
         core.connect("RequestRegistry", accessManager, RequestRegistry.class);
+
+        if(messageBroker == null) {
+            messageBroker = new StandardComponent(new BasicMessageBroker());
+        }
+
+        core.connect("MessageBroker", messageBroker, MessageBroker.class);
 
         return core;
     }

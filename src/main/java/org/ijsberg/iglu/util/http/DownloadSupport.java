@@ -2,7 +2,7 @@ package org.ijsberg.iglu.util.http;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.messaging.MessageStatus;
-import org.ijsberg.iglu.messaging.module.EventMessage;
+import org.ijsberg.iglu.messaging.message.EventMessage;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
