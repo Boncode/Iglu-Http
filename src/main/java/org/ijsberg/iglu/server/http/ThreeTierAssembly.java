@@ -19,6 +19,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
 
     protected Component accessManager;
     protected Component scheduler;
+    protected Component messageBroker;
 
     protected Cluster infraLayer;
     protected Cluster dataLayer;
