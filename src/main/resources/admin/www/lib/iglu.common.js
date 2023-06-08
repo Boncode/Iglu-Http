@@ -18,7 +18,7 @@ iglu.common.Texts.instance = new iglu.common.Texts();
 iglu.common.Texts.prototype.load = function(jsonTextObject) {
     var languageId = jsonTextObject.languageId;
     if(this.texts[languageId] == null) {
-        this.texts[languageId] = new Object(0);
+        this.texts[languageId] = new Object();
     }
     for(var textId in jsonTextObject.texts) {
         this.texts[languageId][textId] = jsonTextObject.texts[textId];
