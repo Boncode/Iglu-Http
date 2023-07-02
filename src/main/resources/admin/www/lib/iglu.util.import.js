@@ -1,3 +1,10 @@
+if(typeof iglu == 'undefined') {
+    var iglu = new Object();
+}
+if(typeof iglu.util == 'undefined') {
+    iglu.util = new Object();
+}
+
 iglu.util.import = new Object();
 
 iglu.util.import.callSeqNr = 0;
