@@ -135,7 +135,7 @@ public class IgluRestServlet extends HttpServlet {
             } else {
                 AllowPublicAccess allowPublicAccess = method.getAnnotation(AllowPublicAccess.class);
                 if(allowPublicAccess == null) {
-                    requiredPermissions = new String[]{"x"};//AccessConstants.ADMIN_ROLE_NAME;
+                    requiredPermissions = new String[]{FULL_CONTROL};//AccessConstants.ADMIN_ROLE_NAME;
                 }
             }
         }

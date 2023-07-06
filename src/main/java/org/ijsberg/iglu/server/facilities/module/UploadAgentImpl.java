@@ -130,7 +130,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	@Override
 	@SystemEndpoint
-	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@RequireOneOrMorePermissions(permission = {FULL_CONTROL})
 	@Endpoint(inputType = MAPPED, path = "delete_file", method = POST,
 			description = "Delete the given file.",
 			parameters = {
@@ -155,7 +155,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	@Override
 	@SystemEndpoint
-	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@RequireOneOrMorePermissions(permission = {FULL_CONTROL})
 	@Endpoint(inputType = VOID, path = "all_uploaded_files", method = GET, returnType = JSON,
 			description = "Retrieve a list of files uploaded by all users.")
 	public FileCollectionDto getAllUploadedFileNames() {
@@ -179,7 +179,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	@Override
 	@SystemEndpoint
-	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@RequireOneOrMorePermissions(permission = {FULL_CONTROL})
 	@Endpoint(inputType = VOID, path = "all_downloadable_client_files", method = GET, returnType = JSON,
 			description = "Retrieve a list of files retrievable by all users.")
 	public FileCollectionDto getAllDownloadableClientFiles() {
@@ -206,7 +206,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	@Override
 	@SystemEndpoint
-	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@RequireOneOrMorePermissions(permission = {FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "uploaded_file", method = GET,
 			description = "Retrieve specified file uploaded by specified user.")
 	public void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response) {
@@ -217,7 +217,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	@Override
 	@SystemEndpoint
-	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@RequireOneOrMorePermissions(permission = {FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "downloadable_file", method = GET,
 			description = "Retrieve specified file downloadable by specified user.")
 	public void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response) {
@@ -228,7 +228,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 
 	@Override
-	@RequireOneOrMorePermissions(permission = {R})
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
 	@BypassCsrfCheck
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST,
 		description = "Upload and process data.")
@@ -239,7 +239,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Override
 	@SystemEndpoint
 	@BypassCsrfCheck
-	@RequireOneOrMorePermissions(permission = {X, FULL_CONTROL})
+	@RequireOneOrMorePermissions(permission = {FULL_CONTROL})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload_for_client", method = POST,
 		description = "Upload and process file to /downloads folder for the given user for them to retrieve.")
 	public void readMultiPartUploadForClient(HttpServletRequest req, HttpServletResponse res) {
