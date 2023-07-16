@@ -18,11 +18,6 @@ import java.io.InputStream;
 
 public class DownloadSupport {
 
-    private static RequestRegistry requestRegistry;
-    public void setRequestRegistry(RequestRegistry requestRegistry) {
-        this.requestRegistry = requestRegistry;
-    }
-
     public static File getDownloadableFile(String resourcePath) {
         resourcePath = FileSupport.convertToUnixStylePath(resourcePath);
         if(resourcePath.startsWith("/")) {
@@ -41,7 +36,7 @@ public class DownloadSupport {
         return downloadable;
     }
 
-    public static void downloadFile(HttpServletResponse response, String resourcePath) {
+    public static void downloadFile(HttpServletResponse response, String resourcePath) throws IOException {
         File downloadable = getDownloadableFile(resourcePath);
         String fileName = downloadable.getName();
         System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", fileName)));
@@ -53,9 +48,7 @@ public class DownloadSupport {
         try (InputStream input = new FileInputStream(downloadable)) {
             StreamSupport.absorbInputStream(input, response.getOutputStream());
         } catch (IOException e) {
-            System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", fileName), e));
-            requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage(), MessageStatus.FAILURE));
-            response.setStatus(500);
+            throw e;
         }
     }
 }

@@ -212,7 +212,17 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	public void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response) {
 		String[] path = req.getPathInfo().split("/");
 		String resourcePath = uploadRootDir + "/" + path[2] + "/" + path[3];
-		DownloadSupport.downloadFile(response, resourcePath);
+		downloadFile(response, resourcePath);
+	}
+
+	private void downloadFile(HttpServletResponse response, String path) {
+		try {
+			DownloadSupport.downloadFile(response, path);
+		} catch (IOException e) {
+			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", path), e));
+			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage(), MessageStatus.FAILURE));
+			response.setStatus(500);
+		}
 	}
 
 	@Override
@@ -223,7 +233,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	public void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response) {
 		String[] path = req.getPathInfo().split("/");
 		String resourcePath = uploadRootDir + "/" + path[2] + "/downloads/" + path[3];
-		DownloadSupport.downloadFile(response, resourcePath);
+		downloadFile(response, resourcePath);
 	}
 
 
