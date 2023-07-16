@@ -19,9 +19,13 @@
 
 package org.ijsberg.iglu.server.facilities;
 
+import org.ijsberg.iglu.server.facilities.module.UserAgentImpl;
+
 /**
  */
 public interface UserAgent {
+
+	UserAgentImpl illegalReference = null;
 
 	boolean login(String userName, String password);
 
