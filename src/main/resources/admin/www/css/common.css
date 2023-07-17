@@ -105,6 +105,16 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     background-color: var(--filetree-selected) !important;
 }
 
+.boncode_list_heading {
+    height: 20px;
+    font-size: 10pt;
+    line-height: 20px;
+    color: var(--heading-color);
+    font-weight: bold;
+    flex: 0 1 20px;
+    padding: 10px 0;
+}
+
 /* Filter */
 .projects_table_filter {
     padding: 4px 8px;
