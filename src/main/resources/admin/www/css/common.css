@@ -443,16 +443,16 @@ body.waiting * {
     border-radius: 15px;
 }
 
-.inline_tag.HANDLED {
+.inline_tag.HANDLED, .inline_tag.Yes, .inline_tag.Low {
     background-color: var(--default-green);
 }
 
-.inline_tag.PENDING {
+.inline_tag.PENDING, .inline_tag.Pending, .inline_tag.Moderate {
     background-color: var(--default-yellow);
     color: black;
 }
 
-.inline_tag.LATE {
+.inline_tag.LATE, .inline_tag.No, .inline_tag.High, .inline_tag.Critical {
     background-color: var(--default-darkred);
 }
 
