@@ -424,11 +424,19 @@ body.waiting * {
     display: flex;
     gap: 7px;
     line-height: 20px;
-    color: white;
+    color: var(--text-color);
+    background-color: var(--form-input-background-color);
     height: 20px;
-    flex: 0 0 20px;
     padding: 0px 7px;
     border-radius: 3px;
+}
+
+.inline_tag.clickable:hover {
+    background-color: var(--form-input-background-color-hover);
+}
+
+.inline_tag.clickable:active {
+    background-color: var(--form-input-background-color-active);
 }
 
 .inline_tag.rounded {
