@@ -158,6 +158,14 @@ public class JsonData implements JsonDecorator {
 		return JsonSupport.purgeStringValue(attributes.get(name));
 	}
 
+	public JsonData getJsonData(String name) {
+		return (JsonData) attributes.get(name);
+	}
+
+	public JsonArray getJsonArray(String name) {
+		return (JsonArray) attributes.get(name);
+	}
+
 	public String getStringAttribute(String name) {
 		Object retval = getAttribute(name);
 		if(retval != null) {

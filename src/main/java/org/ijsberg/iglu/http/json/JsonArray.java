@@ -58,6 +58,10 @@ public class JsonArray implements JsonDecorator {
 		return contents;
 	}
 
+	public List<JsonData> getJsonDataContents() {
+		return contents;
+	}
+
 	public Object getValue(int index) {
 		return JsonSupport.purgeStringValue(contents.get(index));
 	}
