@@ -97,7 +97,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     flex: 1;
 }
 
-.boncode_table_large tbody td .flex_content {
+.boncode_table_large tbody td.flex_content {
     flex-direction: column;
     display: flex;
     justify-content: center;
