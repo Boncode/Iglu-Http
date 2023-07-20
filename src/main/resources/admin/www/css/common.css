@@ -97,6 +97,12 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     flex: 1;
 }
 
+.boncode_table_large tbody td .flex_content {
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+}
+
 .boncode_table_large thead th::after {
     padding: 0 5px;
 }
@@ -407,3 +413,46 @@ body.waiting * {
 .clickable_icon:active {
     background-color: var(--icon-background-active);
 }
+
+.inline_tag_container {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.inline_tag {
+    display: flex;
+    gap: 7px;
+    line-height: 20px;
+    color: white;
+    height: 20px;
+    flex: 0 0 20px;
+    padding: 0px 7px;
+    border-radius: 3px;
+}
+
+.inline_tag.rounded {
+    border-radius: 15px;
+}
+
+.inline_tag.HANDLED {
+    background-color: var(--default-green);
+}
+
+.inline_tag.PENDING {
+    background-color: var(--default-yellow);
+    color: black;
+}
+
+.inline_tag.LATE {
+    background-color: var(--default-darkred);
+}
+
+.inline_tag.IDLE {
+    background-color: var(--default-blue);
+}
+
+.inline_tag.DELETED {
+    background-color: var(--default-grey);
+}
+
