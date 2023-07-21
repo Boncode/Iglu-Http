@@ -231,5 +231,13 @@ public class JsonData implements JsonDecorator {
 	public void removeAttribute(String key) {
 		attributes.remove(key);
 	}
+
+	public boolean getBooleanAttribute(String key) {
+		Object value = getAttribute(key);
+		if(value != null) {
+			return Boolean.parseBoolean("" + value);
+		}
+		return false;
+	}
 }
 
