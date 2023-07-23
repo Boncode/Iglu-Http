@@ -103,6 +103,12 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     justify-content: center;
 }
 
+.tag_container {
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+}
+
 .boncode_table_large thead th::after {
     padding: 0 5px;
 }
@@ -418,10 +424,11 @@ body.waiting * {
     display: flex;
     gap: 5px;
     flex-wrap: wrap;
+    margin: 0px 10px;
 }
 
 .inline_tag {
-    display: flex;
+    display: none;
     gap: 7px;
     line-height: 20px;
     color: var(--text-color);
@@ -433,34 +440,46 @@ body.waiting * {
 
 .inline_tag.clickable:hover {
     background-color: var(--form-input-background-color-hover);
+    display: flex;
 }
 
 .inline_tag.clickable:active {
     background-color: var(--form-input-background-color-active);
+    display: flex;
 }
 
 .inline_tag.rounded {
     border-radius: 15px;
+    display: flex;
 }
 
 .inline_tag.HANDLED, .inline_tag.Yes, .inline_tag.Low {
     background-color: var(--default-green);
+    color: var(--default-white-offset);
+    display: flex;
 }
 
 .inline_tag.PENDING, .inline_tag.Pending, .inline_tag.Moderate {
     background-color: var(--default-yellow);
     color: black;
+    display: flex;
 }
 
 .inline_tag.LATE, .inline_tag.No, .inline_tag.High, .inline_tag.Critical {
     background-color: var(--default-darkred);
+    color: var(--default-white-offset);
+    display: flex;
 }
 
 .inline_tag.IDLE {
     background-color: var(--default-blue);
+    color: var(--default-white-offset);
+    display: flex;
 }
 
-.inline_tag.DELETED {
+.inline_tag.DELETED, .inline_tag.N\/A {
     background-color: var(--default-grey);
+    color: var(--default-white-offset);
+    display: flex;
 }
 
