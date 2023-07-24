@@ -434,6 +434,7 @@ body.waiting * {
     color: var(--text-color);
     background-color: var(--form-input-background-color);
     height: 20px;
+    width: max-content;
     padding: 0px 7px;
     border-radius: 3px;
 }
