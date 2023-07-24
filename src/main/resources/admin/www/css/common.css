@@ -428,7 +428,7 @@ body.waiting * {
 }
 
 .inline_tag {
-    display: none;
+    display: flex;
     gap: 7px;
     line-height: 20px;
     color: var(--text-color);
@@ -440,46 +440,38 @@ body.waiting * {
 
 .inline_tag.clickable:hover {
     background-color: var(--form-input-background-color-hover);
-    display: flex;
 }
 
 .inline_tag.clickable:active {
     background-color: var(--form-input-background-color-active);
-    display: flex;
 }
 
 .inline_tag.rounded {
     border-radius: 15px;
-    display: flex;
 }
 
 .inline_tag.HANDLED, .inline_tag.Yes, .inline_tag.Low {
     background-color: var(--default-green);
     color: var(--default-white-offset);
-    display: flex;
 }
 
 .inline_tag.PENDING, .inline_tag.Pending, .inline_tag.Moderate {
     background-color: var(--default-yellow);
     color: black;
-    display: flex;
 }
 
 .inline_tag.LATE, .inline_tag.No, .inline_tag.High, .inline_tag.Critical {
     background-color: var(--default-darkred);
     color: var(--default-white-offset);
-    display: flex;
 }
 
-.inline_tag.IDLE {
+.inline_tag.IDLE, .inline_tag.Unclassified {
     background-color: var(--default-blue);
     color: var(--default-white-offset);
-    display: flex;
 }
 
 .inline_tag.DELETED, .inline_tag.N\/A {
     background-color: var(--default-grey);
     color: var(--default-white-offset);
-    display: flex;
 }
 
