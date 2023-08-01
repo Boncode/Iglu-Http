@@ -103,10 +103,17 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     justify-content: center;
 }
 
-.tag_container {
-    flex-direction: column;
+.boncode_table_large tbody td.wrap_text {
     display: flex;
-    justify-content: center;
+    white-space: pre-wrap;
+    line-height: normal;
+    flex-direction: column;
+}
+
+.tag_container {
+    gap: 5px;
+    display: flex;
+    align-items: center
 }
 
 .boncode_table_large thead th::after {
@@ -423,8 +430,7 @@ body.waiting * {
 .inline_tag_container {
     display: flex;
     gap: 5px;
-    flex-wrap: wrap;
-    margin: 0px 10px;
+    flex-direction: row;
 }
 
 .inline_tag {
@@ -451,18 +457,23 @@ body.waiting * {
     border-radius: 15px;
 }
 
-.inline_tag.HANDLED, .inline_tag.Yes, .inline_tag.Low {
+.inline_tag.HANDLED, .inline_tag.Yes, .inline_tag.Low, .inline_tag.LOW {
     background-color: var(--default-green);
     color: var(--default-white-offset);
 }
 
-.inline_tag.PENDING, .inline_tag.Pending, .inline_tag.Moderate {
+.inline_tag.PENDING, .inline_tag.Pending, .inline_tag.Moderate, .inline_tag.MEDIUM {
     background-color: var(--default-yellow);
     color: black;
 }
 
-.inline_tag.LATE, .inline_tag.No, .inline_tag.High, .inline_tag.Critical {
+.inline_tag.LATE, .inline_tag.No, .inline_tag.High, .inline_tag.HIGH {
     background-color: var(--default-darkred);
+    color: var(--default-white-offset);
+}
+
+.inline_tag.Critical, .inline_tag.CRITICAL  {
+    background-color: var(--default-black);
     color: var(--default-white-offset);
 }
 
@@ -471,7 +482,7 @@ body.waiting * {
     color: var(--default-white-offset);
 }
 
-.inline_tag.DELETED, .inline_tag.N\/A {
+.inline_tag.DELETED, .inline_tag.N\/A, inline_tag.Basic {
     background-color: var(--default-grey);
     color: var(--default-white-offset);
 }
