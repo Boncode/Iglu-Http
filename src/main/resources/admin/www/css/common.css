@@ -462,7 +462,7 @@ body.waiting * {
     color: var(--default-white-offset);
 }
 
-.inline_tag.PENDING, .inline_tag.Pending, .inline_tag.Moderate, .inline_tag.MEDIUM {
+.inline_tag.PENDING, .inline_tag.Pending, .inline_tag.Moderate, .inline_tag.MEDIUM, .inline_tag.Medium {
     background-color: var(--default-yellow);
     color: black;
 }
@@ -485,5 +485,20 @@ body.waiting * {
 .inline_tag.DELETED, .inline_tag.N\/A, inline_tag.Basic {
     background-color: var(--default-grey);
     color: var(--default-white-offset);
+}
+
+.inline_tag.green {
+    background-color: var(--default-green);
+    color: var(--default-white);
+}
+
+.widget_header {
+    line-height: 30px;
+    height: 60px;
+    display: flex;
+
+    position: sticky;
+    top: 0;
+    background-color: var(--widget-background-color);
 }
 
