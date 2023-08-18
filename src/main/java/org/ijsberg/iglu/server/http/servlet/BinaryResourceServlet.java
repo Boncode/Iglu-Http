@@ -58,7 +58,13 @@ public abstract class BinaryResourceServlet extends HttpServlet {
 			ServletOutputStream out = response.getOutputStream();
 			response.setContentType(MimeTypeSupport.getMimeTypeForFileExtension(resourcePath.substring(resourcePath.lastIndexOf('.') + 1)));
 
-			byte[] responseData =  getResource(resourcePath);
+
+			byte[] responseData = null;
+			try {
+				responseData = getResource(resourcePath);
+			} catch (IOException ioe) {
+				System.out.println(new LogEntry("resource " + resourcePath + " not found with message: " + ioe.getMessage()));
+			}
 			if(responseData == null) {
 				response.setStatus(404);
 				return;
