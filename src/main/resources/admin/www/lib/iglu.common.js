@@ -79,7 +79,7 @@ iglu.common.convertIgluPropertiesToMap = function(propertiesStringData) {
     var lines = dataWithoutWindowsCR.split('\n');
 
     for(var i in lines) {
-        if(lines[i].includes('#') || lines[i] === '') { // ignore iglu comment or empty property line
+        if(lines[i].trim().startsWith('#') || lines[i].trim() === '') { // ignore iglu comment or empty property line
             continue;
         } else {
             let lineContent = lines[i].split('=');
