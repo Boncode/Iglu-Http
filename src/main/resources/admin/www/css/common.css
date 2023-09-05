@@ -126,12 +126,12 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 
 .boncode_list_heading {
     height: 20px;
-    font-size: 10pt;
-    line-height: 20px;
+    font-size: 11pt;
+    line-height: 30px;
     color: var(--heading-color);
     font-weight: bold;
     flex: 0 1 20px;
-    padding: 10px 0;
+    padding: 10px;
 }
 
 /* Filter */
