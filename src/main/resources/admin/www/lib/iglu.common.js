@@ -36,6 +36,13 @@ iglu.common.Texts.prototype.get = function(languageId, textId) {
     return this.texts[languageId][textId];
 }
 
+iglu.common.Texts.prototype.getTranslatedPhrase = function (phraseId) {
+    let phrase = this.get(this.currentLanguageId, phraseId);
+    if(phrase === null) {
+        phrase = phraseId.split('.')[1].replaceAll('_', ' ');
+    }
+    return phrase;
+}
 
 iglu.common.Texts.prototype.translateHtml = function(domElement) {
     let translatableElements = domElement.querySelectorAll('[data-text-id]');
