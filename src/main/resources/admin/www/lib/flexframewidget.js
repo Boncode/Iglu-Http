@@ -117,6 +117,14 @@ FlexFrameWidget.prototype.onDeploy = function() {
 	this.display();
 };
 
+FlexFrameWidget.prototype.hide = function() {
+    this.element.style.display = 'none';
+}
+
+FlexFrameWidget.prototype.show = function() {
+    this.element.style.display = 'flex';
+}
+
 FlexFrameWidget.prototype.writeHTML = function() {
 };
 
