@@ -110,6 +110,11 @@ public class MenuItem extends JsonData {
 		return this;
 	}
 
+	public MenuItem setLabelUnescaped(String unescapedLabel) {
+		addStringAttribute("label", unescapedLabel);
+		return this;
+	}
+
 	public String getId() {
 		return getStringAttribute("id");
 	}
