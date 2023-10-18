@@ -21,7 +21,9 @@ function SideMenuWidget(id, content, callback, grantedPermissions) {
 
     this.grantedPermissions = grantedPermissions;
 
-    createMouseEnterAndExitListeners(document.getElementById(id));
+    document.getElementById(this.id).addEventListener("mouseleave", (e) => {
+        this.closeAllSubmenu();
+    });
 }
 
 subclass(SideMenuWidget, WidgetContent);
@@ -60,10 +62,10 @@ SideMenuWidget.prototype.rememberToggleSettings = function(tree) {
 };
 
 SideMenuWidget.prototype.writeHTML = function() {
-
 	if(this.element && this.menu) {
 	    this.element.innerHTML = '';
 		this.createTree(this.menu, this.element, false);
+	    this.createPinnedIcon(this.element);
 	}
     this.translateTexts();
 };
@@ -113,6 +115,25 @@ SideMenuWidget.prototype.containsVisibleItems = function(tree) {
             }
         }
     }
+}
+
+SideMenuWidget.prototype.createPinnedIcon = function (element) {
+    let wrapperElement = document.createElement('div');
+    wrapperElement.style = 'display: flex;';
+    wrapperElement.appendChild(element.firstChild);
+
+    let menuPinned = this.element.classList.contains('pinned');
+
+    let pinnedElement = document.createElement('div');
+    pinnedElement.style = 'margin-left: auto';
+    pinnedElement.className = 'side_menu_item';
+    pinnedElement.innerHTML = '<div class="side_menu_pinned_icon" id="side_menu_pinned_icon" title="Pin side menu">' +
+                              	'<div class="bi bi-pin' + (menuPinned ? '-fill' : '') + '" style="font-size: 13px"></div>' +
+                              '</div>';
+    pinnedElement.onclick = (evt) => {this.togglePinned();};
+
+    wrapperElement.appendChild(pinnedElement);
+    element.insertBefore(wrapperElement, element.firstChild);
 }
 
 SideMenuWidget.prototype.createTree = function(tree, container) {
@@ -185,14 +206,13 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 	}
 }
 
-function createMouseEnterAndExitListeners(element) {
-    element.addEventListener("mouseenter", (e) => {
-
-    });
-
-    element.addEventListener("mouseleave", (e) => {
-
-    });
+SideMenuWidget.prototype.togglePinned = function() {
+    let pinElement = document.getElementById('side_menu_pinned_icon');
+    if(this.element.classList.toggle('pinned')){
+        pinElement.firstChild.className = 'bi bi-pin-fill';
+    } else {
+        pinElement.firstChild.className = 'bi bi-pin';
+    }
 }
 
 function createSideMenuLabel(item) {
@@ -218,10 +238,12 @@ function toggleSubmenu(itemId) {
 }
 
 SideMenuWidget.prototype.closeAllSubmenu = function() {
-    let sideMenuItems = document.getElementsByClassName('side_menu_item');
-    for(sideMenuItem of sideMenuItems) {
-        if(sideMenuItem.className.split(' ').includes('submenu_open')){
-            toggleSubmenu(sideMenuItem.id);
+    if(!this.element.classList.contains('pinned')) {
+        let sideMenuItems = document.getElementsByClassName('side_menu_item');
+        for(sideMenuItem of sideMenuItems) {
+            if(sideMenuItem.classList.contains('submenu_open')){
+                toggleSubmenu(sideMenuItem.id);
+            }
         }
     }
 };
