@@ -64,8 +64,8 @@ SideMenuWidget.prototype.rememberToggleSettings = function(tree) {
 SideMenuWidget.prototype.writeHTML = function() {
 	if(this.element && this.menu) {
 	    this.element.innerHTML = '';
-		this.createTree(this.menu, this.element, false);
 	    this.createPinnedIcon(this.element);
+		this.createTree(this.menu, this.element, false);
 	}
     this.translateTexts();
 };
@@ -118,22 +118,17 @@ SideMenuWidget.prototype.containsVisibleItems = function(tree) {
 }
 
 SideMenuWidget.prototype.createPinnedIcon = function (element) {
-    let wrapperElement = document.createElement('div');
-    wrapperElement.style = 'display: flex;';
-    wrapperElement.appendChild(element.firstChild);
-
     let menuPinned = this.element.classList.contains('pinned');
 
     let pinnedElement = document.createElement('div');
-    pinnedElement.style = 'margin-left: auto';
+    pinnedElement.style = 'position: absolute; right: 0;';
     pinnedElement.className = 'side_menu_item';
     pinnedElement.innerHTML = '<div class="side_menu_pinned_icon" id="side_menu_pinned_icon" title="Pin side menu">' +
-                              	'<div class="bi bi-pin' + (menuPinned ? '-fill' : '') + '" style="font-size: 13px"></div>' +
+                              	'<div class="bi bi-pin' + (menuPinned ? '-fill' : '') + '" style="font-size: 12px"></div>' +
                               '</div>';
     pinnedElement.onclick = (evt) => {this.togglePinned();};
 
-    wrapperElement.appendChild(pinnedElement);
-    element.insertBefore(wrapperElement, element.firstChild);
+    element.appendChild(pinnedElement);
 }
 
 SideMenuWidget.prototype.createTree = function(tree, container) {
