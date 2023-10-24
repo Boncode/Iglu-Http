@@ -123,7 +123,7 @@ SideMenuWidget.prototype.createPinnedIcon = function (element) {
     let pinnedElement = document.createElement('div');
     pinnedElement.style = 'position: absolute; right: 0;';
     pinnedElement.className = 'side_menu_item';
-    pinnedElement.innerHTML = '<div class="side_menu_pinned_icon" id="side_menu_pinned_icon" title="Pin side menu">' +
+    pinnedElement.innerHTML = '<div class="side_menu_pinned_icon" id="side_menu_pinned_icon" data-tippy-content-id="phrase.pin_side_menu">' +
                               	'<div class="bi bi-pin' + (menuPinned ? '-fill' : '') + '" style="font-size: 12px"></div>' +
                               '</div>';
     pinnedElement.onclick = (evt) => {this.togglePinned();};
