@@ -203,6 +203,7 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 
 SideMenuWidget.prototype.togglePinned = function() {
     let pinElement = document.getElementById('side_menu_pinned_icon');
+    document.getElementById('analysis_progress_side_menu').classList.toggle('pinned');
     if(this.element.classList.toggle('pinned')){
         pinElement.firstChild.className = 'bi bi-pin-fill';
     } else {
