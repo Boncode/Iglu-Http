@@ -20,45 +20,12 @@ function SideMenuWidget(id, content, callback, grantedPermissions) {
     this.expertMode = false;
 
     this.grantedPermissions = grantedPermissions;
-
-    document.getElementById(this.id).addEventListener("mouseleave", (e) => {
-        this.closeAllSubmenu();
-    });
 }
 
-subclass(SideMenuWidget, WidgetContent);
+subclass(SideMenuWidget, MenuWidget);
 
 SideMenuWidget.prototype.constructSideMenuWidget = function(settings, content) {
-	this.constructWidgetContent(settings, content);
-};
-
-
-SideMenuWidget.prototype.alertSomething = function(value) {
-	alert(value);
-};
-
-SideMenuWidget.prototype.process = function(value) {
-	alert(value);
-};
-
-SideMenuWidget.prototype.setSizeAndPosition = function() {
-};
-
-SideMenuWidget.prototype.setExpertMode = function(value) {
-
-    this.rememberToggleSettings(this.menu);
-    this.expertMode = value;
-};
-
-SideMenuWidget.prototype.rememberToggleSettings = function(tree) {
-    for(var i in tree) {
-        if(typeof tree[i].toggleProperty_key != 'undefined') {
-            tree[i].toggleProperty_value = WidgetManager.instance.settings[tree[i].toggleProperty_key];
-        }
-        if(typeof(tree[i].submenu) != 'undefined') {
-            this.rememberToggleSettings(tree[i].submenu);
-        }
-    }
+	this.constructMenuWidget(settings, content);
 };
 
 SideMenuWidget.prototype.writeHTML = function() {
@@ -67,55 +34,11 @@ SideMenuWidget.prototype.writeHTML = function() {
 	    this.createPinnedIcon(this.element);
 		this.createTree(this.menu, this.element, false);
 	}
+    this.element.addEventListener("mouseleave", (e) => {
+        this.closeAllSubmenu();
+    });
     this.translateTexts();
 };
-
-
-SideMenuWidget.prototype.getRequiredPermissions = function(treeItem) {
-    if(typeof treeItem.require_one_of_permissions != 'undefined') {
-        return treeItem.require_one_of_permissions.split(',');
-    }
-    return null;
-}
-
-SideMenuWidget.prototype.getRequireLoggedIn = function(treeItem) {
-    if(typeof treeItem.require_logged_in != 'undefined') {
-        return treeItem.require_logged_in;
-    }
-    return false;
-}
-
-SideMenuWidget.prototype.itemIsVisible = function(treeItem) {
-    if(treeItem.disabled) {
-        return false;
-    }
-    var requireLoggedIn = this.getRequireLoggedIn(treeItem);
-    if (requireLoggedIn && currentUser == null) {
-       return false;
-    }
-    var requiredPermissions = this.getRequiredPermissions(treeItem);
-    if( typeof this.grantedPermissions != 'undefined' &&
-        this.grantedPermissions != null &&
-        requiredPermissions != null) {
-        for(var j in requiredPermissions) {
-            if(this.grantedPermissions.indexOf(requiredPermissions[j]) != -1) {
-                return true;
-            }
-        }
-        return false;
-    }
-    return true;
-}
-
-SideMenuWidget.prototype.containsVisibleItems = function(tree) {
-    for(var i in tree) {
-        if(!tree[i].expertMode || this.expertMode) {
-            if(this.itemIsVisible(tree[i])) {
-                return true;
-            }
-        }
-    }
-}
 
 SideMenuWidget.prototype.createPinnedIcon = function (element) {
     let menuPinned = this.element.classList.contains('pinned');
@@ -129,16 +52,6 @@ SideMenuWidget.prototype.createPinnedIcon = function (element) {
     pinnedElement.onclick = (evt) => {this.togglePinned();};
 
     element.appendChild(pinnedElement);
-}
-
-SideMenuWidget.prototype.createTree = function(tree, container) {
-    for(var i in tree) {
-        if(!tree[i].expertMode || this.expertMode) {
-            if(this.itemIsVisible(tree[i])) {
-                this.addItem(tree[i], container);
-            }
-        }
-    }
 }
 
 SideMenuWidget.prototype.addItem = function(item, container) {
@@ -242,64 +155,4 @@ SideMenuWidget.prototype.closeAllSubmenu = function() {
             }
         }
     }
-};
-
-SideMenuWidget.prototype.refresh = function() {
-};
-
-
-SideMenuWidget.prototype.onDestroy = function() {
-	//save state
-};
-
-
-SideMenuWidget.prototype.display = function() {
-//	alert('display');
-};
-
-
-
-SideMenuWidget.prototype.handleAjaxResponse = function(responseText) {
-	this.evaluate(responseText, this);
-};
-
-
-SideMenuWidget.prototype.evaluate = function(contents, sideMenuWidget) {
-
-	console.debug('MenuWidget evaluate');
-	if(!this.isLoaded) {
-		sideMenuWidget.menu = eval(contents);
-		sideMenuWidget.writeHTML();
-		this.isLoaded = true;
-	}
-	//save state
-};
-
-SideMenuWidget.prototype.load = function(contents, sideMenuWidget) {
-
-	if(!sideMenuWidget.isLoaded) {
-	    console.debug('loading menu contents');
-		sideMenuWidget.menu = JSON.parse(contents).menu;
-		sideMenuWidget.writeHTML();
-		sideMenuWidget.isLoaded = true;
-		if(typeof sideMenuWidget.callback != 'undefined') {
-		    sideMenuWidget.callback(sideMenuWidget);
-		}
-	} else {
-	    console.warn('cannot load: menu contents already loaded');
-	}
-	//save state
-};
-
-
-SideMenuWidget.prototype.onDeploy = function() {
-	console.debug('deploying menu with source ' + this.source);
-	if(this.source != null) {
-		ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
-	}
-};
-
-SideMenuWidget.prototype.display = function(content, element)
-{
-
 };
