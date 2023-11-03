@@ -314,17 +314,19 @@ function evalInContext(valueStr, context) {
     return function() { return eval(valueStr); }.call(context);
 }
 
+function scrollToElementInContainer(containerId, scrollTargetId, scrollBehavior) {
+	let scrollTarget = document.getElementById(scrollTargetId);
+	let container = document.getElementById(containerId);
 
-function scrollToElement(containerId, scrollTargetId) {
-	var scrollTarget = document.getElementById(scrollTargetId);
-	var container = document.getElementById(containerId);
-
-    //console.debug('trying to scroll in container ' + containerId + ', scrolling to element ' + scrollTargetId);
-
+    console.debug('trying to scroll in container ' + containerId + ', scrolling to element ' + scrollTargetId);
+    let containerOffset = container.offsetTop;
+    console.debug('container position in document: ' + containerOffset);
+    let scrollOffset = 0;
+    scrollBehavior = scrollBehavior || 'instant';
 	if(scrollTarget != null) {
-		container.scrollTop = scrollTarget.offsetTop;
+		scrollOffset = scrollTarget.offsetTop - containerOffset;
 	} else {
-    	console.log('cannot scroll ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
-		container.scrollTop = 0;
+    	console.debug('cannot scroll ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
 	}
+	container.scrollTo({top: scrollOffset, behavior: scrollBehavior});
 }
