@@ -281,8 +281,8 @@ WidgetContent.prototype.refresh = function() {
 		    if (functionPathArray.includes('') || functionPathArray.includes(null)) {
                 console.error('Part of the source_load_action: '+ this.source_load_action + ', for widget: ' + this.id + ' is empty');
                 return;
-		    }
-		    let currentPlaceInFunctionPath = window;
+            }
+            let currentPlaceInFunctionPath = window;
 		    for (let i=0; i<functionPathArray.length;i++) {
 		        currentPlaceInFunctionPath = currentPlaceInFunctionPath[functionPathArray[i]];
 		        if (typeof currentPlaceInFunctionPath === 'undefined') {
