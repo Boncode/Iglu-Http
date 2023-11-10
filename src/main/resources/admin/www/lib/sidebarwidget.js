@@ -12,7 +12,6 @@ function SideBarWidget(id, source) {
 	this.constructSideBarWidget(settings);
 
     this.isOpen = false;
-    console.warn(this);
 }
 
 subclass(SideBarWidget, WidgetContent);
