@@ -20,6 +20,7 @@ function SideMenuWidget(id, content, callback, grantedPermissions) {
     this.expertMode = false;
 
     this.grantedPermissions = grantedPermissions;
+    this.isPinned = Common.getLocalStorageItemOrDefault('sideMenuPinned', 'false');
 }
 
 subclass(SideMenuWidget, MenuWidget);
@@ -31,6 +32,10 @@ SideMenuWidget.prototype.constructSideMenuWidget = function(settings, content) {
 SideMenuWidget.prototype.writeHTML = function() {
 	if(this.element && this.menu) {
 	    this.element.innerHTML = '';
+	    if(this.isPinned === 'true') {
+	        this.element.classList.add('pinned');
+	        document.getElementById('analysis_progress_side_menu').classList.add('pinned');
+	    }
 	    this.createPinnedIcon(this.element);
 		this.createTree(this.menu, this.element, false);
 	}
@@ -41,8 +46,7 @@ SideMenuWidget.prototype.writeHTML = function() {
 };
 
 SideMenuWidget.prototype.createPinnedIcon = function (element) {
-    let menuPinned = this.element.classList.contains('pinned');
-
+    let menuPinned = this.isPinned === 'true';
     let pinnedElement = document.createElement('div');
     pinnedElement.style = 'position: absolute; right: 0;';
     pinnedElement.className = 'side_menu_item';
@@ -117,10 +121,13 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 SideMenuWidget.prototype.togglePinned = function() {
     let pinElement = document.getElementById('side_menu_pinned_icon');
     document.getElementById('analysis_progress_side_menu').classList.toggle('pinned');
-    if(this.element.classList.toggle('pinned')){
-        pinElement.firstChild.className = 'bi bi-pin-fill';
-    } else {
+    this.element.classList.toggle('pinned');
+    if(this.isPinned === 'true'){
         pinElement.firstChild.className = 'bi bi-pin';
+        this.isPinned = Common.setLocalStorageItem('sideMenuPinned', 'false');
+    } else {
+        pinElement.firstChild.className = 'bi bi-pin-fill';
+        this.isPinned = Common.setLocalStorageItem('sideMenuPinned', 'true');
     }
 }
 
