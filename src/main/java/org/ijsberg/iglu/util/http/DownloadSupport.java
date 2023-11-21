@@ -1,9 +1,6 @@
 package org.ijsberg.iglu.util.http;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.ijsberg.iglu.messaging.MessageStatus;
-import org.ijsberg.iglu.messaging.message.EventMessage;
-import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.ResourceException;
@@ -47,8 +44,16 @@ public class DownloadSupport {
 
         try (InputStream input = new FileInputStream(downloadable)) {
             StreamSupport.absorbInputStream(input, response.getOutputStream());
-        } catch (IOException e) {
-            throw e;
         }
+    }
+
+    public static void downloadData(HttpServletResponse response, String fileName, byte[] data) throws IOException {
+        System.out.println(new LogEntry(Level.DEBUG, String.format("downloading %s", fileName)));
+
+        response.setContentType(MimeTypeSupport.getMimeTypeForFileName(fileName));
+        response.setContentLength(data.length);
+        response.setHeader("Content-disposition", "attachment; filename=" + fileName);
+
+        StreamSupport.writeToOutputStream(data, response.getOutputStream());
     }
 }
