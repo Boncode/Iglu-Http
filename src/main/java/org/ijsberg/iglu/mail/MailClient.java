@@ -33,7 +33,15 @@ public class MailClient {
         }
     }
 
+    public void sendHtmlMail(String sender, String recipient, String subject, String messageTxt) throws MessagingException {
+        sendMail(sender, recipient, subject, "text/html", messageTxt);
+    }
+
     public void sendMail(String sender, String recipient, String subject, String messageTxt) throws MessagingException {
+        sendMail(sender, recipient, subject, "text/plain", messageTxt);
+    }
+
+    public void sendMail(String sender, String recipient, String subject, String contentType, String messageTxt) throws MessagingException {
         Session session = Session.getInstance(properties, authenticator);
 
         Message message = new MimeMessage(session);
@@ -45,7 +53,7 @@ public class MailClient {
         message.setSubject(subject);
 
         MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(messageTxt, "text/plain");
+        mimeBodyPart.setContent(messageTxt, contentType);
 
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(mimeBodyPart);
