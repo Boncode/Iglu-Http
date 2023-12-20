@@ -192,7 +192,7 @@ MenuWidget.prototype.addItem = function(item, container) {
 		}
 
 //		itemDiv.innerHTML = itemLabel;
-        if(item.label !== "" && this.containsVisibleItems(item.submenu)){
+        if(item.label !== "" && this.containsVisibleItems(item.submenu)) {
             itemDiv.innerHTML +=
                 '<span id="' + itemId + '.chevron">' +
                 getSubMenuChevronDownHTML() +
