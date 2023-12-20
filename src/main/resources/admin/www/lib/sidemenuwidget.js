@@ -34,7 +34,6 @@ SideMenuWidget.prototype.writeHTML = function() {
 	    this.element.innerHTML = '';
 	    if(this.isPinned === 'true') {
 	        this.element.classList.add('pinned');
-	        document.getElementById('analysis_progress_side_menu').classList.add('pinned');
 	    }
 	    this.createPinnedIcon(this.element);
 		this.createTree(this.menu, this.element, false);
@@ -120,7 +119,6 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 
 SideMenuWidget.prototype.togglePinned = function() {
     let pinElement = document.getElementById('side_menu_pinned_icon');
-    document.getElementById('analysis_progress_side_menu').classList.toggle('pinned');
     this.element.classList.toggle('pinned');
     if(this.isPinned === 'true'){
         pinElement.firstChild.className = 'bi bi-pin';
