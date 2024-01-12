@@ -500,7 +500,7 @@ public class IgluRestServlet extends HttpServlet {
     public static String purgeXSS(String stringResponse, RestMethodData restMethodData) {
         int start = 0;
         int index = 0;
-        if(!restMethodData.allowScriptSnippets && stringResponse.indexOf('<', start) != -1) {
+        if(restMethodData != null/*i.e. endpoint not defined*/ && !restMethodData.allowScriptSnippets && stringResponse.indexOf('<', start) != -1) {
             String stringResponseLowerCase = stringResponse.toLowerCase();
             if(stringResponseLowerCase.contains("script")) {
                 stringResponseLowerCase = StringSupport.replaceAll(stringResponseLowerCase, new String[]{"\t", " "}, new String[]{"",""});
@@ -576,7 +576,7 @@ public class IgluRestServlet extends HttpServlet {
     }
 
     public JsonData createErrorResponse(RestException e) {
-        return RestSupport.createResponse(e.getHttpStatusCode(), e.getMessage(), e);
+        return RestSupport.createResponse(e.getHttpStatusCode(), e.getMessage()/*, e*/);
     }
 
 }

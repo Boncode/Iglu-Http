@@ -99,6 +99,13 @@ MenuWidget.prototype.getRequireLoggedIn = function(treeItem) {
     return false;
 }
 
+MenuWidget.prototype.getRequireUserPropertyTrue = function(treeItem) {
+    if(typeof treeItem.require_user_property != 'undefined') {
+        return treeItem.require_user_property;
+    }
+    return null;
+}
+
 MenuWidget.prototype.itemIsVisible = function(treeItem) {
     if(treeItem.disabled) {
         return false;
@@ -107,6 +114,15 @@ MenuWidget.prototype.itemIsVisible = function(treeItem) {
     if (requireLoggedIn && currentUser == null) {
        return false;
     }
+
+    var propertyName = this.getRequireUserPropertyTrue(treeItem);
+    if(propertyName != null) {
+        //alert(iglu.common.getUserProperty(propertyName));
+        if(!iglu.common.getUserProperty(propertyName)) {
+            return false;
+        }
+    }
+
     var requiredPermissions = this.getRequiredPermissions(treeItem);
     if( typeof this.grantedPermissions != 'undefined' &&
         this.grantedPermissions != null &&

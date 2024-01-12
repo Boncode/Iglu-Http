@@ -133,3 +133,19 @@ iglu.common.arrayEquals = function(array1, array2) {
         array1.length === array2.length &&
         array1.every((val, index) => val === array2[index]);
 }
+
+iglu.common.userProperties = new Object();
+
+iglu.common.putUserProperties = function(properties) {
+    for(var x in properties) {
+        iglu.common.putUserProperty(x,properties[x]);
+    }
+}
+
+iglu.common.putUserProperty = function(key, value) {
+    iglu.common.userProperties[key] = value;
+}
+
+iglu.common.getUserProperty = function(key) {
+    return iglu.common.userProperties[key];
+}

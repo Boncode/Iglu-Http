@@ -27,7 +27,7 @@ public abstract class RestSupport {
     }
 
     public static JsonData createResponse(int status, String message, Exception e) {
-        return createResponse(status, message, getExceptionMessage(e));
+        return createResponse(status, message/*, getExceptionMessage(e)*/);
     }
 
     public static JsonData createResponse(int status, String message, String details) {
