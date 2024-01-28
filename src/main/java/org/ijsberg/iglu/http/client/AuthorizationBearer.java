@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class AuthorizationBearer implements HttpHeader {
 
-    private String token;
+    private final String token;
     public static final String KEY = "Authorization";
     public static final String VALUE_PREFIX = "Bearer ";
 
