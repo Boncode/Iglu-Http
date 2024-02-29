@@ -105,6 +105,11 @@ public class MenuItem extends JsonData {
 		return this;
 	}
 
+	public MenuItem addOnfocus(String onfocus) {
+		addStringAttribute("onfocus", onfocus);
+		return this;
+	}
+
 	public MenuItem addPlaceholder(String placeholder) {
 		addStringAttribute("placeholder", placeholder);
 		return this;

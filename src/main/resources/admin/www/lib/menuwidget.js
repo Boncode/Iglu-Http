@@ -181,6 +181,9 @@ MenuWidget.prototype.addItem = function(item, container) {
     if(typeof item.oninput != 'undefined') {
         itemDiv.setAttribute('oninput', item.oninput);
     }
+    if(typeof item.onfocus != 'undefined') {
+        itemDiv.setAttribute('onfocus', item.onfocus);
+    }
 
     if(typeof item.placeholder != 'undefined') {
         itemDiv.setAttribute('placeholder', item.placeholder);
