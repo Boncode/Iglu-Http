@@ -378,56 +378,5 @@ function getToggleProperty(value, on, off) {
 	if(value == off) {
 		return '&nbsp;';
 	}
-
 }
 
-function createLink(item, alternativeLabel) {
-
-	var onclick = '';
-	var toggleIndication = '';
-	//alert(item.toggleProperty.key);
-
-	if(typeof item.toggleProperty_key != 'undefined') {
-
-		if(typeof item.toggleProperty_on == 'undefined') {
-			item.toggleProperty_on = 'true';
-		}
-		if(typeof item.toggleProperty_off == 'undefined') {
-			item.toggleProperty_off = 'false';
-		}
-		if(typeof item.toggleProperty_value == 'undefined') {
-			item.toggleProperty_value = item.toggleProperty_off;
-		}
-		toggleIndication = '<span id="' + item.toggleProperty_key + '_select">' + (item.toggleProperty_value == item.toggleProperty_off ? '&nbsp;&nbsp;' : '&#x2713;') + '</span>';
-		onclick += 'toggleProperty(\'' + item.toggleProperty_key + '\',\'' + item.toggleProperty_on + '\',\'' + item.toggleProperty_off + '\');';
-		WidgetManager.instance.settings[item.toggleProperty_key] = item.toggleProperty_value;
-	}
-
-	if(typeof(item.onclick) != 'undefined') {
-		onclick += item.onclick + ';';
-	}
-
-	if(typeof(item.link) != 'undefined' && item.link.length > 0) {
-		for(var i in item.link) {
-			var link = item.link[i];
-			if(link.functionName != null) {
-				onclick += link.functionName + '(\'' + link.url + '\', \'' + link.target_label + '\');';
-			} else if(link.url.endsWith('.js')) {
-				onclick += 'linkToJavaScript(\'' + link.url + '\', \'' + link.target + '\', \'' + link.target_label + '\');';
-			} else if(link.url.endsWith('.json')) {
-                onclick += 'linkToJson(\'' + link.url + '\', \'' + link.target + '\', \'' + link.target_label + '\');';
-            } else {
-				onclick += 'linkToHtml(\'' + link.url + '\', \'' + link.target + '\', \'' + link.target_label + '\');';
-			}
-		}
-	}
-
-    var itemLabel = '<span data-text-id="menu.' + item.id + '.label">' + (typeof alternativeLabel !== 'undefined' ? alternativeLabel : item.label) + '</span>';
-
-
-	if(onclick.length > 0) {
-		return '<a onclick="' + onclick + '">' + itemLabel + toggleIndication + '</a>';
-	} else {
-		return itemLabel;
-	}
-}
