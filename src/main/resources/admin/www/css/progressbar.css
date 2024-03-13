@@ -13,12 +13,11 @@
 
 .progress_message {
     flex: 0 0 20px;
-    height: 20px;
     font-size: 9pt;
-    line-height: 20px;
     margin: 0px 8px;
-    overflow-wrap: break-all;
     color: var(--heading-color);
+    height: auto;
+    line-height: normal;
 }
 
 .progress_bar_inner, .progress_bar_inner_success, .progress_bar_inner_failure {
