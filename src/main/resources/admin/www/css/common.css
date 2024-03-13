@@ -413,17 +413,46 @@ body.waiting * {
     text-align: center;
 }
 
+.toggle_icon {
+    color: var(--text-default);
+}
+
+.toggle_icon.active {
+    background-color: var(--icon-background-selected);
+    color: var(--toggle-icon-text-color);
+}
+
+.toggle_icon {
+    border-radius: 10%;
+    border: var(--text-color);
+    border-width: thin;
+    border-style: solid;
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color .1s ease-in-out;
+    box-shadow: -1px -1px var(--text-color);
+}
+
 .clickable_icon {
     border-radius: 50%;
     background-color: rgba(0,0,0,0);
     transition: background-color .1s ease-in-out;
 }
 
-.clickable_icon:hover {
-    background-color: var(--icon-background-hover);
+.toggle_icon:hover {
+    color: var(--text-default);
 }
 
-.clickable_icon:active {
+.toggle_icon:active {
+    box-shadow: unset;
+    transform: translate(-1px, -1px);
+}
+
+.clickable_icon:hover, .toggle_icon:hover {
+    background-color: var(--icon-background-hover);
+    cursor: pointer;
+}
+
+.clickable_icon:active, .toggle_icon:active {
     background-color: var(--icon-background-active);
 }
 
