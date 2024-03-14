@@ -413,23 +413,25 @@ body.waiting * {
     text-align: center;
 }
 
-.toggle_icon {
-    color: var(--text-default);
-}
-
 .toggle_icon.active {
     background-color: var(--icon-background-selected);
     color: var(--toggle-icon-text-color);
 }
 
+.toggle_icon:active {
+    box-shadow: unset;
+    transform: translate(1px, 1px);
+}
+
 .toggle_icon {
+    color: var(--text-default);
     border-radius: 10%;
-    border: var(--text-color);
+    border: rgb(143 143 143);
     border-width: thin;
     border-style: solid;
     background-color: rgba(0, 0, 0, 0);
     transition: background-color .1s ease-in-out;
-    box-shadow: -1px -1px var(--text-color);
+    box-shadow: 1px 1px var(--box-shadow-color);
 }
 
 .clickable_icon {
@@ -439,20 +441,15 @@ body.waiting * {
 }
 
 .toggle_icon:hover {
-    color: var(--text-default);
+    cursor: pointer;
 }
 
-.toggle_icon:active {
-    box-shadow: unset;
-    transform: translate(-1px, -1px);
-}
-
-.clickable_icon:hover, .toggle_icon:hover {
+.clickable_icon:hover {
     background-color: var(--icon-background-hover);
     cursor: pointer;
 }
 
-.clickable_icon:active, .toggle_icon:active {
+.clickable_icon:active {
     background-color: var(--icon-background-active);
 }
 
