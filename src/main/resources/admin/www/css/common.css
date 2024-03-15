@@ -59,7 +59,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     position: sticky;
     top: 0;
     background-color: var(--widget-background-color);
-    border-bottom: 1px solid var(--hairline-color);
+    border-bottom: 1px solid #dddddd;
 }
 
 .boncode_table_large thead tr {
@@ -67,7 +67,9 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     justify-content: space-between;
 }
 
-
+.boncode_table_large tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
 
 .boncode_table_large tbody {
     font-size: 9pt;
@@ -79,7 +81,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 }
 
 .boncode_table_large tbody tr {
-    border-top: 1px solid var(--hairline-color);
+    /*border-top: 1px solid var(--hairline-color);*/
     display: flex;
 }
 
@@ -142,7 +144,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     border: none;
     border-bottom-style: solid;
     border-bottom-width: 2px;
-    border-color: var(--hairline-color);
+    border-color: #dddddd;
     color: inherit;
     outline: none;
     top: 0;
@@ -157,11 +159,11 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 /* General */
 .clickable_row:hover {
     cursor: pointer;
-    background-color: var(--filetree-hover);
+    background-color: var(--filetree-hover) !important;
 }
 
 .hover_row:hover {
-    background-color: var(--filetree-hover);
+    background-color: var(--filetree-hover) !important;
 }
 
 .clickable {
