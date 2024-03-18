@@ -92,6 +92,7 @@ SideMenuWidget.prototype.addItem = function(item, container) {
         branchDiv.setAttribute('id', itemId + '.submenu');
 
 		itemDiv.onclick = new Function('toggleSubmenu(\'' + itemId + '\');');
+		itemDiv.classList.add('clickable');
 //		itemDiv.onmouseout = new Function('hideSubmenu(\'' + itemId + '\');');
 
 		if(typeof(item.submenu_class_name) != 'undefined') {
@@ -131,11 +132,11 @@ SideMenuWidget.prototype.togglePinned = function() {
 
 function createSideMenuLabel(item) {
     if(typeof(item.link) != 'undefined' && item.link.length > 0) {
-        return '<span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a onclick="event.stopPropagation();' + item.link + ';" data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a>';
+        return '<div><span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a onclick="event.stopPropagation();' + item.link + ';" data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a></div>';
     } else if(typeof(item.onclick) != 'undefined') {
-        return '<span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a onclick="event.stopPropagation();' + item.onclick + ';" data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a>';
+        return '<div><span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a onclick="event.stopPropagation();' + item.onclick + ';" data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a></div>';
     } else {
-        return '<span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a>';
+        return '<div><span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a></div>';
     }
 }
 
