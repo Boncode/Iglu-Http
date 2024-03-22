@@ -177,10 +177,10 @@ WindowWidget.prototype.display = function(content, element)
 {
     if(typeof content != 'undefined') {
         if(element != null) {
-            element.content = content; //TODO ???
+            //element.content = content; //TODO ???
             document.getElementById(element.id + '_contents').innerHTML = content;
         } else {
-            this.content = content; //TODO ???
+            //this.content = content; //TODO ???
             document.getElementById(this.id + '_contents').innerHTML = content;
         }
 	}
