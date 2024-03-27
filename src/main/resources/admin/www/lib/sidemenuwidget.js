@@ -114,7 +114,14 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 		this.createTree(item.submenu, branchDiv);
 	} else {
 	    itemDiv.setAttribute('id', itemId);
-//		itemDiv.innerHTML = itemLabel;
+
+	    if(typeof(item.link) != 'undefined' && item.link.length > 0) {
+            itemDiv.onclick = new Function('event.stopPropagation();' + item.link + ';');
+            itemDiv.classList.add('clickable');
+	    } else if(typeof(item.onclick) != 'undefined') {
+		    itemDiv.onclick = new Function('event.stopPropagation();' + item.onclick + ';');
+		    itemDiv.classList.add('clickable');
+	    }
 	}
 }
 
@@ -131,13 +138,13 @@ SideMenuWidget.prototype.togglePinned = function() {
 }
 
 function createSideMenuLabel(item) {
-    if(typeof(item.link) != 'undefined' && item.link.length > 0) {
-        return '<div><span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a onclick="event.stopPropagation();' + item.link + ';" data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a></div>';
-    } else if(typeof(item.onclick) != 'undefined') {
-        return '<div><span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a onclick="event.stopPropagation();' + item.onclick + ';" data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a></div>';
-    } else {
+//    if(typeof(item.link) != 'undefined' && item.link.length > 0) {
+//        return '<div><span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a onclick="event.stopPropagation();' + item.link + ';" data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a></div>';
+//    } else if(typeof(item.onclick) != 'undefined') {
+//        return '<div><span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a onclick="event.stopPropagation();' + item.onclick + ';" data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a></div>';
+//    } else {
         return '<div><span class="side_menu_item_icon"><i class="' + item.iconClass + '"></i></span><a data-text-id="side_menu.' + item.id + '.label">' + item.label + '</a></div>';
-    }
+//    }
 }
 
 function getSubMenuChevronHTML() {
