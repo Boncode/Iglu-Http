@@ -1,22 +1,7 @@
 package org.ijsberg.iglu.server.http;
 
-import jakarta.servlet.Filter;
-import org.ijsberg.iglu.access.AccessManager;
-import org.ijsberg.iglu.access.component.RequestRegistry;
-import org.ijsberg.iglu.access.component.StandardAccessManager;
 import org.ijsberg.iglu.assembly.StandardCoreAssembly;
 import org.ijsberg.iglu.configuration.Cluster;
-import org.ijsberg.iglu.configuration.Component;
-import org.ijsberg.iglu.configuration.module.StandardComponent;
-import org.ijsberg.iglu.logging.Logger;
-import org.ijsberg.iglu.server.admin.http.AdminAjaxResponseAgent;
-import org.ijsberg.iglu.server.admin.module.AdminAgentImpl;
-import org.ijsberg.iglu.server.facilities.module.UploadAgentImpl;
-import org.ijsberg.iglu.server.http.filter.WebAppEntryPoint;
-import org.ijsberg.iglu.server.http.module.SimpleJettyServletContext;
-import org.ijsberg.iglu.usermanagement.UserManager;
-import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
-import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.util.Properties;
 

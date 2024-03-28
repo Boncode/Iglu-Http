@@ -10,7 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.Properties;
 import java.util.Set;
 
 /**
