@@ -68,7 +68,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 }
 
 .boncode_table_large tbody tr:nth-child(odd) {
-    background-color: #f2f2f2;
+    background-color: var(--widget-background-color-alternate);
 }
 
 .boncode_table_large tbody {
