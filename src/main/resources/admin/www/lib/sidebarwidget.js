@@ -48,8 +48,8 @@ SideBarWidget.prototype.toggleSideBarView = function() {
 };
 
 SideBarWidget.prototype.openSideBar = function() {
-    this.element.style.minWidth = '230px';
-    this.element.style.width = '16vw';
+    this.element.style.minWidth = '300px';
+    this.element.style.width = '20vw';
     this.isOpen = true;
 };
 
