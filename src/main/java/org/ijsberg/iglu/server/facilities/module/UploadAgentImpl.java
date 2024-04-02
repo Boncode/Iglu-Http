@@ -21,7 +21,10 @@ package org.ijsberg.iglu.server.facilities.module;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.ijsberg.iglu.access.*;
+import org.ijsberg.iglu.access.AccessConstants;
+import org.ijsberg.iglu.access.AgentFactory;
+import org.ijsberg.iglu.access.BasicAgentFactory;
+import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.http.json.JsonData;
@@ -54,7 +57,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.ijsberg.iglu.access.Permissions.*;
+import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
+import static org.ijsberg.iglu.access.Permissions.UPLOAD;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
