@@ -36,7 +36,7 @@ public class MenuItem extends JsonData {
 		addHtmlEscapedStringAttribute("id", id);
 		addHtmlEscapedStringAttribute("label", label);
 		addAttribute("link", links);
-		addStringAttribute("htmlType", "div");
+		//addStringAttribute("htmlType", "div");
 	}
 
 	public MenuItem setExpertMode() {
@@ -44,7 +44,7 @@ public class MenuItem extends JsonData {
 		return this;
 	}
 
-	public MenuItem addLinkToTargetElement(String url, String target, String targetTitle) {
+/*	public MenuItem addLinkToTargetElement(String url, String target, String targetTitle) {
 		JsonData link = new JsonData();
 		link.addHtmlEscapedStringAttribute("url", url);
 		link.addHtmlEscapedStringAttribute("target", target);
@@ -52,7 +52,7 @@ public class MenuItem extends JsonData {
 		links.add(link);
 		return this;
 	}
-
+*/
 	public MenuItem addLinkViaFunction(String functionName, String url, String targetTitle) {
 		JsonData link = new JsonData();
 		link.addHtmlEscapedStringAttribute("functionName", functionName);
