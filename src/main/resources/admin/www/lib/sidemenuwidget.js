@@ -32,30 +32,30 @@ SideMenuWidget.prototype.constructSideMenuWidget = function(settings, content) {
 SideMenuWidget.prototype.writeHTML = function() {
 	if(this.element && this.menu) {
 	    this.element.innerHTML = '';
-	    if(this.isPinned === 'true') {
-	        this.element.classList.add('pinned');
-	    }
-	    this.createPinnedIcon(this.element);
+//	    if(this.isPinned === 'true') {
+//	        this.element.classList.add('pinned');
+//	    }
+//	    this.createPinnedIcon(this.element);
 		this.createTree(this.menu, this.element, false);
 	}
-    this.element.addEventListener("mouseleave", (e) => {
-        this.closeAllSubmenu();
-    });
+//    this.element.addEventListener("mouseleave", (e) => {
+//        this.closeAllSubmenu();
+//    });
     this.translateTexts();
 };
 
-SideMenuWidget.prototype.createPinnedIcon = function (element) {
-    let menuPinned = this.isPinned === 'true';
-    let pinnedElement = document.createElement('div');
-    pinnedElement.style = 'position: absolute; right: 0;';
-    pinnedElement.className = 'side_menu_item';
-    pinnedElement.innerHTML = '<div class="side_menu_pinned_icon" id="side_menu_pinned_icon" data-tippy-tooltip data-tippy-content-id="phrase.pin_side_menu">' +
-                              	'<div class="bi bi-pin' + (menuPinned ? '-fill' : '') + '" style="font-size: 12px"></div>' +
-                              '</div>';
-    pinnedElement.onclick = (evt) => {this.togglePinned();};
-
-    element.appendChild(pinnedElement);
-}
+//SideMenuWidget.prototype.createPinnedIcon = function (element) {
+//    let menuPinned = this.isPinned === 'true';
+//    let pinnedElement = document.createElement('div');
+//    pinnedElement.style = 'position: absolute; right: 0;';
+//    pinnedElement.className = 'side_menu_item';
+//    pinnedElement.innerHTML = '<div class="side_menu_pinned_icon" id="side_menu_pinned_icon" data-tippy-tooltip data-tippy-content-id="phrase.pin_side_menu">' +
+//                              	'<div class="bi bi-pin' + (menuPinned ? '-fill' : '') + '" style="font-size: 12px"></div>' +
+//                              '</div>';
+//    pinnedElement.onclick = (evt) => {this.togglePinned();};
+//
+//    element.appendChild(pinnedElement);
+//}
 
 SideMenuWidget.prototype.addItem = function(item, container) {
 
@@ -125,17 +125,17 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 	}
 }
 
-SideMenuWidget.prototype.togglePinned = function() {
-    let pinElement = document.getElementById('side_menu_pinned_icon');
-    this.element.classList.toggle('pinned');
-    if(this.isPinned === 'true'){
-        pinElement.firstChild.className = 'bi bi-pin';
-        this.isPinned = Common.setLocalStorageItem('sideMenuPinned', 'false');
-    } else {
-        pinElement.firstChild.className = 'bi bi-pin-fill';
-        this.isPinned = Common.setLocalStorageItem('sideMenuPinned', 'true');
-    }
-}
+//SideMenuWidget.prototype.togglePinned = function() {
+//    let pinElement = document.getElementById('side_menu_pinned_icon');
+//    this.element.classList.toggle('pinned');
+//    if(this.isPinned === 'true'){
+//        pinElement.firstChild.className = 'bi bi-pin';
+//        this.isPinned = Common.setLocalStorageItem('sideMenuPinned', 'false');
+//    } else {
+//        pinElement.firstChild.className = 'bi bi-pin-fill';
+//        this.isPinned = Common.setLocalStorageItem('sideMenuPinned', 'true');
+//    }
+//}
 
 function createSideMenuLabel(item) {
 //    if(typeof(item.link) != 'undefined' && item.link.length > 0) {
@@ -159,13 +159,13 @@ function toggleSubmenu(itemId) {
     submenuElement.classList.toggle('submenu_open');
 }
 
-SideMenuWidget.prototype.closeAllSubmenu = function() {
-    if(!this.element.classList.contains('pinned')) {
+SideMenuWidget.prototype.closeAllSubmenus = function() {
+//    if(!this.element.classList.contains('pinned')) {
         let sideMenuItems = document.getElementsByClassName('side_menu_item');
         for(sideMenuItem of sideMenuItems) {
             if(sideMenuItem.classList.contains('submenu_open')){
                 toggleSubmenu(sideMenuItem.id);
             }
         }
-    }
+//    }
 };

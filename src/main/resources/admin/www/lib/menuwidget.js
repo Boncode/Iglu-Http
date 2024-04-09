@@ -111,7 +111,7 @@ MenuWidget.prototype.itemIsVisible = function(treeItem) {
         return false;
     }
     var requireLoggedIn = this.getRequireLoggedIn(treeItem);
-    if (requireLoggedIn && currentUser == null) {
+    if (requireLoggedIn && Dashboard.currentUser == null) {
        return false;
     }
 
