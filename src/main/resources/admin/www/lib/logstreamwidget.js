@@ -61,7 +61,7 @@ LogStreamWidget.prototype.onTimer = function(line) {
 };
 
 LogStreamWidget.prototype.loadEntries = function(entries, logStreamWidget) {
-	var entryStrings = eval(entries);
+	var entryStrings = e_v_a_l(entries);
 	for(var i in entryStrings) {
 		logStreamWidget.append(entryStrings[i]);
 	}

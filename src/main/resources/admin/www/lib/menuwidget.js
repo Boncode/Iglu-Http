@@ -320,24 +320,6 @@ MenuWidget.prototype.display = function() {
 //	alert('display');
 };
 
-
-
-MenuWidget.prototype.handleAjaxResponse = function(responseText) {
-	this.evaluate(responseText, this);
-};
-
-
-MenuWidget.prototype.evaluate = function(contents, menuWidget) {
-
-	console.debug('MenuWidget evaluate');
-	if(!this.isLoaded) {
-		menuWidget.menu = eval(contents);
-		menuWidget.writeHTML();
-		this.isLoaded = true;
-	}
-	//save state
-};
-
 MenuWidget.prototype.load = function(contents, menuWidget) {
 
 	if(!menuWidget.isLoaded) {

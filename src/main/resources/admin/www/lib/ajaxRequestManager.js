@@ -297,22 +297,6 @@ function removeFromRequestQueue(requestNr) {
 
 
 
-/**
- * Interpretes response as instructions that are either
- * evaluated in this function by 'eval()' or by a member 'evaluate()' of callbackInput
- */
-AjaxRequestManager.prototype.evaluateResponse = function(contents, callbackInput)
-{
-	if(callbackInput != null && typeof(callbackInput.evaluate) == 'function')
-	{
-		callbackInput.evaluate(contents);
-	}
-	else
-	{
-		eval(contents);
-	}
-}
-
 function ignoreResponse() {
 }
 
@@ -328,8 +312,6 @@ function loadPageJson(contents, callbackInput) {
 
 	var panelHeader = document.getElementById(callbackInput.target + '_header');
 	panelHeader.innerHTML = callbackInput.title;
-
-	JSON.parse(nodesJson);//TODO and now?
 }
 
 function loadPageJavaScript(contents, callbackInput) {
@@ -339,7 +321,6 @@ function loadPageJavaScript(contents, callbackInput) {
 	var panelHeader = document.getElementById(callbackInput.target + '_header');
 	panelHeader.innerHTML = callbackInput.title;
 
-	eval(contents);
 }
 
 function linkToJavaScript(source, target, title) {

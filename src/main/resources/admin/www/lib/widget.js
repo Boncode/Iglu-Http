@@ -128,15 +128,6 @@ Widget.prototype.onFocus = function() {
 Widget.prototype.onBlur = function() {
 };
 
-Widget.prototype.processJavaScript = function(input) {
-	try {
-		eval('' + input);
-	} catch(e) {
-		alert('Error: ' + e.message);
-	}
-};
-
-
 Widget.prototype.saveState = function() {
 };
 
@@ -174,10 +165,6 @@ Widget.prototype.display = function(content, element) {
 		domElement.style.visibility = this.visibility;
 	}
 	this.translateTexts();
-};
-
-Widget.prototype.evaluate = function(content, element) {
-	eval(content);
 };
 
 Widget.prototype.activate = function() {

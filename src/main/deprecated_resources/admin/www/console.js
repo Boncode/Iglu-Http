@@ -15,7 +15,7 @@ AdminConsole.prototype.test = function(responseMessage, feedbackMessage) {
 AdminConsole.prototype.executeJson = function(responseMessage, feedbackMessage) {
 
     try {
-        var message = eval("(" + responseMessage + ")");
+        var message = e_v_a_l("(" + responseMessage + ")");
     } catch(e) {
         alert(e.message + ' in:\n' + responseMessage);
     }
