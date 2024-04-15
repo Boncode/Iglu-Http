@@ -265,14 +265,14 @@ WidgetContent.prototype.refresh = function() {
 		    ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
 		} else {
 		    let functionPathArray = this.source_load_action.split('.');
-		    if (functionPathArray.includes('') || functionPathArray.includes(null)) {
+		    if(functionPathArray.includes('') || functionPathArray.includes(null)) {
                 console.error('Part of the source_load_action: '+ this.source_load_action + ', for widget: ' + this.id + ' is empty');
                 return;
             }
             let currentPlaceInFunctionPath = window;
-		    for (let i=0; i<functionPathArray.length;i++) {
+		    for(let i = 0; i < functionPathArray.length; i++) {
 		        currentPlaceInFunctionPath = currentPlaceInFunctionPath[functionPathArray[i]];
-		        if (typeof currentPlaceInFunctionPath === 'undefined') {
+		        if(typeof currentPlaceInFunctionPath === 'undefined') {
 		            console.error('The source_load_action: \''+ this.source_load_action + '\', for widget: \'' + this.id + '\' does not exist.'
 		            + '\nCheck for typo\'s or if the function is publicly available');
 		            return;
