@@ -66,6 +66,22 @@ public class JsonArray implements JsonDecorator {
 		return JsonSupport.purgeStringValue(contents.get(index));
 	}
 
+	public Float getFloatValue(int index) {
+		String value = getStringValue(index);
+		if(value == null) {
+			return null;
+		}
+		return Float.parseFloat(value);
+	}
+
+	public Integer getIntValue(int index) {
+		String value = getStringValue(index);
+		if(value == null) {
+			return null;
+		}
+		return Integer.parseInt(value);
+	}
+
 	public String getStringValue(int index) {
 		Object retval = getValue(index);
 		if(retval != null) {
