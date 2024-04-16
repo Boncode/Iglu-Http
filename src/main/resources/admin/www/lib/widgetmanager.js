@@ -253,21 +253,21 @@ WidgetManager.prototype.replaceWidgetInContainer = function(container, newWidget
     //TODO handle proper destruction, notifying etc.
 	var widget = this.widgets[newWidget.getId()];
 	this.widgets[newWidget.getId()] = newWidget;
-	var newElement = container;
+	var messageText = container;
 
 	newWidget.hasCreatedElement = false;
 
 	if(newWidget.getId() != container.id) {
 		var oldElement = document.getElementById(oldWidget.getId());
-        newElement = document.createElement('div');
+        messageText = document.createElement('div');
         //is this necessary?
         //use prefix 'widget_'
         newWidget.hasCreatedElement = true;
-        newElement.setAttribute('id', newWidget.getId());
-        container.replaceChild(newElement, oldElement);
+        messageText.setAttribute('id', newWidget.getId());
+        container.replaceChild(messageText, oldElement);
 	}
 	newWidget.containerElement = container;
-	newWidget.setDOMElement(newElement);
+	newWidget.setDOMElement(messageText);
 	//newWidget.draw();
 	newWidget.onDeploy();
 	console.debug('widget "' + newWidget.getId() + '" deployed');
