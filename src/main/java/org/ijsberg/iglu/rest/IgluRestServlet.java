@@ -454,11 +454,11 @@ public class IgluRestServlet extends HttpServlet {
                         result = restMethodData.getComponent().invoke(restMethodData.method.getName(), parameters);
                     }
                 } catch (InvocationTargetException e) {
-                    System.out.println(new LogEntry(Level.CRITICAL, "unable to invoke method " + restMethodData.method.getName(), e.getCause()));
+                    System.out.println(new LogEntry(Level.CRITICAL, "error while invoking method " + restMethodData.method.getName(), e.getCause()));
                     if (e.getCause() instanceof RestException) {
                         errorResult = createErrorResponse((RestException) e.getCause());
                     } else {
-                        throw new FatalException("unable to invoke method " + restMethodData.method.getName(), e);
+                        throw new FatalException("error while invoking " + restMethodData.method.getName(), e);
                     }
                 } catch (NoSuchMethodException e) {
                     System.out.println(new LogEntry(Level.CRITICAL, "unable to invoke method " + restMethodData.method.getName(), e));

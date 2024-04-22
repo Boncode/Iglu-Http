@@ -181,19 +181,19 @@ function getEventPositionInPage(event)
 
 function printStackTrace(e) {
 
-  var callstack = [];
-  var isCallstackPopulated = false;
+  let stack = [];
+  var isStackPopulated = false;
 
     if (e.stack) { //Firefox
       var lines = e.stack.split('\n');
       for (var i=0, len=lines.length; i < len; i++) {
         if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
-          callstack.push(lines[i]);
+          stack.push(lines[i]);
         }
       }
       //Remove call to printStackTrace()
-      callstack.shift();
-      isCallstackPopulated = true;
+      stack.shift();
+      isStackPopulated = true;
     }
     else if (window.opera && e.message) { //Opera
       var lines = e.message.split('\n');
@@ -205,24 +205,24 @@ function printStackTrace(e) {
             entry += ' at ' + lines[i+1];
             i++;
           }
-          callstack.push(entry);
+          stack.push(entry);
         }
       }
       //Remove call to printStackTrace()
-      callstack.shift();
-      isCallstackPopulated = true;
+      stack.shift();
+      isStackPopulated = true;
     }
 
-  if (!isCallstackPopulated) { //IE and Safari
+  if (!isStackPopulated) { //IE and Safari
     var currentFunction = arguments.callee.caller;
     while (currentFunction) {
       var fn = currentFunction.toString();
       var fname = fn.substring(fn.indexOf('function') + 8, fn.indexOf('')) || 'anonymous';
-      callstack.push(fname);
+      stack.push(fname);
       currentFunction = currentFunction.caller;
     }
     }
-  output(callstack);
+  output(stack);
 }
 
 function output(arr) {
@@ -291,28 +291,6 @@ function getUrlParameters(url) {
   return obj;
 }
 
-function globalValueExists(valueStr) {
-    try {
-        var value = eval(valueStr);
-        return typeof value != 'undefined' && value != null;
-    } catch(e) {
-        return false;
-    }
-}
-
-function valueExistsInContext(valueStr, context) {
-    try {
-        var value = evalInContext(valueStr, context);
-        return typeof value != 'undefined' && value != null;
-    } catch(e) {
-        return false;
-    }
-}
-
-function evalInContext(valueStr, context) {
-    //# Return the results of the in-line anonymous function we .call with the passed context
-    return function() { return eval(valueStr); }.call(context);
-}
 
 function scrollToElementInContainer(containerId, scrollTargetId, scrollBehavior) {
 	let scrollTarget = document.getElementById(scrollTargetId);

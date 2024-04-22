@@ -12,10 +12,14 @@ iglu.util.import.callSeqNr = 0;
 iglu.util.import.callData = new Array();
 
 iglu.util.import.loadJsonData = function(data, servletPath, callbackWhenDone, callbackInput) {
+
+    var callBackArguments = iglu.util.import.getArgumentsAsArray(arguments).slice(3);
+
     var callSeqNr = iglu.util.import.callSeqNr++;
     iglu.util.import.callData[callSeqNr] = new Object();
 	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded = callbackWhenDone;
 	iglu.util.import.callData[callSeqNr].callbackInput = callbackInput;
+	iglu.util.import.callData[callSeqNr].callBackArguments = callBackArguments;
 	iglu.util.import.callData[callSeqNr].nrofFilesToLoad = data.length;
 //	console.debug(data);
 	for(var i in data) {
@@ -30,6 +34,14 @@ iglu.util.import.loadJsonData = function(data, servletPath, callbackWhenDone, ca
 	}
 }
 
+iglu.util.import.getArgumentsAsArray = function(argumentObject) {
+    var argumentsArray = new Array();
+    for(var i in argumentObject) {
+        argumentsArray.push(argumentObject[i]);
+    }
+    return argumentsArray;
+}
+
 iglu.util.import.getJsonParseFunctionText = function(varName, callSeqNr) {
 	return "try { " +
 		varName + " = JSON.parse(jsonData);" +
@@ -42,7 +54,7 @@ iglu.util.import.getJsonParseFunctionText = function(varName, callSeqNr) {
 iglu.util.import.checkNrofFilesToLoad = function(callSeqNr) {
 	iglu.util.import.callData[callSeqNr].nrofFilesToLoad--;
 	if(iglu.util.import.callData[callSeqNr].nrofFilesToLoad == 0 && typeof iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded != 'undefined') {
-    	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded.call(this, iglu.util.import.callData[callSeqNr].callbackInput);
+    	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded.apply(this, iglu.util.import.callData[callSeqNr].callBackArguments);
 	}
 }
 

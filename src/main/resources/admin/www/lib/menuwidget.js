@@ -111,7 +111,7 @@ MenuWidget.prototype.itemIsVisible = function(treeItem) {
         return false;
     }
     var requireLoggedIn = this.getRequireLoggedIn(treeItem);
-    if (requireLoggedIn && currentUser == null) {
+    if (requireLoggedIn && Dashboard.currentUser == null) {
        return false;
     }
 
@@ -318,24 +318,6 @@ MenuWidget.prototype.onDestroy = function() {
 
 MenuWidget.prototype.display = function() {
 //	alert('display');
-};
-
-
-
-MenuWidget.prototype.handleAjaxResponse = function(responseText) {
-	this.evaluate(responseText, this);
-};
-
-
-MenuWidget.prototype.evaluate = function(contents, menuWidget) {
-
-	console.debug('MenuWidget evaluate');
-	if(!this.isLoaded) {
-		menuWidget.menu = eval(contents);
-		menuWidget.writeHTML();
-		this.isLoaded = true;
-	}
-	//save state
 };
 
 MenuWidget.prototype.load = function(contents, menuWidget) {

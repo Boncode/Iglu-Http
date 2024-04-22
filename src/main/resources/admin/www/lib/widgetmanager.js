@@ -317,21 +317,6 @@ WidgetManager.prototype.containsWidget = function(id) {
 }
 
 
-
-
-WidgetManager.prototype.executeJson = function(responseMessage, feedbackMessage) {
-
-    try {
-        var message = eval("(" + responseMessage + ")");
-    } catch(e) {
-        alert(e.message + ' in:\n' + responseMessage);
-    }
-
-    eval(message.function + '(message.data, message.dataId)');
-}
-
-
-
 var widgetmanager = new WidgetManager();
 WidgetManager.instance = widgetmanager;
 
