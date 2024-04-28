@@ -7,8 +7,8 @@ import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
-import org.ijsberg.iglu.messaging.MessageBroker;
-import org.ijsberg.iglu.messaging.module.BasicMessageBroker;
+import org.ijsberg.iglu.messaging.ServiceBroker;
+import org.ijsberg.iglu.messaging.module.BasicServiceBroker;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
 import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
 
@@ -21,7 +21,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
 
     protected Component accessManager;
     protected Component scheduler;
-    protected Component messageBroker;
+    protected Component serviceBroker;
 
     protected Cluster infraLayer;
     protected Cluster dataLayer;
@@ -54,7 +54,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         this.accessManager = providedComponents[0];
         this.scheduler = providedComponents[1];
         if(providedComponents.length > 2) {
-            this.messageBroker = providedComponents[2];
+            this.serviceBroker = providedComponents[2];
         }
         createLayers(properties);
     }
@@ -103,11 +103,11 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         core.connect("AccessManager", accessManager, RequestRegistry.class, AccessManager.class);
         core.connect("RequestRegistry", accessManager, RequestRegistry.class);
 
-        if(messageBroker == null) {
-            messageBroker = new StandardComponent(new BasicMessageBroker());
+        if(serviceBroker == null) {
+            serviceBroker = new StandardComponent(new BasicServiceBroker());
         }
 
-        core.connect("MessageBroker", messageBroker, MessageBroker.class);
+        core.connect("ServiceBroker", serviceBroker, ServiceBroker.class);
 
         return core;
     }
