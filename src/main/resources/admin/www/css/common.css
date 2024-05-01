@@ -520,6 +520,12 @@ body.waiting * {
     color: var(--default-white);
 }
 
+.active_tag {
+    outline: solid;
+    outline-color: var(--default-grey);
+    border-radius: 5px;
+}
+
 .widget_header {
     line-height: 30px;
     height: 60px;
