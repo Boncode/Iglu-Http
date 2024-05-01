@@ -187,8 +187,10 @@ public class IgluRestServlet extends HttpServlet {
     }
 
     private Assembly assembly;
-    private String agentName;
-    private Class agentClass;
+    //private String agentName;
+   // private Class agentClass;
+
+    private InvocationHandlerData agentData = null;
     //FIXME allow for method overloading
 
     //FIXME allow for http request method overloading
@@ -203,8 +205,9 @@ public class IgluRestServlet extends HttpServlet {
         if(agentClass.isInterface()) {
             throw new ConfigurationException("agentClass " + agentClass.getSimpleName() + " cannot be an interface");
         }
-        this.agentName = agentName;
-        this.agentClass = agentClass;
+        agentData = new InvocationHandlerData();
+        this.agentData.name = agentName;
+        this.agentData.type = agentClass;
 
     }
 
@@ -224,33 +227,57 @@ public class IgluRestServlet extends HttpServlet {
         }
     }
 
+    private static class InvocationHandlerData {
+        private Class type;
+        private String name;
+    }
+
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
         //TODO currently impl, should be in line with interface
-        String agentClassInitParam = config.getInitParameter("agentClass");
-        String agentNameInitParam = config.getInitParameter("agentName");
-        if(agentClassInitParam != null && agentNameInitParam != null) {
-            try {
-                agentClass = Class.forName(agentClassInitParam);
-            } catch (ClassNotFoundException e) {
-                throw new ResourceException("Cannot load class " + agentClassInitParam);
-            }
-            agentName = agentNameInitParam;
+        InvocationHandlerData agentData = obtainHandler(config, "agent");
+        if(agentData != null) {
+            this.agentData = agentData;
         }
 
-        if(agentClass != null) {
-            Method[] methods = agentClass.getDeclaredMethods();
-            for (Method method : methods) {
-                Endpoint endpoint = method.getAnnotation(Endpoint.class);
-                if (endpoint != null) {
-                    String path = trimPath(endpoint.path());
-                    addInvokeableMethod(path, new RestMethodData(endpoint, method, agentName));
-                }
-            }
-        } else {
-            System.out.println(new LogEntry(Level.DEBUG, "No agent class found for servlet: " + this.getServletInfo()));
+        if(this.agentData != null) {
+            initEndPoints(this.agentData);
         }
+
+        InvocationHandlerData serviceData = obtainHandler(config, "service");
+        if(serviceData != null) {
+            setServiceComponent(
+                    assembly.getClusters().get("ServiceCluster").getInternalComponents().get(serviceData.name),
+                    serviceData.type);
+        }
+    }
+
+    private void initEndPoints(InvocationHandlerData handlerData) {
+        Method[] methods = handlerData.type.getDeclaredMethods();
+        for (Method method : methods) {
+            Endpoint endpoint = method.getAnnotation(Endpoint.class);
+            if (endpoint != null) {
+                String path = trimPath(endpoint.path());
+                addInvokeableMethod(path, new RestMethodData(endpoint, method, handlerData.name));
+            }
+        }
+    }
+
+    private InvocationHandlerData obtainHandler(ServletConfig config, String handlerType) {
+        InvocationHandlerData handlerData = null;
+        String handlerClassInitParam = config.getInitParameter(handlerType + "Class");
+        String handlerNameInitParam = config.getInitParameter(handlerType + "Name");
+        if(handlerClassInitParam != null && handlerNameInitParam != null) {
+            handlerData = new InvocationHandlerData();
+            try {
+                handlerData.type = Class.forName(handlerClassInitParam);
+            } catch (ClassNotFoundException e) {
+                throw new ResourceException("Cannot load class " + handlerClassInitParam);
+            }
+            handlerData.name = handlerNameInitParam;
+        }
+        return handlerData;
     }
 
 
@@ -285,10 +312,7 @@ public class IgluRestServlet extends HttpServlet {
         }
         RequestParameter[] declaredParameters = methodData.endpoint.parameters();
         if(methodData.endpoint.method() == POST || methodData.endpoint.method() == PUT) {
-            //@@@
             byte[] postData = readPostData(request);
- //           RequestParameter parameter = declaredParameters[0];
-
             if(methodData.endpoint.inputType() == JSON_POST) {
                 ObjectMapper mapper = new ObjectMapper();
                 Object obj = null;
@@ -324,14 +348,9 @@ public class IgluRestServlet extends HttpServlet {
             return new Object[]{new String(postData)};
         } else { //GET
             Object[] result = getInputObjectsFromRequest(request, methodData, methodData.endpoint.inputType());
-            //System.out.println("initial input: " + ArraySupport.format(result, ","));
             if(methodData.endpoint.secondInputType() != null) {
-
                 Object[] additionalInput = getInputObjectsFromRequest(request, methodData, methodData.endpoint.secondInputType());
-               //System.out.println("additional input: " + ArraySupport.format(additionalInput, ","));
-
                 result = ArraySupport.join(result, additionalInput);
-                //System.out.println("result input: " + ArraySupport.format(result, ","));
             }
             return result;
         }
@@ -388,11 +407,6 @@ public class IgluRestServlet extends HttpServlet {
             Request userRequest = accessManager.getCurrentRequest();
             if (userRequest.hasSession()) {
                 Session session = userRequest.getSession(false);
-
-//                System.out.println("SessionResolvedByToken:" + Boolean.parseBoolean("" + session.getAttribute(ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN)));
-//                System.out.println("X-CSRF-Token http-header:" + request.getHeader(HEADER_X_CSRF_TOKEN));
-//                System.out.println("X-CSRF-Token session:" + session.getAttribute(HEADER_X_CSRF_TOKEN));
-
                 if (!Boolean.parseBoolean("" + session.getAttribute(ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN))) {
                     String csrfTokenFromSession = (String) session.getAttribute(HEADER_X_CSRF_TOKEN);
                     if (csrfTokenFromSession != null) {
@@ -550,11 +564,9 @@ public class IgluRestServlet extends HttpServlet {
             List<String> pathParts = StringSupport.split(path, "/");
             while(returnValue == null && pathParts.size() > 1) {
                 pathParts.remove(pathParts.size() - 1);
-//                System.out.println("trying " + CollectionSupport.format(pathParts, "/"));
                 returnValue = invokeableMethods.get(CollectionSupport.format(pathParts, "/"));
             }
         }
-//        System.out.println(new LogEntry(TRACE, "found " + returnValue));
         return returnValue;
     }
 

@@ -91,10 +91,8 @@ FlexPanelWidget.prototype.allowScrolling = function() {
 
 FlexPanelWidget.prototype.writeHTML = function() {
 
-	if(this.hasHeader) {
-        this.createEmptyHeader();
-        this.setHeaderContent();
-	}
+    this.createEmptyHeader();
+    this.setHeaderContent();
 
 //    var contentFrame;
 //    if(!this.content instanceof FlexFrameWidget) {
