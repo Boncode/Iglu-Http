@@ -484,10 +484,6 @@ public class IgluRestServlet extends HttpServlet {
 
             result = purgeResponse(result);
 
-
-
-            //filterResult
-
             //TODO restMethodData:null leads to NPE
 
             ServletOutputStream out = servletResponse.getOutputStream();
@@ -497,13 +493,14 @@ public class IgluRestServlet extends HttpServlet {
                 result = errorResult.toString();
                 servletResponse.setStatus((Integer) errorResult.getAttribute("status"));
             } else if (!(result instanceof String) && restMethodData.endpoint.returnType() == JSON) {
-                ObjectMapper mapper = new ObjectMapper();
-                result = mapper.writeValueAsString(result);
+                if(result instanceof JsonData) {
+                    result = result.toString();
+                } else {
+                    ObjectMapper mapper = new ObjectMapper();
+                    result = mapper.writeValueAsString(result);
+                }
             }
-
             out.print(result != null ? purgeXSS(result.toString(), restMethodData) : "");
-                    //TODO return type JSON
-                    //(restMethodData.requestPath.returnType() == VOID ? "" : "null"));
         } catch(Exception e) {
             handleException(restMethodData, servletResponse, e);
         }

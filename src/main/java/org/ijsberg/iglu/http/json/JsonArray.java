@@ -54,6 +54,20 @@ public class JsonArray implements JsonDecorator {
 		return this;
 	}
 
+	public JsonArray addListOfValues(List<Object> objects) {
+		for(Object object : objects) {
+			contents.add(object);
+		}
+		return this;
+	}
+
+	public JsonArray concat(JsonArray jsonArray) {
+		for(Object object : jsonArray.getJsonDataContents()) {
+			contents.add(object);
+		}
+		return this;
+	}
+
 	public List getContents() {
 		return contents;
 	}
