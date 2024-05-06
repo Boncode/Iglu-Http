@@ -442,6 +442,10 @@ body.waiting * {
     transition: background-color .1s ease-in-out;
 }
 
+.clickable_icon.disabled {
+    background-color: var(--form-input-background-color-disabled);
+}
+
 .toggle_icon:hover {
     cursor: pointer;
 }
@@ -449,6 +453,11 @@ body.waiting * {
 .clickable_icon:hover {
     background-color: var(--icon-background-hover);
     cursor: pointer;
+}
+
+.clickable_icon.disabled:hover {
+    cursor: not-allowed;
+    background-color: var(--form-input-background-color-disabled);
 }
 
 .clickable_icon:active {
