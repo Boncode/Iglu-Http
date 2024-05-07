@@ -7,8 +7,8 @@ import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
-import org.ijsberg.iglu.messaging.ServiceBroker;
-import org.ijsberg.iglu.messaging.module.BasicServiceBroker;
+import org.ijsberg.iglu.event.ServiceBroker;
+import org.ijsberg.iglu.event.module.BasicServiceBroker;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
 import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
 

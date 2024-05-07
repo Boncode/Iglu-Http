@@ -31,9 +31,9 @@ import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
-import org.ijsberg.iglu.messaging.MessageStatus;
-import org.ijsberg.iglu.messaging.message.EventMessage;
-import org.ijsberg.iglu.messaging.message.MailMessage;
+import org.ijsberg.iglu.event.messaging.MessageStatus;
+import org.ijsberg.iglu.event.messaging.message.StatusMessage;
+import org.ijsberg.iglu.event.messaging.message.MailMessage;
 import org.ijsberg.iglu.rest.*;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
@@ -224,7 +224,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 			DownloadSupport.downloadFile(response, path);
 		} catch (IOException e) {
 			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", path), e));
-			requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Download failed with message: " + e.getMessage(), MessageStatus.FAILURE));
+			requestRegistry.dropMessageToCurrentUser(new StatusMessage("processFailed", "Download failed with message: " + e.getMessage(), MessageStatus.FAILURE));
 			response.setStatus(500);
 		}
 	}
@@ -292,7 +292,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				//TODO exception if file missing
 				if(!isUploadCancelled) {
 					System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + uploadedFile + " failed or was interrupted", e));
-					requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed with message: " + e.getMessage(), MessageStatus.FAILURE));
+					requestRegistry.dropMessageToCurrentUser(new StatusMessage("processFailed", "Upload failed with message: " + e.getMessage(), MessageStatus.FAILURE));
 				}
 				cancelUpload();
 				reader = null;
@@ -331,7 +331,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				uploadedFile.delete();
 			} catch (IOException e) {
 				System.out.println(new LogEntry(Level.CRITICAL, "cannot move file (or metadata) to target dir", e));
-				requestRegistry.dropMessageToCurrentUser(new EventMessage("processFailed", "Upload failed. A problem occurred while moving the file.", MessageStatus.FAILURE));
+				requestRegistry.dropMessageToCurrentUser(new StatusMessage("processFailed", "Upload failed. A problem occurred while moving the file.", MessageStatus.FAILURE));
 			}
 		}
 		if(sendEmail) {
@@ -339,7 +339,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		} else {
 			System.out.println(new LogEntry("notification disabled"));
 		}
-		requestRegistry.dropMessageToCurrentUser(new EventMessage("uploadDone", uploadSuccessMessage, MessageStatus.SUCCESS));
+		requestRegistry.dropMessageToCurrentUser(new StatusMessage("uploadDone", uploadSuccessMessage, MessageStatus.SUCCESS));
 	}
 
 	private void notifyAsync(FileData fileData) {
