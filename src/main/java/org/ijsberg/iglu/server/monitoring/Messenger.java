@@ -2,11 +2,11 @@ package org.ijsberg.iglu.server.monitoring;
 
 import org.ijsberg.iglu.access.*;
 import org.ijsberg.iglu.configuration.Startable;
+import org.ijsberg.iglu.event.messaging.UserConsumableMessage;
+import org.ijsberg.iglu.event.messaging.message.MailMessage;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.mail.MailClient;
-import org.ijsberg.iglu.event.messaging.UserConsumableMessage;
-import org.ijsberg.iglu.event.messaging.message.MailMessage;
 import org.ijsberg.iglu.scheduling.Pageable;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
