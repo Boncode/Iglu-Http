@@ -1,6 +1,8 @@
 package org.ijsberg.iglu.server.http;
 
 import org.ijsberg.iglu.access.AccessManager;
+import org.ijsberg.iglu.access.asset.AssetAccessManager;
+import org.ijsberg.iglu.access.asset.StandardAssetAccessManager;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.access.component.StandardAccessManager;
 import org.ijsberg.iglu.configuration.Cluster;
@@ -22,6 +24,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     protected Component accessManager;
     protected Component scheduler;
     protected Component serviceBroker;
+    protected Component assetAccessManager;
 
     protected Cluster infraLayer;
     protected Cluster dataLayer;
@@ -56,6 +59,9 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         if(providedComponents.length > 2) {
             this.serviceBroker = providedComponents[2];
         }
+        if(providedComponents.length > 3) {
+            this.assetAccessManager = providedComponents[3];
+        }
         createLayers(properties);
     }
 
@@ -80,8 +86,6 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
 
     protected abstract Cluster createPresentationLayer();
 
-
-
     protected Cluster createInfraLayer() {
 
         //super.createInfraLayer();
@@ -99,17 +103,19 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
             standardAccessManager.setProperties(accessManProps);
             accessManager = new StandardComponent(standardAccessManager);
         }
-
         core.connect("AccessManager", accessManager, RequestRegistry.class, AccessManager.class);
         core.connect("RequestRegistry", accessManager, RequestRegistry.class);
 
         if(serviceBroker == null) {
             serviceBroker = new StandardComponent(new BasicServiceBroker());
         }
-
         core.connect("ServiceBroker", serviceBroker, ServiceBroker.class);
+
+        if(assetAccessManager == null) {
+            assetAccessManager = new StandardComponent(new StandardAssetAccessManager());
+        }
+        core.connect("AssetAccessManager", assetAccessManager, AssetAccessManager.class);
 
         return core;
     }
-
 }
