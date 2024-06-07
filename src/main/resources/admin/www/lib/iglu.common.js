@@ -46,8 +46,14 @@ iglu.common.Texts.prototype.getTranslatedPhrase = function (phraseId) {
 
 iglu.common.Texts.prototype.translateHtml = function(domElement) {
     let translatableElements = domElement.querySelectorAll('[data-text-id]');
+    console.warn(this)
     translatableElements.forEach((translatableElement) => {
+        if(translatableElement.id.includes('findings')) {
+            console.warn(translatableElement);
+            console.warn(translatableElement.dataset.textId);
+        }
         var text = this.get(this.currentLanguageId, translatableElement.dataset.textId);
+        if(translatableElement.id.includes('findings')) {console.warn(text)}
         if(text != null && text != '') {
             if(typeof translatableElement.languageId == 'undefined') {
                 //store default text in case user toggles back
