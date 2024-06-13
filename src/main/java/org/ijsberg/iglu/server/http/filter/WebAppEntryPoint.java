@@ -295,8 +295,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 */
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
 
-		//TODO IP addresses can be obtained when request is passed by Apache (reverse proxy) from header X-Forwarded-For
-		//TODO IP blocking should be added
 		String pathInfo = getPath(servletRequest);
 
 		servletRequest.setCharacterEncoding("UTF-8");
@@ -316,7 +314,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 			appRequest = accessManager.bindRequest(this);
 			try {
-				appRequest.setAttribute("IP-Address", ((HttpServletRequest) servletRequest).getHeader("X-Forwarded-For"));
+				appRequest.setAttribute("IP-Address", getClientIpAddress((HttpServletRequest) servletRequest));
 			} catch (Throwable t) {
 				System.out.println(new LogEntry("retrieving IP-adddress failed", t));
 			}
@@ -392,6 +390,27 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				accessManager.releaseRequest();
 			}
 		}
+	}
+
+	/**
+	 * Retrieves the client IP address for a given HttpServletRequest.
+	 * First tries the X-Forwarded-For header. If that holds no value it falls back on the remote address. If the
+	 * X-Forwarded-For header contains multiple IPs (caused by load-balancers and/or proxies), we take the left-most
+	 * value, which is usually the client IP.
+	 * @param servletRequest
+	 * @return the client IP address as a string
+	 */
+	private static String getClientIpAddress(HttpServletRequest servletRequest) {
+		String xForwardedFor = servletRequest.getHeader("X-Forwarded-For");
+		if(xForwardedFor == null) {
+			return servletRequest.getRemoteAddr();
+		}
+
+		// could be multiple forward/reverse proxies, client ip is first in the list
+		if(xForwardedFor.contains(",")) {
+			return xForwardedFor.split(",")[0];
+		}
+		return xForwardedFor;
 	}
 
 	/**
