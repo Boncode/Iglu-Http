@@ -24,6 +24,7 @@ import org.ijsberg.iglu.util.collection.CollectionSupport;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -136,5 +137,17 @@ public class JsonArray implements JsonDecorator {
 			purgedList.add(value.toString());
 		}
 		return "[" + CollectionSupport.format(purgedList, ", ") + "]";
+	}
+
+	public List<Object> getAttributesFromTree(String lookup) {
+		List<Object> attributeValues = new ArrayList<>();
+		for(Object listElement : contents) {
+			if (listElement instanceof JsonData) {
+				attributeValues.addAll(((JsonData) listElement).getAttributesFromTree(lookup));
+			} else if (listElement instanceof JsonArray) {
+				attributeValues.addAll(((JsonArray) listElement).getAttributesFromTree(lookup));
+			}
+		}
+		return attributeValues;
 	}
 }

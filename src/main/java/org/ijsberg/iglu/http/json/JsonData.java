@@ -8,9 +8,7 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  */
@@ -155,6 +153,21 @@ public class JsonData implements JsonDecorator {
 
 	public Object getAttribute(String name) {
 		return JsonSupport.purgeStringValue(attributes.get(name));
+	}
+
+	public List<Object> getAttributesFromTree(String lookup) {
+		List<Object> attributeValues = new ArrayList<>();
+		for(String attributeName : attributes.keySet()) {
+			Object attributeValue = attributes.get(attributeName);
+			if(attributeName.equals(lookup)) {
+				attributeValues.add(attributes.get(lookup));
+			} else if(attributeValue instanceof JsonData) {
+				attributeValues.addAll(((JsonData) attributeValue).getAttributesFromTree(lookup));
+			} else if(attributeValue instanceof JsonArray) {
+				attributeValues.addAll(((JsonArray) attributeValue).getAttributesFromTree(lookup));
+			}
+		}
+		return attributeValues;
 	}
 
 	public JsonData getJsonData(String name) {
