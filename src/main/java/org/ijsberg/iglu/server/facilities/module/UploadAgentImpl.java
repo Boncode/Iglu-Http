@@ -323,10 +323,10 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				User user = requestRegistry.getCurrentRequest().getUser();
 				IgluProperties metadata = new IgluProperties();
 				metadata.setProperty("userId", user.getId());
-				if(!user.getGroupNames().isEmpty()) {
-					metadata.setProperty("groups", CollectionSupport.format(user.getGroupNames(), ","));
-				}
-				metadata.setProperty("isAdmin", "" + user.hasRole(AccessConstants.ADMIN_ROLE_NAME));
+//				if(!user.getGroupNames().isEmpty()) {
+//					metadata.setProperty("groups", CollectionSupport.format(user.getGroupNames(), ","));
+//				}
+//				metadata.setProperty("isAdmin", "" + user.hasRole(AccessConstants.ADMIN_ROLE_NAME));
 				IgluProperties.saveProperties(metadata, permanentFileName + ".metadata.properties");
 				uploadedFile.delete();
 			} catch (IOException e) {
