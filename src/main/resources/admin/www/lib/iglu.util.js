@@ -14,7 +14,7 @@ iglu.util.getStaticFunction = function(functionName) {
     for(let i = 0; i < functionPathArray.length; i++) {
         currentPlaceInFunctionPath = currentPlaceInFunctionPath[functionPathArray[i]];
         if(typeof currentPlaceInFunctionPath === 'undefined') {
-            console.error('object \'' + functionName + '\' was not found.');
+            console.log('object \'' + functionName + '\' was not found.');
             return null;
         }
     }
