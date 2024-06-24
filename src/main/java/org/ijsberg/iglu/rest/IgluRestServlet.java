@@ -472,7 +472,8 @@ public class IgluRestServlet extends HttpServlet {
                     if (e.getCause() instanceof RestException) {
                         errorResult = createErrorResponse((RestException) e.getCause());
                     } else {
-                        throw new FatalException("error while invoking " + restMethodData.method.getName(), e);
+                        handleException(restMethodData, servletResponse, e.getCause());
+                        //throw new FatalException("error while invoking " + restMethodData.method.getName(), e);
                     }
                 } catch (NoSuchMethodException e) {
                     System.out.println(new LogEntry(Level.CRITICAL, "unable to invoke method " + restMethodData.method.getName(), e));
@@ -528,13 +529,16 @@ public class IgluRestServlet extends HttpServlet {
         //return stringResponse.replace("<", "&lt;AAP");
     }
 
-    public void handleException(RestMethodData restMethodData, HttpServletResponse response, Exception e) throws IOException {
+    public void handleException(RestMethodData restMethodData, HttpServletResponse response, Throwable e) throws IOException {
         try {
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("text/plain");
             if(e instanceof RestException) {
                 System.out.println(new LogEntry(Level.DEBUG, "process request failed with predictable error", e));
                 respondWithError(response, restMethodData, ((RestException) e).getHttpStatusCode(), e.getMessage());
+            } else if(e instanceof SecurityException) {
+                System.out.println(new LogEntry(Level.CRITICAL, "processing request failed with security exception", e));
+                respondWithError(response, restMethodData, 403, e.getMessage());
             } else {
                 System.out.println(new LogEntry(Level.CRITICAL, "processing request failed with server error", e));
                 respondWithError(response, restMethodData, 500, "unexpected error");
