@@ -145,6 +145,7 @@ MenuWidget.prototype.containsVisibleItems = function(tree) {
             }
         }
     }
+    return false;
 }
 
 MenuWidget.prototype.createTree = function(tree, container) {

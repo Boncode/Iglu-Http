@@ -58,6 +58,9 @@ SideMenuWidget.prototype.writeHTML = function() {
 //}
 
 SideMenuWidget.prototype.addItem = function(item, container) {
+    if(typeof(item.submenu) !== 'undefined' && !this.containsVisibleItems(item.submenu) && item.id !== 'dashboards') {
+        return;
+    }
 
     if(item.id == 'expert_mode') {
 //        item.toggleProperty_value = this.expertMode ? item.toggleProperty_on : item.toggleProperty_off;
