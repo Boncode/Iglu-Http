@@ -58,6 +58,7 @@ SideMenuWidget.prototype.writeHTML = function() {
 //}
 
 SideMenuWidget.prototype.addItem = function(item, container) {
+    //check if item has any items otherwise don't make the item FIXME: check for dashboard can be removed when dashboards are not loaded dynamically
     if(typeof(item.submenu) !== 'undefined' && !this.containsVisibleItems(item.submenu) && item.id !== 'dashboards') {
         return;
     }
