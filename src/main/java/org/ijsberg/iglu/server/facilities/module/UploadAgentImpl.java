@@ -21,10 +21,7 @@ package org.ijsberg.iglu.server.facilities.module;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.ijsberg.iglu.access.AccessConstants;
-import org.ijsberg.iglu.access.AgentFactory;
-import org.ijsberg.iglu.access.BasicAgentFactory;
-import org.ijsberg.iglu.access.User;
+import org.ijsberg.iglu.access.*;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.event.messaging.MessageStatus;
@@ -55,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
@@ -226,6 +224,9 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 			System.out.println(new LogEntry(Level.CRITICAL, String.format("failed to download %s", path), e));
 			requestRegistry.dropMessageToCurrentUser(new StatusMessage("processFailed", "Download failed with message: " + e.getMessage(), MessageStatus.FAILURE));
 			response.setStatus(500);
+		} catch (ResourceException re) {
+			System.out.println(new LogEntry(Level.DEBUG, String.format("Resource exception for %s", path), re));
+			response.setStatus(404);
 		}
 	}
 
@@ -248,6 +249,21 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		description = "Upload and process data.")
 	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
 		readMultiPartUpload(req, new String[]{"*"}, getUserDir());
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
+	@BypassCsrfCheck
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "download", method = POST,
+		description = "Download a downloadable file.")
+	public void downloadUserDownloadableFile(HttpServletRequest req, HttpServletResponse res) {
+		String[] path = req.getPathInfo().split("/");
+		String downloadFileName = path[2]; // upload/download/filename.txt
+		String userDir = getUserDir();
+		if(userDir != null) {
+			String resourcePath = uploadRootDir + "/" + userDir + "/downloads/" + downloadFileName;
+			downloadFile(res, resourcePath);
+		}
 	}
 
 	@Override
@@ -444,11 +460,14 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	@Override
 	public void assertFileNameAllowed(String fullFileName) {
+		if(fullFileName.equals(downloadSubDir)) { //prevent weird overwrites of critical folder
+			throw new RestException("file " + fullFileName + " has illegal name", 400);
+		}
 		for(String wildcardExp : allowedFormatsWildcardExpressions) {
 			if(PatternMatchingSupport.valueMatchesWildcardExpression(fullFileName, wildcardExp)) {
 				return;
 			}
 		}
-		throw new RestException("file " + fullFileName + " not allowed to be uploaded", 403);
+		throw new RestException("file " + fullFileName + " does not match naming convention", 400);
 	}
 }

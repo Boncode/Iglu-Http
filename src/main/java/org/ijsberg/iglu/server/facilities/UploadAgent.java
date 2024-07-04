@@ -43,7 +43,7 @@ public interface UploadAgent {
 
     void readMultiPartUploadForClient(HttpServletRequest req, HttpServletResponse res);
 
-    //String readMultiPartUpload(HttpServletRequest request, Properties properties, String fileName) throws IOException;
+    void downloadUserDownloadableFile(HttpServletRequest req, HttpServletResponse res);
 
 	long getBytesRead();
 
