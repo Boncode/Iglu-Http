@@ -23,8 +23,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 
-import java.io.FileNotFoundException;
-
 /**
  */
 public interface UploadAgent {

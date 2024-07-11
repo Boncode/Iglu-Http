@@ -35,7 +35,6 @@ import org.ijsberg.iglu.rest.*;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
 import org.ijsberg.iglu.server.facilities.UploadAgent;
 import org.ijsberg.iglu.util.ResourceException;
-import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.DownloadSupport;
 import org.ijsberg.iglu.util.http.MultiPartReader;
@@ -53,7 +52,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
