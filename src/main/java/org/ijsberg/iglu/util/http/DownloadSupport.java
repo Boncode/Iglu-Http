@@ -8,26 +8,23 @@ import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.io.StreamSupport;
 import org.ijsberg.iglu.util.mail.MimeTypeSupport;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class DownloadSupport {
 
-    public static File getDownloadableFile(String resourcePath) {
+    public static File getDownloadableFile(String resourcePath) throws FileNotFoundException {
         resourcePath = FileSupport.convertToUnixStylePath(resourcePath);
         if(resourcePath.startsWith("/")) {
             resourcePath = resourcePath.substring(1);
         }
         resourcePath = HttpEncodingSupport.urlDecode(resourcePath);
         if(resourcePath.contains("..")) {
-            throw new ResourceException("resource path contains suspicious content");
+            throw new SecurityException("resource path contains suspicious content");
         }
 
         File downloadable = new File(resourcePath);
         if (!downloadable.exists()) {
-            throw new ResourceException("file does not exist");
+            throw new FileNotFoundException("file does not exist");
         }
 
         return downloadable;

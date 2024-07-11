@@ -48,6 +48,7 @@ import org.ijsberg.iglu.util.io.model.FileDto;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,8 +143,8 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		File toDelete;
 		try {
 			toDelete = DownloadSupport.getDownloadableFile(uploadRootDir + "/" + path);
-		} catch (ResourceException e) {
-			throw new RestException("Cannot delete file: " + e.getMessage(), 403);
+		} catch (FileNotFoundException e) {
+			throw new RestException("File not found", 404);
 		}
 		System.out.println(new LogEntry(Level.VERBOSE, "deleting uploaded client file " + toDelete));
 		try {
