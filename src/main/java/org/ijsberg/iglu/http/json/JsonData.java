@@ -118,8 +118,8 @@ public class JsonData implements JsonDecorator {
 	}
 
 	public void print(PrintStream out) {
-		out.print("{\n ");
-		int i = 0;
+		out.print("{\n");
+		int attributeNr = 0;
 		for(String attrName : attributes.keySet()) {
 			Object value = attributes.get(attrName);
 			out.print(" \"" + attrName + "\" : ");
@@ -143,12 +143,12 @@ public class JsonData implements JsonDecorator {
 			} else {
 				out.print(value);
 			}
-			i++;
-			if(i < attributes.size()) {
+			attributeNr++;
+			if(attributeNr < attributes.size()) {
 				out.print(",\n");
 			}
 		}
-		out.print(" }\n");
+		out.print("\n}");
 	}
 
 	public Object getAttribute(String name) {

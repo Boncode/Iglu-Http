@@ -106,7 +106,7 @@ public class JsonArray implements JsonDecorator {
 	}
 
 	public String toString() {
-		return "[" + CollectionSupport.format(contents, ", ") + "]\n";
+		return "[" + CollectionSupport.format(contents, ", ") + "]";
 	}
 
 	public int length() {
