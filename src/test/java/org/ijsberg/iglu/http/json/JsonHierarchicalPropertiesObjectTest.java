@@ -20,15 +20,16 @@ public class JsonHierarchicalPropertiesObjectTest {
 	}
 
 	private static String result = "{\n" +
-			"  \"main\" : \"bogus\",\n" +
+			" \"main\" : \"bogus\",\n" +
 			" \"sub\" : {\n" +
-			"  \"foo\" : \"bla\",\n" +
+			" \"foo\" : \"bla\",\n" +
 			" \"bar\" : \"hop\",\n" +
 			" \"sub1\" : {\n" +
-			"  \"bar\" : \"hop1\",\n" +
-			" \"foo\" : \"bla1\" }\n" +
-			" }\n" +
-			" }\n";
+			" \"bar\" : \"hop1\",\n" +
+			" \"foo\" : \"bla1\"\n" +
+			"}\n" +
+			"}\n" +
+			"}";
 
 	@Test
 	public void testConstructor() throws Exception {
