@@ -67,7 +67,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     justify-content: space-between;
 }
 
-.boncode_table_large tbody tr:nth-child(odd) {
+.boncode_table_large tbody tr:nth-child(odd of :not([style*="display: none"])) {
     background-color: var(--widget-background-color-alternate);
 }
 
@@ -138,6 +138,22 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 
 /* Filter */
 .projects_table_filter {
+    padding: 4px 8px;
+    font-size: 9pt;
+    min-height: 25px;
+    border: none;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-color: #dddddd;
+    color: inherit;
+    outline: none;
+    top: 0;
+    background-color: var(--widget-background-color);
+    position: sticky;
+}
+
+/* TODO remove .projects_table_filter after transition */
+.table_searchbar {
     padding: 4px 8px;
     font-size: 9pt;
     min-height: 25px;
