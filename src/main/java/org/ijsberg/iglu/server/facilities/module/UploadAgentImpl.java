@@ -533,7 +533,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Override
 	public boolean isUploadInProgress() {
 		return readingUpload;
-
 	}
 
 	@Override
