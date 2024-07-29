@@ -11,24 +11,44 @@ iglu.util.import.callSeqNr = 0;
 
 iglu.util.import.callData = new Array();
 
-iglu.util.import.loadJsonData = function(data, servletPath, callbackWhenDone, callbackInput) {
+/*
+data is an array of arrays
+[
+    [   <variable name for loaded object>,
+        <URL of JSON source to load>,
+        <optional: type (constructor) to instantiate>],
+    [ ... ],
+    ...
+]
+*/
+iglu.util.import.loadJsonData = function(data, callbackWhenDone/*, extra arguments will be passed to (optional) constructors and callback function*/) {
 
-    var callBackArguments = iglu.util.import.getArgumentsAsArray(arguments).slice(3);
-
+    var callBackArguments = iglu.util.import.getArgumentsAsArray(arguments).slice(2);
     var callSeqNr = iglu.util.import.callSeqNr++;
+
     iglu.util.import.callData[callSeqNr] = new Object();
 	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded = callbackWhenDone;
-	iglu.util.import.callData[callSeqNr].callbackInput = callbackInput;
 	iglu.util.import.callData[callSeqNr].callBackArguments = callBackArguments;
 	iglu.util.import.callData[callSeqNr].nrofFilesToLoad = data.length;
-//	console.debug(data);
+
+
 	for(var i in data) {
 	    try {
+	        if(data[i].length == 3) {
+	            //invoke constructor
+//	            console.info('+++++++++++++++++++++++++>' + data[i][2]);
+	        }
+        	var callbackInput = new Object();
+	        callbackInput.varName = data[i][0];
+	        callbackInput.callSeqNr = callSeqNr;
+
+
 		    ajaxRequestManager.doRequest(
-		        (typeof servletPath != 'undefined' && servletPath != null ? servletPath : './') + data[i][1],
-		        new Function("jsonData", iglu.util.import.getJsonParseFunctionText(data[i][0],callSeqNr)));
+		        data[i][1],
+		        iglu.util.import.assignValToVarAndProceed, callbackInput);
+		        //new Function("jsonData", iglu.util.import.getJsonParseFunctionText(data[i][0],callSeqNr)));
         } catch(e) {
-            console.error('unable to perform request ' + servletPath + ': ' + e.message);
+            console.error('unable to perform request ' + data[i][1] + ': ' + e.message);
             console.error(data[i][0]);
         }
 	}
@@ -42,14 +62,35 @@ iglu.util.import.getArgumentsAsArray = function(argumentObject) {
     return argumentsArray;
 }
 
-iglu.util.import.getJsonParseFunctionText = function(varName, callSeqNr) {
+/*iglu.util.import.getJsonParseFunctionText = function(varName, callSeqNr) {
 	return "try { " +
 		varName + " = JSON.parse(jsonData);" +
 		"} catch (e) {" +
 			"console.error('cannot parse ' + jsonData + ' for var " + varName + " with message: ' + e.message);" +
 		"}" +
 		"iglu.util.import.checkNrofFilesToLoad(" + callSeqNr + ");"
+}*/
+
+iglu.util.import.assignValToVarAndProceed = function(jsonData, callbackInput) {
+	try {
+		iglu.util.setGlobalObject(callbackInput.varName, JSON.parse(jsonData));
+		console.debug('data imported in var: ' + callbackInput.varName/* + ' -> ' + jsonData*/);
+	} catch (e) {
+		console.error('cannot set ' + jsonData + ' for var ' + callbackInput.varName + ' with message: ' + e.message);
+	}
+	iglu.util.import.checkNrofFilesToLoad(callbackInput.callSeqNr);
 }
+
+
+/*iglu.util.import.getJsonParseAndInvokeConstructorText = function(varName, callSeqNr) {
+	return "try { " +
+		varName + " = JSON.parse(jsonData);" +
+		"} catch (e) {" +
+			"console.error('cannot parse ' + jsonData + ' for var " + varName + " with message: ' + e.message);" +
+		"}" +
+		"iglu.util.import.checkNrofFilesToLoad(" + callSeqNr + ");"
+}*/
+
 
 iglu.util.import.checkNrofFilesToLoad = function(callSeqNr) {
 	iglu.util.import.callData[callSeqNr].nrofFilesToLoad--;
@@ -62,7 +103,7 @@ iglu.util.import.checkNrofFilesToLoad = function(callSeqNr) {
 
 //TODO jsonData should be textData or data, used only once, unclear code
 
-iglu.util.import.loadTextData = function(data, servletPath, callbackWhenDone, callbackInput) {
+iglu.util.import.loadTextData = function(data, servletPath, callbackWhenDone/*, callbackInput*/) {
 	console.debug(data);
 	for(var i in data) {
 	    try {

@@ -202,8 +202,8 @@ MenuWidget.prototype.addItem = function(item, container) {
 		var branchDiv = document.createElement('div');
 		branchDiv.setAttribute('id', itemId);
 
-		itemDiv.onmouseover = new Function('showSubmenu(\'' + itemId + '\');');
-		itemDiv.onmouseout = new Function('hideSubmenu(\'' + itemId + '\');');
+		itemDiv.onmouseover = function(){showSubmenu(itemId)};
+		itemDiv.onmouseout = function(){hideSubmenu(itemId)};
 
 		branchDiv.style.visibility = 'hidden';
 
