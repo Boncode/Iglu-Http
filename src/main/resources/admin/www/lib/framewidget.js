@@ -468,8 +468,8 @@ FrameWidget.prototype.onDeploy = function() {
 	this.setPositionFromPage();
 
 
-	this.element.onmouseover = new Function('event', 'event.stopPropagation();');
-	this.element.onmouseout = new Function('event', 'event.stopPropagation();');
+	this.element.onmouseover = function(event){event.stopPropagation()};
+	this.element.onmouseout = function(event){event.stopPropagation()};
 
 	if(this.isDraggable) {
 		WidgetManager.instance.registerDraggableWidget(this);

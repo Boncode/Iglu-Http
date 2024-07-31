@@ -148,7 +148,7 @@ AjaxRequestManager.prototype.doRequest = function(requestURL, callback, callback
 		this.callbackInputObjects[requestNr] = callbackInput;
 
 		//hand each request its own private handler
-		this.ajaxRequests[requestNr] = this.createAjaxRequest(new Function('dispatchResponse(' + requestNr + ');'));
+		this.ajaxRequests[requestNr] = this.createAjaxRequest(function(){dispatchResponse(requestNr);});
 
 		if (multipart) {
         	this.sendMultiPartRequest(this.ajaxRequests[requestNr], requestURL, postData);

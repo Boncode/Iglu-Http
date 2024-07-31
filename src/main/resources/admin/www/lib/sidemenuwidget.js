@@ -95,7 +95,7 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 		var branchDiv = document.createElement('div');
         branchDiv.setAttribute('id', itemId + '.submenu');
 
-		itemDiv.onclick = new Function('toggleSubmenu(\'' + itemId + '\');');
+		itemDiv.onclick = function(){toggleSubmenu(itemId)};
 		itemDiv.classList.add('clickable');
 //		itemDiv.onmouseout = new Function('hideSubmenu(\'' + itemId + '\');');
 
@@ -119,11 +119,16 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 	} else {
 	    itemDiv.setAttribute('id', itemId);
 
-	    if(typeof(item.link) != 'undefined' && item.link.length > 0) {
+/*	    if(typeof(item.link) != 'undefined' && item.link.length > 0) {
             itemDiv.onclick = new Function('event.stopPropagation();' + item.link + ';');
             itemDiv.classList.add('clickable');
-	    } else if(typeof(item.onclick) != 'undefined') {
-		    itemDiv.onclick = new Function('event.stopPropagation();' + item.onclick + ';');
+	    } else*/
+	    if(typeof(item.onclick) != 'undefined') {
+		    //itemDiv.onclick = new Function('event.stopPropagation();' + item.onclick + ';');
+		    itemDiv.onclick = function() {
+		        event.stopPropagation();
+		        iglu.util.processFunctionInvocationsString(item.onclick);
+		    };
 		    itemDiv.classList.add('clickable');
 	    }
 	}
