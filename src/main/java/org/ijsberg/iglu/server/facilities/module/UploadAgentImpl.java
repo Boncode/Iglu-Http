@@ -41,15 +41,20 @@ import org.ijsberg.iglu.util.http.MultiPartReader;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.FSFileCollection;
 import org.ijsberg.iglu.util.io.FileData;
+import org.ijsberg.iglu.util.io.FileFilterRuleSet;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 import org.ijsberg.iglu.util.io.model.FileDto;
+import org.ijsberg.iglu.util.io.model.UploadedFileCommentDto;
+import org.ijsberg.iglu.util.io.model.UploadedFileDto;
 import org.ijsberg.iglu.util.properties.IgluProperties;
+import org.ijsberg.iglu.util.time.TimeSupport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -114,7 +119,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	}
 
 	private String getDownloadDir() {
-		return uploadRootDir + "/" + ServletSupport.getUserDir(requestRegistry) + "/" + downloadSubDir;
+		return uploadRootDir + "/" + getUserDir() + "/" + downloadSubDir;
 	}
 
 	@Override
@@ -122,12 +127,89 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Endpoint(inputType = VOID, path = "downloadable_files", method = GET, returnType = JSON,
 		description = "Retrieve a list of downloadable files for the current user.")
 	public FileCollectionDto getDownloadableFileNames() {
-		FSFileCollection fileCollection = new FSFileCollection(getDownloadDir());
-		System.out.println(new LogEntry("getDownloadDir(): " + getDownloadDir()));
+		FSFileCollection fileCollection = getUserDownloadsFileCollection();
 		return new FileCollectionDto(fileCollection.getFileNames().stream()
 				.map(fileName -> new FileDto(fileName, getUserDir()))
 				.collect(Collectors.toList()));
 	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
+	@Endpoint(inputType = VOID, path = "uploaded_files", method = GET, returnType = JSON,
+			description = "Retrieve a list of uploaded files of the current user.")
+	public FileCollectionDto getUploadedFileNames() {
+		FSFileCollection fileCollection = getUserUploadsFileCollection();
+		return enrichWithMetadata(fileCollection);
+	}
+
+	private FSFileCollection getUserUploadsFileCollection() {
+		return new FSFileCollection(uploadRootDir + "/" + getUserDir() + "/",
+				new FileFilterRuleSet()
+						.setIncludeFilesWithNameMask("*")
+						.excludeFilesWithNameMask("*/" + downloadSubDir + "/*", "*.metadata.properties"));
+	}
+
+	private FSFileCollection getUserDownloadsFileCollection() {
+		return new FSFileCollection(getDownloadDir(),
+				new FileFilterRuleSet()
+						.setIncludeFilesWithNameMask("*")
+						.excludeFilesWithNameMask("*.metadata.properties"));
+	}
+
+	private FileCollectionDto enrichWithMetadata(FSFileCollection fileCollection) {
+		List<FileDto> fileDtos = new ArrayList<>();
+		for(String fileName : fileCollection.getFileNames()) {
+			String metadataPropertiesFileName = uploadRootDir + "/" + getUserDir() + "/" + fileName + ".metadata.properties";
+			if(IgluProperties.propertiesExist(metadataPropertiesFileName)) {
+				IgluProperties metadataProperties = IgluProperties.loadProperties(metadataPropertiesFileName);
+				fileDtos.add(createFileDtoWithMetadata(fileName, metadataProperties.getProperty("userId"), Long.parseLong(metadataProperties.getProperty("uploadedTimestamp")), metadataProperties.getProperty("comment", "No comments")));
+			} else {
+				fileDtos.add(createFileDtoWithMetadata(fileName, "N/a", 0L, "No comments"));
+			}
+		}
+		return new FileCollectionDto(fileDtos);
+	}
+
+	private UploadedFileDto createFileDtoWithMetadata(String fileName, String userId, long uploadedTimestamp, String comment) {
+		return new UploadedFileDto(
+				fileName,
+				getUserDir(),
+				userId,
+				uploadedTimestamp,
+				comment
+		);
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
+		@Endpoint(inputType = JSON_POST, path = "add_comment", method = POST,
+			description = "Add a comment to a previously uploaded file.")
+	public void addCommentToUploadedFile(UploadedFileCommentDto uploadedFileCommentDto) {
+		if(getUserUploadsFileCollection().containsFile(uploadedFileCommentDto.getFileName())) {
+			String metadataPropertiesFileName = uploadRootDir + "/" + getUserDir() + "/" + uploadedFileCommentDto.getFileName() + ".metadata.properties";
+			if(IgluProperties.propertiesExist(metadataPropertiesFileName)) {
+				IgluProperties metadataProperties = IgluProperties.loadProperties(metadataPropertiesFileName);
+				metadataProperties.setProperty("comment", uploadedFileCommentDto.getComment());
+				try {
+					IgluProperties.saveProperties(metadataProperties, metadataPropertiesFileName);
+				} catch (IOException e) {
+					System.out.println(new LogEntry(Level.DEBUG, "Saving metadata properties for file " + uploadedFileCommentDto.getFileName() + " has failed.", e));
+					throw new RestException("Saving comment failed", 500);
+				}
+			} else {
+				// create new metadataproperties
+				IgluProperties metadataProperties = createMetadataPropertiesForUploadedFile();
+				metadataProperties.setProperty("comment", uploadedFileCommentDto.getComment());
+				try {
+					IgluProperties.saveProperties(metadataProperties, metadataPropertiesFileName);
+				} catch (IOException e) {
+					System.out.println(new LogEntry(Level.DEBUG, "Saving metadata properties for file " + uploadedFileCommentDto.getFileName() + " has failed.", e));
+					throw new RestException("Saving comment failed", 500);
+				}
+			}
+		}
+	}
+
 
 	@Override
 	@SystemEndpoint
@@ -147,6 +229,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		System.out.println(new LogEntry(Level.VERBOSE, "deleting uploaded client file " + toDelete));
 		try {
 			FileSupport.deleteFile(toDelete);
+			FileSupport.deleteFile(toDelete + ".metadata.properties"); //as well as potential metadata properties
 		} catch (IOException e) {
 			String msg = "unable to delete " + toDelete;
 			System.out.println(new LogEntry(Level.CRITICAL, msg));
@@ -169,6 +252,9 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				}
 				for (File uploadedFile : userDir.listFiles()) {
 					if (uploadedFile == null || uploadedFile.isDirectory()) {
+						continue;
+					}
+					if(uploadedFile.getName().endsWith(".metadata.properties")) {
 						continue;
 					}
 					fileDtos.add(new FileDto(uploadedFile.getName(), userDir.getName()));
@@ -195,9 +281,10 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 				String customerName = userDir.getName();
 				if (userDownloadDirectory.listFiles() != null) {
 					for (File downloadableFile : userDownloadDirectory.listFiles()) {
-						if (!downloadableFile.isDirectory()) {
-							downloadableFiles.add(new FileDto(downloadableFile.getName(), customerName));
+						if (downloadableFile.isDirectory() || downloadableFile.getName().endsWith(".metadata.properties")) {
+							continue;
 						}
+						downloadableFiles.add(new FileDto(downloadableFile.getName(), customerName));
 					}
 				}
 			}
@@ -239,7 +326,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		String resourcePath = uploadRootDir + "/" + path[2] + "/downloads/" + path[3];
 		downloadFile(response, resourcePath);
 	}
-
 
 	@Override
 	@RequireOneOrMorePermissions(permission = {UPLOAD})
@@ -327,34 +413,43 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 
 	private void postProcess(File uploadedFile) {
 		FileData fileData = new FileData(uploadedFile.getPath());
+		String permanentFileName = fileData.getFullFileName();
 		if(targetDir != null) {
 			String tmpFileName = targetDir + "/ignore.tmp";
-			String permanentFileName = targetDir + "/" + fileData.getFileName();
+			permanentFileName = targetDir + "/" + fileData.getFileName();
 			try {
 				FileSupport.copyFile(uploadedFile, tmpFileName, true);
 				File file = new File(tmpFileName);
 				//make file appear as atomic as possible
 				file.renameTo(new File(permanentFileName));
-				User user = requestRegistry.getCurrentRequest().getUser();
-				IgluProperties metadata = new IgluProperties();
-				metadata.setProperty("userId", user.getId());
-//				if(!user.getGroupNames().isEmpty()) {
-//					metadata.setProperty("groups", CollectionSupport.format(user.getGroupNames(), ","));
-//				}
-//				metadata.setProperty("isAdmin", "" + user.hasRole(AccessConstants.ADMIN_ROLE_NAME));
-				IgluProperties.saveProperties(metadata, permanentFileName + ".metadata.properties");
 				uploadedFile.delete();
 			} catch (IOException e) {
 				System.out.println(new LogEntry(Level.CRITICAL, "cannot move file (or metadata) to target dir", e));
 				requestRegistry.dropMessageToCurrentUser(new StatusMessage("processFailed", "Upload failed. A problem occurred while moving the file.", MessageStatus.FAILURE));
 			}
 		}
+
+		try {
+			IgluProperties metadata = createMetadataPropertiesForUploadedFile();
+			IgluProperties.saveProperties(metadata, permanentFileName + ".metadata.properties");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		if(sendEmail) {
 			notifyAsync(fileData);
 		} else {
 			System.out.println(new LogEntry("notification disabled"));
 		}
 		requestRegistry.dropMessageToCurrentUser(new StatusMessage("uploadDone", uploadSuccessMessage, MessageStatus.SUCCESS));
+	}
+
+	private IgluProperties createMetadataPropertiesForUploadedFile() {
+		User user = requestRegistry.getCurrentRequest().getUser();
+		IgluProperties metadata = new IgluProperties();
+		metadata.setProperty("userId", user.getId());
+		metadata.setProperty("uploadedTimestamp", "" + new Date().getTime());
+		return metadata;
 	}
 
 	private void notifyAsync(FileData fileData) {
@@ -438,7 +533,6 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Override
 	public boolean isUploadInProgress() {
 		return readingUpload;
-
 	}
 
 	@Override

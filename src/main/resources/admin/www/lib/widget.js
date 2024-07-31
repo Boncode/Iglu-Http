@@ -264,7 +264,7 @@ WidgetContent.prototype.refresh = function() {
 	    if(typeof this[this.source_load_action] != 'undefined') {
 		    ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
 		} else {
-		    let definedFunction = iglu.util.getStaticFunction(this.source_load_action);
+		    let definedFunction = iglu.util.getGlobalObject(this.source_load_action);
 		    if(definedFunction != null) {
                 ajaxRequestManager.doRequest(this.source, definedFunction, this);
             }
