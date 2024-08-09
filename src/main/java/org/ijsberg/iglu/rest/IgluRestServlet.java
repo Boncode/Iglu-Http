@@ -464,7 +464,6 @@ public class IgluRestServlet extends HttpServlet {
                         return;
                     } else {
                         Object[] parameters = getParameters(servletRequest, restMethodData);
-                        checkInput(parameters);
                         result = restMethodData.getComponent().invoke(restMethodData.method.getName(), parameters);
                     }
                 } catch (InvocationTargetException e) {
@@ -482,8 +481,6 @@ public class IgluRestServlet extends HttpServlet {
             } else {
                 errorResult = RestSupport.createResponse(404, "no endpoint");
             }
-
-            result = purgeResponse(result);
 
             //TODO restMethodData:null leads to NPE
 
@@ -569,23 +566,6 @@ public class IgluRestServlet extends HttpServlet {
             }
         }
         return returnValue;
-    }
-
-    private void checkInput(Object[] parameters) {
-/*        for(Object parameter : parameters) {
-            if(parameter instanceof TenantAwareInput) {
-                System.out.println(new LogEntry("Found TenantAwareInput, tenant: " + ((TenantAwareInput)parameter).getTenantId()));
-            }
-        }*/
-    }
-
-    private Object purgeResponse(Object result) {
-/*        User user = accessManager.getCurrentRequest().getUser();
-        if(user != null) {
-            System.out.println(new LogEntry("purging result for user " + user.getId() + " : " + user.getGroup()));
-        }
-*/
-        return result;
     }
 
     public JsonData createErrorResponse(RestException e) {
