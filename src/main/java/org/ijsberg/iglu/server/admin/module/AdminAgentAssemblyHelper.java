@@ -31,7 +31,7 @@ import org.ijsberg.iglu.configuration.module.StandardCluster;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.logging.Logger;
 import org.ijsberg.iglu.server.admin.http.AdminAjaxResponseAgent;
-import org.ijsberg.iglu.server.facilities.module.UploadAgentImpl;
+import org.ijsberg.iglu.server.facilities.module.FileManagerAgentImpl;
 import org.ijsberg.iglu.server.http.filter.WebAppEntryPoint;
 import org.ijsberg.iglu.server.http.module.SimpleJettyServletContext;
 import org.ijsberg.iglu.usermanagement.UserManager;
@@ -55,7 +55,7 @@ public class AdminAgentAssemblyHelper {
 		if(logger != null) {
 			admin.connect("Logger", new StandardComponent(logger), Logger.class);
 		}
-		admin.connect("UploadFactory", new StandardComponent(UploadAgentImpl.getAgentFactory(admin, loadProperties("admin/config/upload_agent.properties"))));
+		admin.connect("UploadFactory", new StandardComponent(FileManagerAgentImpl.getAgentFactory(admin, loadProperties("admin/config/upload_agent.properties"))));
 
 		StandardAccessManager adminAccessManager = new StandardAccessManager(MultiTenantAwareComponent.class);
 

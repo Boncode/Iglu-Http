@@ -1,22 +1,3 @@
-/*
- * Copyright 2011-2014 Jeroen Meetsma - IJsberg Automatisering BV
- *
- * This file is part of Iglu.
- *
- * Iglu is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Iglu is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Iglu.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.ijsberg.iglu.server.facilities.module;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,17 +8,14 @@ import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.event.messaging.MessageStatus;
 import org.ijsberg.iglu.event.messaging.message.MailMessage;
 import org.ijsberg.iglu.event.messaging.message.StatusMessage;
-import org.ijsberg.iglu.http.json.JsonData;
-import org.ijsberg.iglu.http.json.JsonSupport;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.*;
-import org.ijsberg.iglu.server.facilities.FileNameChecker;
-import org.ijsberg.iglu.server.facilities.UploadAgent;
+import org.ijsberg.iglu.server.facilities.FileManagerAgent;
+import org.ijsberg.iglu.server.facilities.FileUploadManager;
+import org.ijsberg.iglu.server.facilities.model.MultipartUploadProgress;
 import org.ijsberg.iglu.util.ResourceException;
-import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
 import org.ijsberg.iglu.util.http.DownloadSupport;
-import org.ijsberg.iglu.util.http.MultiPartReader;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.io.FSFileCollection;
 import org.ijsberg.iglu.util.io.FileData;
@@ -47,16 +25,13 @@ import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 import org.ijsberg.iglu.util.io.model.FileDto;
 import org.ijsberg.iglu.util.io.model.UploadedFileCommentDto;
 import org.ijsberg.iglu.util.io.model.UploadedFileDto;
+import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.properties.IgluProperties;
-import org.ijsberg.iglu.util.time.TimeSupport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
@@ -65,61 +40,40 @@ import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
-import static org.ijsberg.iglu.util.mail.WebContentType.TXT;
 
+public class FileManagerAgentImpl implements FileManagerAgent {
 
-/**
- */
-public class UploadAgentImpl implements UploadAgent, FileNameChecker {
+	public static final String FILE_MANAGER_AGENT_NAME = "FileManagerAgent";
 
-	MultiPartReader reader;
-	private boolean readingUpload;
-	private boolean isUploadCancelled = false;
 	private RequestRegistry requestRegistry;
+
 	private Properties properties;
-	//directory to move file to after upload finished
-	private String targetDir;
-	private String uploadRootDir = "uploads";
-	private String downloadSubDir = "downloads";
+	private String uploadDir = "uploads/";
+	private boolean sendEmail;
 
-	private String uploadSuccessMessage = "Upload success! The file will be processed shortly.";
+	private FileUploadManager personalFileUploadManager;
 
-	private String[] allowedFormatsWildcardExpressions;
 
-	private boolean sendEmail = false;
-
-	public static final String UPLOAD_AGENT_NAME = "UploadAgent";
-
-	public static AgentFactory<UploadAgent> getAgentFactory(Cluster cluster, Properties agentProperties) {
-		return new BasicAgentFactory<>(cluster, UPLOAD_AGENT_NAME, agentProperties) {
-			public UploadAgent createAgentImpl() {
-				return new UploadAgentImpl(getAgentProperties());
+	public static AgentFactory<FileManagerAgent> getAgentFactory(Cluster cluster, Properties agentProperties) {
+		return new BasicAgentFactory<>(cluster, FILE_MANAGER_AGENT_NAME, agentProperties) {
+			public FileManagerAgent createAgentImpl() {
+				return new FileManagerAgentImpl(getAgentProperties());
 			}
 		};
 	}
 
-	public UploadAgentImpl(Properties agentProperties) {
+	public FileManagerAgentImpl(Properties agentProperties) {
 		this.properties = agentProperties;
-		targetDir = properties.getProperty("target_dir");
-		downloadSubDir = properties.getProperty("download_sub_dir", downloadSubDir);
-		uploadRootDir = properties.getProperty("upload_root_dir", uploadRootDir);
-		uploadSuccessMessage = properties.getProperty("upload_success_message", uploadSuccessMessage);
-		sendEmail = Boolean.parseBoolean(properties.getProperty("send_email", "" + sendEmail));
+		uploadDir = properties.getProperty("upload_dir", uploadDir);
+		sendEmail = Boolean.parseBoolean(properties.getProperty("send_email", "false"));
 	}
 
 	public void setProperties(Properties properties) {
+
 	}
 
 	public void setRequestRegistry(RequestRegistry requestRegistry) {
 		this.requestRegistry = requestRegistry;
-	}
-
-	protected String getUserDir() {
-		return ServletSupport.getUserDir(requestRegistry);
-	}
-
-	private String getDownloadDir() {
-		return uploadRootDir + "/" + getUserDir() + "/" + downloadSubDir;
 	}
 
 	@Override
@@ -143,14 +97,14 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	}
 
 	private FSFileCollection getUserUploadsFileCollection() {
-		return new FSFileCollection(uploadRootDir + "/" + getUserDir() + "/",
+		return new FSFileCollection(uploadDir + "/" + getUserDir() + "/",
 				new FileFilterRuleSet()
 						.setIncludeFilesWithNameMask("*")
-						.excludeFilesWithNameMask("*/" + downloadSubDir + "/*", "*.metadata.properties"));
+						.excludeFilesWithNameMask("*/downloads/*", "*.metadata.properties"));
 	}
 
 	private FSFileCollection getUserDownloadsFileCollection() {
-		return new FSFileCollection(getDownloadDir(),
+		return new FSFileCollection(getUserDownloadDir(),
 				new FileFilterRuleSet()
 						.setIncludeFilesWithNameMask("*")
 						.excludeFilesWithNameMask("*.metadata.properties"));
@@ -159,7 +113,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	private FileCollectionDto enrichWithMetadata(FSFileCollection fileCollection) {
 		List<FileDto> fileDtos = new ArrayList<>();
 		for(String fileName : fileCollection.getFileNames()) {
-			String metadataPropertiesFileName = uploadRootDir + "/" + getUserDir() + "/" + fileName + ".metadata.properties";
+			String metadataPropertiesFileName = uploadDir + "/" + getUserDir() + "/" + fileName + ".metadata.properties";
 			if(IgluProperties.propertiesExist(metadataPropertiesFileName)) {
 				IgluProperties metadataProperties = IgluProperties.loadProperties(metadataPropertiesFileName);
 				fileDtos.add(createFileDtoWithMetadata(fileName, metadataProperties.getProperty("userId"), Long.parseLong(metadataProperties.getProperty("uploadedTimestamp")), metadataProperties.getProperty("comment", "No comments")));
@@ -186,7 +140,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 			description = "Add a comment to a previously uploaded file.")
 	public void addCommentToUploadedFile(UploadedFileCommentDto uploadedFileCommentDto) {
 		if(getUserUploadsFileCollection().containsFile(uploadedFileCommentDto.getFileName())) {
-			String metadataPropertiesFileName = uploadRootDir + "/" + getUserDir() + "/" + uploadedFileCommentDto.getFileName() + ".metadata.properties";
+			String metadataPropertiesFileName = uploadDir + "/" + getUserDir() + "/" + uploadedFileCommentDto.getFileName() + ".metadata.properties";
 			if(IgluProperties.propertiesExist(metadataPropertiesFileName)) {
 				IgluProperties metadataProperties = IgluProperties.loadProperties(metadataPropertiesFileName);
 				metadataProperties.setProperty("comment", uploadedFileCommentDto.getComment());
@@ -222,7 +176,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	public void deleteFile(String path) {
 		File toDelete;
 		try {
-			toDelete = DownloadSupport.getDownloadableFile(uploadRootDir + "/" + path);
+			toDelete = DownloadSupport.getDownloadableFile(uploadDir + "/" + path);
 		} catch (FileNotFoundException e) {
 			throw new RestException("File not found", 404);
 		}
@@ -243,7 +197,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Endpoint(inputType = VOID, path = "all_uploaded_files", method = GET, returnType = JSON,
 			description = "Retrieve a list of files uploaded by all users.")
 	public FileCollectionDto getAllUploadedFileNames() {
-		File uploadRootFile = new File(uploadRootDir);
+		File uploadRootFile = new File(uploadDir);
 		List<FileDto> fileDtos = new ArrayList<>();
 		if (uploadRootFile.listFiles() != null) {
 			for (File userDir : uploadRootFile.listFiles()) {
@@ -270,7 +224,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	@Endpoint(inputType = VOID, path = "all_downloadable_client_files", method = GET, returnType = JSON,
 			description = "Retrieve a list of files retrievable by all users.")
 	public FileCollectionDto getAllDownloadableClientFiles() {
-		File uploadRootFile = new File(uploadRootDir);
+		File uploadRootFile = new File(uploadDir);
 		List<FileDto> downloadableFiles = new ArrayList<>();
 		if (uploadRootFile.listFiles() != null) {
 			for (File userDir : uploadRootFile.listFiles()) {
@@ -299,7 +253,7 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 			description = "Retrieve specified file uploaded by specified user.")
 	public void downloadUploadedFile(HttpServletRequest req, HttpServletResponse response) {
 		String[] path = req.getPathInfo().split("/");
-		String resourcePath = uploadRootDir + "/" + path[2] + "/" + path[3];
+		String resourcePath = uploadDir + "/" + path[2] + "/" + path[3];
 		downloadFile(response, resourcePath);
 	}
 
@@ -323,18 +277,10 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 			description = "Retrieve specified file downloadable by specified user.")
 	public void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response) {
 		String[] path = req.getPathInfo().split("/");
-		String resourcePath = uploadRootDir + "/" + path[2] + "/downloads/" + path[3];
+		String resourcePath = uploadDir + "/" + path[2] + "/downloads/" + path[3];
 		downloadFile(response, resourcePath);
 	}
 
-	@Override
-	@RequireOneOrMorePermissions(permission = {UPLOAD})
-	@BypassCsrfCheck
-	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload", method = POST,
-		description = "Upload and process data.")
-	public void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res) {
-		readMultiPartUpload(req, new String[]{"*"}, getUserDir());
-	}
 
 	@Override
 	@RequireOneOrMorePermissions(permission = {UPLOAD})
@@ -346,102 +292,96 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 		String downloadFileName = path[2]; // upload/download/filename.txt
 		String userDir = getUserDir();
 		if(userDir != null) {
-			String resourcePath = uploadRootDir + "/" + userDir + "/downloads/" + downloadFileName;
+			String resourcePath = uploadDir + "/" + userDir + "/downloads/" + downloadFileName;
 			downloadFile(res, resourcePath);
 		}
 	}
 
 	@Override
-	@SystemEndpoint
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
 	@BypassCsrfCheck
-	@RequireOneOrMorePermissions(permission = {FULL_CONTROL})
-	@Endpoint(inputType = REQUEST_RESPONSE, path = "upload_for_client", method = POST,
-		description = "Upload and process file to /downloads folder for the given user for them to retrieve.")
-	public void readMultiPartUploadForClient(HttpServletRequest req, HttpServletResponse res) {
-		// /upload_for_client/customerName
-		String customerName = req.getPathInfo().split("/")[2];
-		System.out.println(new LogEntry(Level.DEBUG, String.format("uploading file for client %s", customerName)));
-		String destination = customerName + "/downloads";
-		readMultiPartUpload(req, new String[]{"*"}, destination);
-	}
-
-	private static final Object lock = new Object();
-
-	public void readMultiPartUpload(HttpServletRequest req, String[] allowedFormatsWildcardExpressions, String destinationPath) {
-		System.out.println(new LogEntry("about to read multipart upload, content-type: " + req.getContentType()));
-		if (req.getContentType() != null && req.getContentType().startsWith("multipart/form-data")) {
-			synchronized (lock) {
-				if (readingUpload) {
-					System.out.println(new LogEntry(Level.VERBOSE, "can not process upload: UploadAgent still busy"));
-					return;
-				}
-				readingUpload = true;
-				isUploadCancelled = false;
-			}
-
-			File uploadedFile = null;
-
-			this.allowedFormatsWildcardExpressions = allowedFormatsWildcardExpressions;
-
-			try {
-				System.out.println(new LogEntry(Level.VERBOSE, "about to read upload in " + uploadRootDir + '/' + destinationPath));
-				reader = new MultiPartReader(req, uploadRootDir + '/' + destinationPath, this);
-				//TODO exception if file missing
-				uploadedFile = reader.readMultipartUpload();
-				System.out.println(new LogEntry(Level.VERBOSE, "reading upload " + uploadedFile + " done"));
-			} catch (Exception e) { //TODO try IOException
-				//TODO exception if file missing
-				if(!isUploadCancelled) {
-					System.out.println(new LogEntry(Level.CRITICAL, "reading upload " + uploadedFile + " failed or was interrupted", e));
-					requestRegistry.dropMessageToCurrentUser(new StatusMessage("processFailed", "Upload failed with message: " + e.getMessage(), MessageStatus.FAILURE));
-				}
-				cancelUpload();
-				reader = null;
-				return;
-			}
-			if (!isUploadCancelled) {
-				postProcess(uploadedFile);
-			}
-			synchronized (lock) {
-				reader = null;
-				readingUpload = false;
-			}
-		} else {
-			System.out.println(new LogEntry(Level.CRITICAL, "cannot process upload for content type " + req.getContentType()));
-		}
-	}
-
-	private void postProcess(File uploadedFile) {
-		FileData fileData = new FileData(uploadedFile.getPath());
-		String permanentFileName = fileData.getFullFileName();
-		if(targetDir != null) {
-			String tmpFileName = targetDir + "/ignore.tmp";
-			permanentFileName = targetDir + "/" + fileData.getFileName();
-			try {
-				FileSupport.copyFile(uploadedFile, tmpFileName, true);
-				File file = new File(tmpFileName);
-				//make file appear as atomic as possible
-				file.renameTo(new File(permanentFileName));
-				uploadedFile.delete();
-			} catch (IOException e) {
-				System.out.println(new LogEntry(Level.CRITICAL, "cannot move file (or metadata) to target dir", e));
-				requestRegistry.dropMessageToCurrentUser(new StatusMessage("processFailed", "Upload failed. A problem occurred while moving the file.", MessageStatus.FAILURE));
-			}
-		}
-
+	@Endpoint(inputType = VOID, path = "personal/initialize", method = GET, returnType = WebContentType.TXT,
+			description = "Initialize personal upload.")
+	public String initializePersonalUpload() {
 		try {
-			IgluProperties metadata = createMetadataPropertiesForUploadedFile();
-			IgluProperties.saveProperties(metadata, permanentFileName + ".metadata.properties");
-		} catch (IOException e) {
-			e.printStackTrace();
+			return getPersonalFileUploadManager().initialize();
+		} catch (IllegalStateException ise) {
+			throw new RestException(ise.getMessage(), 400);
 		}
+	}
 
-		if(sendEmail) {
-			notifyAsync(fileData);
-		} else {
-			System.out.println(new LogEntry("notification disabled"));
+	@Override
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
+	@BypassCsrfCheck
+	@Endpoint(inputType = REQUEST_RESPONSE, path = "personal/upload", method = POST,
+			description = "Start the upload for uploadId")
+	public void startPersonalUpload(HttpServletRequest req, HttpServletResponse res) {
+		try {
+			getPersonalFileUploadManager().upload(req);
+			if(sendEmail) {
+				notifyAsync(new FileData(getPersonalFileUploadManager().getUploadedFile()));
+			}
+		} catch (IllegalArgumentException iae) { //iae message is safe for users
+			throw new RestException(iae.getMessage(), 400);
+		} catch (IOException e) { // in case of failure in file write in postProcess
+			throw new RestException("An error occurred while post processing upload.", 500);
 		}
-		requestRegistry.dropMessageToCurrentUser(new StatusMessage("uploadDone", uploadSuccessMessage, MessageStatus.SUCCESS));
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
+	@BypassCsrfCheck
+	@Endpoint(inputType = FROM_PATH, path = "personal/progress", method = GET, returnType = WebContentType.JSON,
+			description = "Get upload progress for uploadId.")
+	public MultipartUploadProgress getPersonalUploadProgress(String uploadIdString) {
+		try {
+			return getPersonalFileUploadManager().getProgress(uploadIdString);
+		} catch (IllegalArgumentException iae) {
+			throw new RestException(iae.getMessage(), 400);
+		}
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
+	@BypassCsrfCheck
+	@Endpoint(inputType = FROM_PATH, path = "personal/cancel", method = POST,
+			description = "Cancel upload by uploadId.")
+	public void cancelPersonalUpload(String uploadIdString) {
+		getPersonalFileUploadManager().cancel(uploadIdString);
+	}
+
+	private FileUploadManager getPersonalFileUploadManager() {
+		if(personalFileUploadManager == null) {
+			IgluProperties generalFileUploadProperties = new IgluProperties();
+			generalFileUploadProperties.merge(properties);
+			generalFileUploadProperties.setProperty("upload_dir", generalFileUploadProperties.getProperty("upload_dir") + getUserDir());
+			personalFileUploadManager = new FileUploadManager(generalFileUploadProperties, requestRegistry);
+		}
+		return personalFileUploadManager;
+	}
+
+	@Override
+	@RequireOneOrMorePermissions(permission = {FULL_CONTROL})
+	@Endpoint(inputType = MAPPED, path = "personal/move", method = POST,
+			description = "Move uploaded file to downloads folder for client.", parameters = {
+			@RequestParameter(name = "fileName"),
+			@RequestParameter(name = "customerName")
+	})
+	public void moveFileToCustomerDownloads(String fileName, String customerName) throws IOException {
+		String fullFileName = uploadDir + getUserDir() + fileName;
+		File fileToMove = new File(fullFileName);
+		if(fileToMove.exists()) {
+			String newFileName = uploadDir + customerName + "/" + "downloads/" + fileName;
+
+			//todo check if customerName is legit, but only administrator can do this currently
+			FileSupport.moveFile(fullFileName, newFileName, true);
+			File metadata = new File(fullFileName + ".metadata.properties");
+			if(metadata.exists()) {
+				FileSupport.moveFile(fullFileName + ".metadata.properties", newFileName + ".metadata.properties", true);
+			}
+		} else {
+			throw new RestException("File not found: " + fileName, 404);
+		}
 	}
 
 	private IgluProperties createMetadataPropertiesForUploadedFile() {
@@ -453,114 +393,16 @@ public class UploadAgentImpl implements UploadAgent, FileNameChecker {
 	}
 
 	private void notifyAsync(FileData fileData) {
-		//TODO make configurable
 		String message = fileData.getFileName() + " has been uploaded to " + getUserDir();
 		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
-
 		requestRegistry.dropMessage("System", new MailMessage(getUserDir() + " : upload notification", message));
 	}
 
-	@Override
-	public long getBytesRead() {
-		synchronized (lock) {
-			if (reader != null) {
-				return reader.getBytesRead();
-			}
-		}
-		return 0;
+	private String getUserDir() {
+		return ServletSupport.getUserDir(requestRegistry) + "/";
 	}
 
-	@Override
-	public long getContentLength() {
-		synchronized (lock) {
-			if (reader != null) {
-				return reader.getContentLength();
-			}
-		}
-		return 0;
-	}
-
-	@Override
-	public String getProgress(String jsFunction) {
-		JsonData retval = new JsonData();
-		JsonData jsonData = new JsonData();
-		retval.addAttribute("progress", jsonData);
-		jsonData.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
-		jsonData.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
-		jsonData.addAttribute("isUploadCancelled", isUploadCancelled);
-
-		return JsonSupport.toMessage(jsFunction, "progress", retval);
-	}
-
-	@Override
-	@SystemEndpoint
-	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "progress", method = GET, returnType = JSON,
-		description = "Retrieve the amount of bytes read and the amount of bytes to read in total.")
-	public String getProgress() {
-		JsonData retval = new JsonData();
-		JsonData jsonData = new JsonData();
-		retval.addAttribute("progress", jsonData);
-		jsonData.addHtmlEscapedStringAttribute("bytesRead", "" + getBytesRead());
-		jsonData.addHtmlEscapedStringAttribute("contentLength", "" + getContentLength());
-		jsonData.addAttribute("isUploadCancelled", isUploadCancelled);
-		return jsonData.toString();
-	}
-
-	@Override
-	@SystemEndpoint
-	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "cancel", method = POST, returnType = TXT,
-		description = "Cancel the upload.")
-	public String cancelUpload() {
-		System.out.println(new LogEntry(Level.VERBOSE, "cancelling upload"));
-		synchronized (lock) {
-			if (reader != null) {
-				reader.cancel();
-			}
-			readingUpload = false;
-			isUploadCancelled = true;
-		}
-		return "";
-	}
-
-	@Override
-	public boolean isUploadCancelled() {
-		return isUploadCancelled;
-
-	}
-
-	@Override
-	public boolean isUploadInProgress() {
-		return readingUpload;
-	}
-
-	@Override
-	@SystemEndpoint
-	@AllowPublicAccess
-	@Endpoint(inputType = VOID, path = "reset", method = POST,
-		description = "Reset the upload.")
-	public void reset() {
-		System.out.println(new LogEntry(Level.VERBOSE, "resetting upload"));
-		synchronized (lock) {
-			if (readingUpload) {
-				cancelUpload();
-			}
-//			readingUpload = false;
-			isUploadCancelled = false;
-		}
-	}
-
-	@Override
-	public void assertFileNameAllowed(String fullFileName) {
-		if(fullFileName.equals(downloadSubDir)) { //prevent weird overwrites of critical folder
-			throw new RestException("file " + fullFileName + " has illegal name", 400);
-		}
-		for(String wildcardExp : allowedFormatsWildcardExpressions) {
-			if(PatternMatchingSupport.valueMatchesWildcardExpression(fullFileName, wildcardExp)) {
-				return;
-			}
-		}
-		throw new RestException("file " + fullFileName + " does not match naming convention", 400);
+	private String getUserDownloadDir() {
+		return uploadDir + getUserDir() + "downloads/";
 	}
 }

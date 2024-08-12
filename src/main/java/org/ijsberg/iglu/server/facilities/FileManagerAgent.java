@@ -21,12 +21,15 @@ package org.ijsberg.iglu.server.facilities;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.ijsberg.iglu.server.facilities.model.MultipartUploadProgress;
 import org.ijsberg.iglu.util.io.model.FileCollectionDto;
 import org.ijsberg.iglu.util.io.model.UploadedFileCommentDto;
 
+import java.io.IOException;
+
 /**
  */
-public interface UploadAgent {
+public interface FileManagerAgent {
 
 	FileCollectionDto getDownloadableFileNames();
 
@@ -44,25 +47,17 @@ public interface UploadAgent {
 
     void downloadDownloadableFile(HttpServletRequest req, HttpServletResponse response);
 
-    void readMultiPartUpload(HttpServletRequest req, HttpServletResponse res);
-
-    void readMultiPartUploadForClient(HttpServletRequest req, HttpServletResponse res);
-
     void downloadUserDownloadableFile(HttpServletRequest req, HttpServletResponse res);
 
-	long getBytesRead();
+    //uploads
 
-	long getContentLength();
+    String initializePersonalUpload();
 
-    String getProgress();
+    void startPersonalUpload(HttpServletRequest req, HttpServletResponse res);
 
-    String cancelUpload();
+    MultipartUploadProgress getPersonalUploadProgress(String uploadId);
 
-	boolean isUploadCancelled();
+    void cancelPersonalUpload(String uploadId);
 
-    boolean isUploadInProgress();
-
-    void reset();
-
-	String getProgress(String jsFunction);
+    void moveFileToCustomerDownloads(String fileName, String customerId) throws IOException;
 }
