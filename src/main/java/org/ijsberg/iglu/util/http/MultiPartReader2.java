@@ -68,6 +68,8 @@ public class MultiPartReader2 {
      */
     public void readMultipartUpload(HttpServletRequest request) throws IOException {
 //        this.request = request;
+        System.out.println(new LogEntry(Level.DEBUG, "About to read multipart upload"));
+
         contentLength = request.getContentLength();
         input = request.getInputStream();
 
@@ -94,7 +96,7 @@ public class MultiPartReader2 {
             partialCopyOutputStream.close();
 //            fullFileName = null;
         }
-        System.out.println(new LogEntry("post data retrieved from multi-part data: " + bytesRead + " bytes"));
+        System.out.println(new LogEntry(Level.DEBUG, "post data retrieved from multi-part data: " + bytesRead + " bytes"));
     }
 
     private void getMultiPartBoundary() throws IOException {
