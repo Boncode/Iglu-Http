@@ -283,8 +283,8 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 
 
 	@Override
-	@RequireOneOrMorePermissions(permission = {UPLOAD})
 	@BypassCsrfCheck
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "download", method = POST,
 		description = "Download a downloadable file.")
 	public void downloadUserDownloadableFile(HttpServletRequest req, HttpServletResponse res) {
@@ -299,7 +299,6 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 
 	@Override
 	@RequireOneOrMorePermissions(permission = {UPLOAD})
-	@BypassCsrfCheck
 	@Endpoint(inputType = VOID, path = "personal/initialize", method = GET, returnType = WebContentType.TXT,
 			description = "Initialize personal upload.")
 	public String initializePersonalUpload() {
@@ -311,8 +310,8 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 	}
 
 	@Override
-	@RequireOneOrMorePermissions(permission = {UPLOAD})
 	@BypassCsrfCheck
+	@RequireOneOrMorePermissions(permission = {UPLOAD})
 	@Endpoint(inputType = REQUEST_RESPONSE, path = "personal/upload", method = POST,
 			description = "Start the upload for uploadId")
 	public void startPersonalUpload(HttpServletRequest req, HttpServletResponse res) {
@@ -330,7 +329,6 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 
 	@Override
 	@RequireOneOrMorePermissions(permission = {UPLOAD})
-	@BypassCsrfCheck
 	@Endpoint(inputType = FROM_PATH, path = "personal/progress", method = GET, returnType = WebContentType.JSON,
 			description = "Get upload progress for uploadId.")
 	public MultipartUploadProgress getPersonalUploadProgress(String uploadIdString) {
@@ -343,7 +341,6 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 
 	@Override
 	@RequireOneOrMorePermissions(permission = {UPLOAD})
-	@BypassCsrfCheck
 	@Endpoint(inputType = FROM_PATH, path = "personal/cancel", method = POST,
 			description = "Cancel upload by uploadId.")
 	public void cancelPersonalUpload(String uploadIdString) {
