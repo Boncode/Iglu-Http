@@ -21,15 +21,16 @@ data is an array of arrays
     ...
 ]
 */
-iglu.util.import.loadJsonData = function(data, callbackWhenDone/*, extra arguments will be passed to (optional) constructors and callback function*/) {
+iglu.util.import.loadJsonData = function(thisArg, data, callbackWhenDone/*, extra arguments will be passed to (optional) constructors and callback function*/) {
 
-    var callBackArguments = iglu.util.import.getArgumentsAsArray(arguments).slice(2);
+    var callBackArguments = iglu.util.import.getArgumentsAsArray(arguments).slice(3);
     var callSeqNr = iglu.util.import.callSeqNr++;
 
     iglu.util.import.callData[callSeqNr] = new Object();
 	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded = callbackWhenDone;
 	iglu.util.import.callData[callSeqNr].callBackArguments = callBackArguments;
 	iglu.util.import.callData[callSeqNr].nrofFilesToLoad = data.length;
+	iglu.util.import.callData[callSeqNr].thisArg = thisArg;
 
 
 	for(var i in data) {
@@ -62,15 +63,6 @@ iglu.util.import.getArgumentsAsArray = function(argumentObject) {
     return argumentsArray;
 }
 
-/*iglu.util.import.getJsonParseFunctionText = function(varName, callSeqNr) {
-	return "try { " +
-		varName + " = JSON.parse(jsonData);" +
-		"} catch (e) {" +
-			"console.error('cannot parse ' + jsonData + ' for var " + varName + " with message: ' + e.message);" +
-		"}" +
-		"iglu.util.import.checkNrofFilesToLoad(" + callSeqNr + ");"
-}*/
-
 iglu.util.import.assignValToVarAndProceed = function(jsonData, callbackInput) {
 	try {
 		iglu.util.setGlobalObject(callbackInput.varName, JSON.parse(jsonData));
@@ -82,20 +74,10 @@ iglu.util.import.assignValToVarAndProceed = function(jsonData, callbackInput) {
 }
 
 
-/*iglu.util.import.getJsonParseAndInvokeConstructorText = function(varName, callSeqNr) {
-	return "try { " +
-		varName + " = JSON.parse(jsonData);" +
-		"} catch (e) {" +
-			"console.error('cannot parse ' + jsonData + ' for var " + varName + " with message: ' + e.message);" +
-		"}" +
-		"iglu.util.import.checkNrofFilesToLoad(" + callSeqNr + ");"
-}*/
-
-
 iglu.util.import.checkNrofFilesToLoad = function(callSeqNr) {
 	iglu.util.import.callData[callSeqNr].nrofFilesToLoad--;
 	if(iglu.util.import.callData[callSeqNr].nrofFilesToLoad == 0 && typeof iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded != 'undefined') {
-    	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded.apply(this, iglu.util.import.callData[callSeqNr].callBackArguments);
+    	iglu.util.import.callData[callSeqNr].callbackWhenFilesLoaded.apply(iglu.util.import.callData[callSeqNr].thisArg, iglu.util.import.callData[callSeqNr].callBackArguments);
 	}
 }
 
