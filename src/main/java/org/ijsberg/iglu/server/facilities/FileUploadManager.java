@@ -9,7 +9,7 @@ import org.ijsberg.iglu.rest.RestException;
 import org.ijsberg.iglu.server.facilities.model.MultipartUploadProgress;
 import org.ijsberg.iglu.server.facilities.model.UploadStatus;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
-import org.ijsberg.iglu.util.http.MultiPartReader2;
+import org.ijsberg.iglu.util.http.MultiPartReader;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
@@ -21,7 +21,7 @@ import java.util.UUID;
 
 public class FileUploadManager implements FileNameChecker {
 
-    private final MultiPartReader2 uploadReader;
+    private final MultiPartReader uploadReader;
     private UploadStatus uploadStatus = UploadStatus.DONE;
     private UUID currentUploadId = null;
 
@@ -38,7 +38,7 @@ public class FileUploadManager implements FileNameChecker {
         this.allowedFormatsWildcardExpressions = properties.getPropertyAsArray("allowed_files_wildcard");
         this.disallowedFormatsWildcardExpressions = properties.getPropertyAsArray("disallowed_files_wildcard");
 
-        this.uploadReader = new MultiPartReader2(uploadDir, this);
+        this.uploadReader = new MultiPartReader(uploadDir, this);
         this.requestRegistry = requestRegistry;
     }
 
