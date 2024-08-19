@@ -432,15 +432,9 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				csrfToken = KeyGenerator.generateKey(60);
 				session.setAttribute(HEADER_X_CSRF_TOKEN, csrfToken);
 			}
-			((HttpServletResponse)servletResponse).addHeader(HEADER_X_CSRF_TOKEN, csrfToken);
-
-//			servletResponse.getOutputStream().println("AjaxRequestManager." + StringSupport.replaceAll(HEADER_X_CSRF_TOKEN, "-", "_") + " = '" + csrfToken + "';");
+			((HttpServletResponse)servletResponse).setHeader(HEADER_X_CSRF_TOKEN, csrfToken);
 		}
-
-/*		if (pathInfo.endsWith("/ajaxRequestManager.js") && csrfToken != null) {
-				servletResponse.getOutputStream().println("AjaxRequestManager." + StringSupport.replaceAll(HEADER_X_CSRF_TOKEN, "-", "_") + " = '" + csrfToken + "';");
-		}
-*/	}
+	}
 
 	private void setResponseHeaders(ServletRequest servletRequest, ServletResponse servletResponse, Session session) {
 		for(String header : additionalHeaders.toOrderedMap().keySet()) {
