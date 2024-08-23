@@ -66,33 +66,35 @@ import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
  * filters in a chain. Note that the first filter creates the request and
  * determines which realm is entered.  
  */
-public class WebAppEntryPoint implements Filter, EntryPoint
-{
+public class WebAppEntryPoint implements Filter, EntryPoint {
+
+	public static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
+	private final String USER_ID_KEY = "IGLU_USER_ID";
+
 	private String xorKey;
 
 	private AccessManager accessManager;
 
-	public static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
-	private String USER_ID_KEY = "IGLU_USER_ID";
-
 	protected String filterName;
 
-	private boolean syncUserPrefs;
+
+//	private boolean syncUserPrefs;
 	private int userPrefsMaxAge = -1;
 
-	private HashMap exceptionPages = new HashMap();
+//	private HashMap exceptionPages = new HashMap();
 //	private List exceptionsHandled = new ArrayList();
+
 	//debug mode
-	private boolean printUnhandledExceptions = false;
+	private final boolean printUnhandledExceptions = false;
 
 	private ThreadLocal httpRequest = new ThreadLocal();
 	private ThreadLocal httpResponse = new ThreadLocal();
 
-	private HashMap securityConstraints = new HashMap();
+//	private HashMap securityConstraints = new HashMap();
 
 
-	private boolean loggingEnabled;
-	private String exceptionPagesSectionId;
+//	private boolean loggingEnabled;
+//	private String exceptionPagesSectionId;
 
 	private boolean loginRequired = false;
 	private String loginPath;
@@ -102,22 +104,27 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 	private boolean passSessionIdSecure = false;
 
-	private IgluProperties additionalHeaders = new IgluProperties();
-	private IgluProperties additionalHeadersNoLogin = new IgluProperties();
-	private IgluProperties additionalStaticContentHeaders = new IgluProperties();
+	private final IgluProperties additionalHeaders = new IgluProperties();
+	private final IgluProperties additionalHeadersNoLogin = new IgluProperties();
+	private final IgluProperties additionalStaticContentHeaders = new IgluProperties();
 
 
-	private static class ExceptionHandlingSettings {
-		public String redirectPage;
-		public int loglevel;
+//	private static class ExceptionHandlingSettings {
+//		public String redirectPage;
+//		public int loglevel;
+//
+//
+//		public ExceptionHandlingSettings(String redirectPage, int loglevel) {
+//			this.redirectPage = redirectPage;
+//			this.loglevel = loglevel;
+//		}
+//	}
 
 
-		public ExceptionHandlingSettings(String redirectPage, int loglevel) {
-			this.redirectPage = redirectPage;
-			this.loglevel = loglevel;
-		}
+    public WebAppEntryPoint()
+	{
+		super();
 	}
-
 
 	public void setAccessManager(AccessManager accessManager) {
 		this.accessManager = accessManager;
@@ -125,14 +132,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 	public void setXorKey(String xorKey) {
 		this.xorKey = xorKey;
-	}
-
-	/**
-     *
-     */
-    public WebAppEntryPoint()
-	{
-		super();
 	}
 
 	/**
@@ -201,7 +200,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		ServletSupport.importCookieValues(request, properties);
 	}
 
-
 	//TODO document init params
 	/**
 	 * @param conf
@@ -210,8 +208,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	public final void init(FilterConfig conf) {
 		filterName = conf.getFilterName();
 
-		String syncUserPrefsStr = conf.getInitParameter("sync_user_prefs");
-		syncUserPrefs = (syncUserPrefsStr != null ? Boolean.valueOf(syncUserPrefsStr) : false);
+//		String syncUserPrefsStr = conf.getInitParameter("sync_user_prefs");
+//		syncUserPrefs = (syncUserPrefsStr != null ? Boolean.valueOf(syncUserPrefsStr) : false);
 
 		String loginRequiredStr = conf.getInitParameter("login_required");
 		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false); // TODO should default to true
@@ -247,43 +245,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			}
 		}
 	}
-
-/*	private void initializeExceptionPages()
-			throws ServletException
-	{
-		PropertyBundle exceptionPagesSection = application.getConfigurationSection(exceptionPagesSectionId);
-		exceptionPagesSection.setDescription("declares handling in the form of:\n" +
-				"remainingexceptions.class=java.lang.Exception\n" +
-				"remainingexceptions.page=error.jsp\n" +
-				"remainingexceptions.loglevel=CRITICAL\n" +
-				"Note: order matters");
-//		if(exceptionPagesSection != null)
-//	{
-		Iterator defIterator = exceptionPagesSection.getSubsectionKeys().iterator();
-		while(defIterator.hasNext())
-		{
-			String key = (String)defIterator.next();
-//			PropertyBundle def = (PropertyBundle)defIterator.next();
-			String className = exceptionPagesSection.getValue(key + ".class", "org.ijsberg.iglu.SomeException").toString();
-			Class exceptionClass;
-			try
-			{
-				exceptionClass = Class.forName(className);
-			}
-			catch(Throwable t)
-			{
-				throw new ServletException("filter " + filterName + " can not handle exception '" + className + "'", t);
-			}
-			exceptionPages.put(exceptionClass, new ExceptionHandlingSettings(
-					exceptionPagesSection.getValue(key + ".page", "error.html").toString(),
-					exceptionPagesSection.getIndex(key + ".loglevel", StandardApplication.levelString, Application.CRITICAL)));
-
-
-		}
-//	}
-	}*/
-
-
 
 	/**
 	 * Must handle all incoming http requests.
@@ -553,30 +514,21 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 		System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName, cause));
 
-		//print error to screen
+		//print error to screen (for debugging purposes)
 		if(this.printUnhandledExceptions) {
 			if(!response.isCommitted())	{
 				ServletSupport.printException(response, "An exception occurred for which no exception page is defined.\n" +
 						"Make sure you do so if your application is in a production environment.\n" +
-						"(in section [" + exceptionPagesSectionId + "])" +
 						"\n\n" + CollectionSupport.format(messageStack, "\n"), cause);
 				response.setStatus(500);
-			}/* else {
-				System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName + " can not be printed: response already committed", cause));
-			}*/
+			}
 		}
 	}
-
-
 
 	/**
 	 * Is invoked when the servlet runner shuts down
 	 */
 	public void destroy() {
 	}
-
-
-
-
 }
 
