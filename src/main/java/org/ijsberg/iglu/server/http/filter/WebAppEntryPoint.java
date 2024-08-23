@@ -77,24 +77,13 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 
 	protected String filterName;
 
-
-//	private boolean syncUserPrefs;
 	private int userPrefsMaxAge = -1;
-
-//	private HashMap exceptionPages = new HashMap();
-//	private List exceptionsHandled = new ArrayList();
 
 	//debug mode
 	private final boolean printUnhandledExceptions = false;
 
 	private ThreadLocal httpRequest = new ThreadLocal();
 	private ThreadLocal httpResponse = new ThreadLocal();
-
-//	private HashMap securityConstraints = new HashMap();
-
-
-//	private boolean loggingEnabled;
-//	private String exceptionPagesSectionId;
 
 	private boolean loginRequired = false;
 	private String loginPath;
@@ -109,6 +98,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	private final IgluProperties additionalStaticContentHeaders = new IgluProperties();
 
 
+	//todo this might be nice to do a controlled response redirect for pages that don't exist etc
 //	private static class ExceptionHandlingSettings {
 //		public String redirectPage;
 //		public int loglevel;
@@ -161,25 +151,11 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 		storeSessionDataInCookie(USER_ID_KEY, null, response);
 	}
 
-    /**
-     *
-     * @param currentRequest
-     * @param properties
-     */
     public void exportUserSettings(Request currentRequest, Properties properties) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		ServletSupport.exportCookieValues(response, properties, "/", userPrefsMaxAge);
 	}
 
-
-	/**
-	 * Stores session id in the root of a cookie
-	 * The cookie will expire as soon as the browser closes
-	 *
-	 * @param key
-	 * @param value
-	 * @param response
-	 */
 	public void storeSessionDataInCookie(String key, String value, ServletResponse response) {
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
@@ -190,26 +166,14 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 		((HttpServletResponse)response).addCookie(cookie);
 	}
 
-    /**
-     *
-     * @param currentRequest
-     * @param properties
-     */
     public void importUserSettings(Request currentRequest, Properties properties) {
 		ServletRequest request = (ServletRequest)httpRequest.get();
 		ServletSupport.importCookieValues(request, properties);
 	}
 
 	//TODO document init params
-	/**
-	 * @param conf
-	 * @throws
-	 */
 	public final void init(FilterConfig conf) {
 		filterName = conf.getFilterName();
-
-//		String syncUserPrefsStr = conf.getInitParameter("sync_user_prefs");
-//		syncUserPrefs = (syncUserPrefsStr != null ? Boolean.valueOf(syncUserPrefsStr) : false);
 
 		String loginRequiredStr = conf.getInitParameter("login_required");
 		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false); // TODO should default to true
@@ -300,11 +264,9 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 			setResponseHeaders(servletRequest, servletResponse, session);
 
 			//if a user logged in, the user id must be stored
-			if(userId == null)
-			{
+			if(userId == null) {
 				User user = appRequest.getUser();
-				if(user != null)
-				{
+				if(user != null) {
 					storeSessionDataInCookie(USER_ID_KEY, user.getId(), servletResponse);
 				}
 			}
@@ -335,18 +297,14 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 						+ " took " + timeUsed + "ms. (> 100)" ));
 			}
 		}
-		catch (Throwable t)//make sure user gets a controlled response
-		{
+		catch (Throwable t) { //make sure user gets a controlled response
 			//is this the actual entry point or is this entry point wrapped?
-			if ( appRequest != null &&  appRequest.getTimesEntered() > 1)
-			{
+			if ( appRequest != null &&  appRequest.getTimesEntered() > 1) {
 				//it's wrapped, so the exception must be thrown at the top entry point
 				ServletSupport.rethrow(t);
 			}
 			handleException(servletRequest, (HttpServletResponse)servletResponse, t);
-		}
-		finally
-		{
+		} finally {
 			if(accessManager != null) {
 				accessManager.releaseRequest();
 			}
@@ -446,8 +404,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 				session.setAttribute(ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN, true);
 			}
 		}
-		if(session != null) {
-		}
 		return session;
 	}
 
@@ -457,8 +413,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 		if (credentialsArray.size() < 2) {
 			throw new IllegalArgumentException("wrong format of encoded credentials: colon separator not found");
 		}
-		Credentials credentials = new SimpleCredentials(credentialsArray.get(0), credentialsArray.get(1));
-		return credentials;
+		return new SimpleCredentials(credentialsArray.get(0), credentialsArray.get(1));
 	}
 
 	protected String decodeString(String encodedString) {
