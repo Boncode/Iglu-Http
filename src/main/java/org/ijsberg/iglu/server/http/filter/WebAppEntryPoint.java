@@ -1,26 +1,6 @@
-/*
- * Copyright 2011-2014 Jeroen Meetsma - IJsberg Automatisering BV
- *
- * This file is part of Iglu.
- *
- * Iglu is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Iglu is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Iglu.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.ijsberg.iglu.server.http.filter;
 
 import jakarta.servlet.*;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.access.*;
@@ -41,7 +21,6 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 import java.io.IOException;
 import java.util.*;
 
-import static org.eclipse.jetty.http.HttpCookie.SAME_SITE_STRICT_COMMENT;
 import static org.ijsberg.iglu.http.client.Constants.ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN;
 import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
 
@@ -68,8 +47,8 @@ import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
  */
 public class WebAppEntryPoint implements Filter, EntryPoint {
 
-	public static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
-	private final String USER_ID_KEY = "IGLU_USER_ID";
+	private static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
+	private static final String USER_ID_KEY = "IGLU_USER_ID";
 
 	private String xorKey;
 
@@ -91,7 +70,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	private String publicContentRegExp;
 	private String staticContentRegExp;
 
-	private boolean passSessionIdSecure = false;
+//	private boolean passSessionIdSecure = false; // removed, always pass securely
 
 	private final IgluProperties additionalHeaders = new IgluProperties();
 	private final IgluProperties additionalHeadersNoLogin = new IgluProperties();
@@ -131,12 +110,11 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	 */
 	public void onSessionUpdate(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
-		storeSessionDataInCookie(SESSION_TOKEN_KEY, session.getToken(), response);
+		ServletSupport.setCookieValue(response, SESSION_TOKEN_KEY, session.getToken());
 		if(session.getUser() != null) {
-			storeSessionDataInCookie(USER_ID_KEY, session.getUser().getId(), response);
-		}
-		else {
-			storeSessionDataInCookie(USER_ID_KEY, null, response);
+			ServletSupport.setCookieValue(response, USER_ID_KEY, session.getUser().getId());
+		} else {
+			ServletSupport.setCookieValue(response, USER_ID_KEY, null);
 		}
 	}
 
@@ -147,23 +125,13 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	 */
 	public void onSessionDestruction(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
-		storeSessionDataInCookie(SESSION_TOKEN_KEY, null, response);
-		storeSessionDataInCookie(USER_ID_KEY, null, response);
+		ServletSupport.setCookieValue(response, SESSION_TOKEN_KEY, null);
+		ServletSupport.setCookieValue(response, USER_ID_KEY, null);
 	}
 
     public void exportUserSettings(Request currentRequest, Properties properties) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		ServletSupport.exportCookieValues(response, properties, "/", userPrefsMaxAge);
-	}
-
-	public void storeSessionDataInCookie(String key, String value, ServletResponse response) {
-		Cookie cookie = new Cookie(key, value);
-		cookie.setPath("/");
-		cookie.setHttpOnly(true);
-		cookie.setSecure(passSessionIdSecure);
-		cookie.setComment(SAME_SITE_STRICT_COMMENT);
-		cookie.setMaxAge(-1);//expire when browser closes
-		((HttpServletResponse)response).addCookie(cookie);
 	}
 
     public void importUserSettings(Request currentRequest, Properties properties) {
@@ -180,8 +148,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 		loginPath = conf.getInitParameter("login_path");
 
 		//pass_session_id_secure
-		String passSessionIdSecureStr = conf.getInitParameter("pass_session_id_secure");
-		passSessionIdSecure = (passSessionIdSecureStr != null ? Boolean.valueOf(passSessionIdSecureStr) : false);
+//		String passSessionIdSecureStr = conf.getInitParameter("pass_session_id_secure");
+//		passSessionIdSecure = (passSessionIdSecureStr != null ? Boolean.valueOf(passSessionIdSecureStr) : false);
 
 		gatherAdditionalHeaders(conf);
 
@@ -213,7 +181,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	/**
 	 * Must handle all incoming http requests.
 	 * Contains hooks for request and session management.
-	 *
+	 * After filtering, request is delegated to the corresponding servlet for the path, so /auth/* for example delegates
+	 * to the IgluRestServlet that has the AuthenticationAgent bound to it.
 	 * @param servletRequest
 	 * @param servletResponse
 	 * @throws IOException
@@ -228,14 +197,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 
 		Request appRequest = null;
 		try {
-			String sessionToken = ServletSupport.getCookieValue(servletRequest, SESSION_TOKEN_KEY);
-			String userId = ServletSupport.getCookieValue(servletRequest, USER_ID_KEY);
-			if("".equals(sessionToken)) {
-				sessionToken = null;
-			}
-			if("".equals(userId)) {
-				userId = null;
-			}
+			String sessionToken = getCookieValueNullIfEmpty(servletRequest, SESSION_TOKEN_KEY);
+			String userId = getCookieValueNullIfEmpty(servletRequest, USER_ID_KEY);
 
 			appRequest = accessManager.bindRequest(this);
 			try {
@@ -267,7 +230,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 			if(userId == null) {
 				User user = appRequest.getUser();
 				if(user != null) {
-					storeSessionDataInCookie(USER_ID_KEY, user.getId(), servletResponse);
+					ServletSupport.setCookieValue((HttpServletResponse) servletResponse, USER_ID_KEY, user.getId());
 				}
 			}
 
@@ -309,6 +272,14 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 				accessManager.releaseRequest();
 			}
 		}
+	}
+
+	private static String getCookieValueNullIfEmpty(ServletRequest request, String cookieName) {
+		String cookieValue = ServletSupport.getCookieValue(request, cookieName);
+		if (cookieValue != null && cookieValue.isEmpty()) {
+			cookieValue = null;
+		}
+		return cookieValue;
 	}
 
 	/**
@@ -428,7 +399,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	}
 
 	private boolean isStaticContent(String servletPath) {
-		return /*!(servletPath.endsWith("/ajaxRequestManager.js")) &&*/ staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp);
+		return (staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp));
 	}
 
 
