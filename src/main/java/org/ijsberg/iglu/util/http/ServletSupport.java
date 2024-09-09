@@ -43,6 +43,8 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.util.*;
 
+import static org.eclipse.jetty.http.HttpCookie.SAME_SITE_STRICT_COMMENT;
+
 //import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
 
 /**
@@ -597,30 +599,17 @@ public abstract class ServletSupport extends HttpEncodingSupport
 		}
 	}
 
-
-	/**
-	 * Retrieves a value from a cookie
-	 *
-	 * @param request
-	 * @param key
-	 * @return
-	 */
-	public static String getCookieValue(ServletRequest request, String key)
-	{
+	public static String getCookieValue(ServletRequest request, String key) {
 		Cookie[] cookies = ((HttpServletRequest) request).getCookies();
-		if (cookies != null)
-		{
-			for (int i = 0; i < cookies.length; i++)
-			{
-				if (cookies[i].getName().equals(key))
-				{
+		if (cookies != null) {
+			for (int i = 0; i < cookies.length; i++) {
+				if (cookies[i].getName().equals(key)) {
 					return cookies[i].getValue();
 				}
 			}
 		}
 		return null;
 	}
-
 
 	public static Properties importCookieValues(ServletRequest request, Properties properties)
 	{
@@ -669,25 +658,27 @@ public abstract class ServletSupport extends HttpEncodingSupport
 	/**
 	 * Stores session id in the root of a cookie
 	 * The cookie will expire as soon as the browser closes
+	 * Pass the cookie securely (HTTPS)
+	 * Http only disallows client access to the cookie value
+	 * Same site strict comment mitigates CSRF
 	 *
 	 * @param response
 	 * @param key
 	 * @param value
 	 */
-	public static void setCookieValue(HttpServletResponse response, String key, String value)
-	{
-		setCookieValue(response, key, value, "/", -1);
+	public static void setCookieValue(HttpServletResponse response, String key, String value) {
+		setCookieValue(response, key, value, "/", -1, true);
 	}
 
-	public static void setCookieValue(HttpServletResponse response, String key, String value, String path, int maxAge)
-	{
+	private static void setCookieValue(HttpServletResponse response, String key, String value, String path, int maxAge, boolean secure) {
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath(path);
+		cookie.setHttpOnly(true); //mitigates client accessing session id from browser
+		cookie.setSecure(secure);
+		cookie.setComment(SAME_SITE_STRICT_COMMENT);
 		cookie.setMaxAge(maxAge);
 		response.addCookie(cookie);
 	}
-
-
 
 	/**
 	 *

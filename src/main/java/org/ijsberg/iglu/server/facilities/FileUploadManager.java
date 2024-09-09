@@ -43,10 +43,10 @@ public class FileUploadManager implements FileNameChecker {
     }
 
     @Override
-    public void assertFileNameAllowed(String fileName) throws RestException {
+    public void assertFileNameAllowed(String fileName) throws InvalidFilenameException {
         for(String wildCardExp : disallowedFormatsWildcardExpressions) {
             if(PatternMatchingSupport.valueMatchesWildcardExpression(fileName, wildCardExp)) {
-                throw new RestException("file " + fileName + " is not allowed, " + wildCardExp + " is not allowed.", 400);
+                throw new InvalidFilenameException("file " + fileName + " is not allowed, " + wildCardExp + " is not allowed.");
             }
         }
 
@@ -55,7 +55,7 @@ public class FileUploadManager implements FileNameChecker {
                 return;
             }
         }
-        throw new RestException("file " + fileName + " does not match naming convention", 400);
+        throw new InvalidFilenameException("file " + fileName + " does not match naming convention");
     }
 
     private boolean isBusy() {
@@ -75,7 +75,7 @@ public class FileUploadManager implements FileNameChecker {
     }
 
 
-    public void upload(HttpServletRequest req) throws IOException {
+    public void upload(HttpServletRequest req) throws IOException, InvalidFilenameException {
         String uploadIdString = getUploadIdStringFromRequest(req.getPathInfo());
         assertUploadIdValid(uploadIdString);
 
@@ -83,20 +83,14 @@ public class FileUploadManager implements FileNameChecker {
 
         try {
             uploadReader.readMultipartUpload(req);
-        } catch (IOException e) {
+        } catch (IOException | InvalidFilenameException e) {
             uploadReader.cancel();
             uploadStatus = UploadStatus.CANCELLED;
-            System.out.println(new LogEntry(Level.CRITICAL, "Error while reading upload", e));
-            throw new RestException("Error while reading upload", 500);
-            //todo get rid of these rest exceptions, throw
-            // something more meaningful to the agent, the agent can throw rest exceptions
-        } catch (RestException fileNotAllowedException) {
-            uploadReader.cancel();
-            uploadStatus = UploadStatus.CANCELLED;
-            throw fileNotAllowedException;
+            throw e;
         }
 
         uploadReader.close();
+
         try {
             postProcess();
             uploadStatus = UploadStatus.DONE;

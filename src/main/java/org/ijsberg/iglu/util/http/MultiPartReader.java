@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.facilities.FileNameChecker;
+import org.ijsberg.iglu.server.facilities.InvalidFilenameException;
 import org.ijsberg.iglu.util.io.FileData;
 import org.ijsberg.iglu.util.io.FileSupport;
 
@@ -66,7 +67,7 @@ public class MultiPartReader {
      * @throws IOException
      * @see org.ijsberg.iglu.util.io.FileData
      */
-    public void readMultipartUpload(HttpServletRequest request) throws IOException {
+    public void readMultipartUpload(HttpServletRequest request) throws IOException, InvalidFilenameException {
 //        this.request = request;
         System.out.println(new LogEntry(Level.DEBUG, "About to read multipart upload"));
 

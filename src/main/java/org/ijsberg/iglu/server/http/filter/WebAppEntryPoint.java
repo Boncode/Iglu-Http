@@ -1,26 +1,6 @@
-/*
- * Copyright 2011-2014 Jeroen Meetsma - IJsberg Automatisering BV
- *
- * This file is part of Iglu.
- *
- * Iglu is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Iglu is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Iglu.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.ijsberg.iglu.server.http.filter;
 
 import jakarta.servlet.*;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.access.*;
@@ -41,7 +21,6 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 import java.io.IOException;
 import java.util.*;
 
-import static org.eclipse.jetty.http.HttpCookie.SAME_SITE_STRICT_COMMENT;
 import static org.ijsberg.iglu.http.client.Constants.ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN;
 import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
 
@@ -66,33 +45,24 @@ import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
  * filters in a chain. Note that the first filter creates the request and
  * determines which realm is entered.  
  */
-public class WebAppEntryPoint implements Filter, EntryPoint
-{
+public class WebAppEntryPoint implements Filter, EntryPoint {
+
+	private static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
+	private static final String USER_ID_KEY = "IGLU_USER_ID";
+
 	private String xorKey;
 
 	private AccessManager accessManager;
 
-	public static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
-	private String USER_ID_KEY = "IGLU_USER_ID";
-
 	protected String filterName;
 
-	private boolean syncUserPrefs;
 	private int userPrefsMaxAge = -1;
 
-	private HashMap exceptionPages = new HashMap();
-//	private List exceptionsHandled = new ArrayList();
 	//debug mode
-	private boolean printUnhandledExceptions = false;
+	private final boolean printUnhandledExceptions = false;
 
 	private ThreadLocal httpRequest = new ThreadLocal();
 	private ThreadLocal httpResponse = new ThreadLocal();
-
-	private HashMap securityConstraints = new HashMap();
-
-
-	private boolean loggingEnabled;
-	private String exceptionPagesSectionId;
 
 	private boolean loginRequired = false;
 	private String loginPath;
@@ -100,24 +70,30 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	private String publicContentRegExp;
 	private String staticContentRegExp;
 
-	private boolean passSessionIdSecure = false;
+//	private boolean passSessionIdSecure = false; // removed, always pass securely
 
-	private IgluProperties additionalHeaders = new IgluProperties();
-	private IgluProperties additionalHeadersNoLogin = new IgluProperties();
-	private IgluProperties additionalStaticContentHeaders = new IgluProperties();
-
-
-	private static class ExceptionHandlingSettings {
-		public String redirectPage;
-		public int loglevel;
+	private final IgluProperties additionalHeaders = new IgluProperties();
+	private final IgluProperties additionalHeadersNoLogin = new IgluProperties();
+	private final IgluProperties additionalStaticContentHeaders = new IgluProperties();
 
 
-		public ExceptionHandlingSettings(String redirectPage, int loglevel) {
-			this.redirectPage = redirectPage;
-			this.loglevel = loglevel;
-		}
+	//todo this might be nice to do a controlled response redirect for pages that don't exist etc
+//	private static class ExceptionHandlingSettings {
+//		public String redirectPage;
+//		public int loglevel;
+//
+//
+//		public ExceptionHandlingSettings(String redirectPage, int loglevel) {
+//			this.redirectPage = redirectPage;
+//			this.loglevel = loglevel;
+//		}
+//	}
+
+
+    public WebAppEntryPoint()
+	{
+		super();
 	}
-
 
 	public void setAccessManager(AccessManager accessManager) {
 		this.accessManager = accessManager;
@@ -128,26 +104,17 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	}
 
 	/**
-     *
-     */
-    public WebAppEntryPoint()
-	{
-		super();
-	}
-
-	/**
 	 * Notification of a session registration event.
 	 *
 	 * @param session
 	 */
 	public void onSessionUpdate(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
-		storeSessionDataInCookie(SESSION_TOKEN_KEY, session.getToken(), response);
+		ServletSupport.setCookieValue(response, SESSION_TOKEN_KEY, session.getToken());
 		if(session.getUser() != null) {
-			storeSessionDataInCookie(USER_ID_KEY, session.getUser().getId(), response);
-		}
-		else {
-			storeSessionDataInCookie(USER_ID_KEY, null, response);
+			ServletSupport.setCookieValue(response, USER_ID_KEY, session.getUser().getId());
+		} else {
+			ServletSupport.setCookieValue(response, USER_ID_KEY, null);
 		}
 	}
 
@@ -158,68 +125,31 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	 */
 	public void onSessionDestruction(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
-		storeSessionDataInCookie(SESSION_TOKEN_KEY, null, response);
-		storeSessionDataInCookie(USER_ID_KEY, null, response);
+		ServletSupport.setCookieValue(response, SESSION_TOKEN_KEY, null);
+		ServletSupport.setCookieValue(response, USER_ID_KEY, null);
 	}
 
-    /**
-     *
-     * @param currentRequest
-     * @param properties
-     */
     public void exportUserSettings(Request currentRequest, Properties properties) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		ServletSupport.exportCookieValues(response, properties, "/", userPrefsMaxAge);
 	}
 
-
-	/**
-	 * Stores session id in the root of a cookie
-	 * The cookie will expire as soon as the browser closes
-	 *
-	 * @param key
-	 * @param value
-	 * @param response
-	 */
-	public void storeSessionDataInCookie(String key, String value, ServletResponse response) {
-		Cookie cookie = new Cookie(key, value);
-		cookie.setPath("/");
-		cookie.setHttpOnly(true);
-		cookie.setSecure(passSessionIdSecure);
-		cookie.setComment(SAME_SITE_STRICT_COMMENT);
-		cookie.setMaxAge(-1);//expire when browser closes
-		((HttpServletResponse)response).addCookie(cookie);
-	}
-
-    /**
-     *
-     * @param currentRequest
-     * @param properties
-     */
     public void importUserSettings(Request currentRequest, Properties properties) {
 		ServletRequest request = (ServletRequest)httpRequest.get();
 		ServletSupport.importCookieValues(request, properties);
 	}
 
-
 	//TODO document init params
-	/**
-	 * @param conf
-	 * @throws
-	 */
 	public final void init(FilterConfig conf) {
 		filterName = conf.getFilterName();
-
-		String syncUserPrefsStr = conf.getInitParameter("sync_user_prefs");
-		syncUserPrefs = (syncUserPrefsStr != null ? Boolean.valueOf(syncUserPrefsStr) : false);
 
 		String loginRequiredStr = conf.getInitParameter("login_required");
 		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false); // TODO should default to true
 		loginPath = conf.getInitParameter("login_path");
 
 		//pass_session_id_secure
-		String passSessionIdSecureStr = conf.getInitParameter("pass_session_id_secure");
-		passSessionIdSecure = (passSessionIdSecureStr != null ? Boolean.valueOf(passSessionIdSecureStr) : false);
+//		String passSessionIdSecureStr = conf.getInitParameter("pass_session_id_secure");
+//		passSessionIdSecure = (passSessionIdSecureStr != null ? Boolean.valueOf(passSessionIdSecureStr) : false);
 
 		gatherAdditionalHeaders(conf);
 
@@ -248,47 +178,11 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		}
 	}
 
-/*	private void initializeExceptionPages()
-			throws ServletException
-	{
-		PropertyBundle exceptionPagesSection = application.getConfigurationSection(exceptionPagesSectionId);
-		exceptionPagesSection.setDescription("declares handling in the form of:\n" +
-				"remainingexceptions.class=java.lang.Exception\n" +
-				"remainingexceptions.page=error.jsp\n" +
-				"remainingexceptions.loglevel=CRITICAL\n" +
-				"Note: order matters");
-//		if(exceptionPagesSection != null)
-//	{
-		Iterator defIterator = exceptionPagesSection.getSubsectionKeys().iterator();
-		while(defIterator.hasNext())
-		{
-			String key = (String)defIterator.next();
-//			PropertyBundle def = (PropertyBundle)defIterator.next();
-			String className = exceptionPagesSection.getValue(key + ".class", "org.ijsberg.iglu.SomeException").toString();
-			Class exceptionClass;
-			try
-			{
-				exceptionClass = Class.forName(className);
-			}
-			catch(Throwable t)
-			{
-				throw new ServletException("filter " + filterName + " can not handle exception '" + className + "'", t);
-			}
-			exceptionPages.put(exceptionClass, new ExceptionHandlingSettings(
-					exceptionPagesSection.getValue(key + ".page", "error.html").toString(),
-					exceptionPagesSection.getIndex(key + ".loglevel", StandardApplication.levelString, Application.CRITICAL)));
-
-
-		}
-//	}
-	}*/
-
-
-
 	/**
 	 * Must handle all incoming http requests.
 	 * Contains hooks for request and session management.
-	 *
+	 * After filtering, request is delegated to the corresponding servlet for the path, so /auth/* for example delegates
+	 * to the IgluRestServlet that has the AuthenticationAgent bound to it.
 	 * @param servletRequest
 	 * @param servletResponse
 	 * @throws IOException
@@ -303,14 +197,8 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 		Request appRequest = null;
 		try {
-			String sessionToken = ServletSupport.getCookieValue(servletRequest, SESSION_TOKEN_KEY);
-			String userId = ServletSupport.getCookieValue(servletRequest, USER_ID_KEY);
-			if("".equals(sessionToken)) {
-				sessionToken = null;
-			}
-			if("".equals(userId)) {
-				userId = null;
-			}
+			String sessionToken = getCookieValueNullIfEmpty(servletRequest, SESSION_TOKEN_KEY);
+			String userId = getCookieValueNullIfEmpty(servletRequest, USER_ID_KEY);
 
 			appRequest = accessManager.bindRequest(this);
 			try {
@@ -339,12 +227,10 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 			setResponseHeaders(servletRequest, servletResponse, session);
 
 			//if a user logged in, the user id must be stored
-			if(userId == null)
-			{
+			if(userId == null) {
 				User user = appRequest.getUser();
-				if(user != null)
-				{
-					storeSessionDataInCookie(USER_ID_KEY, user.getId(), servletResponse);
+				if(user != null) {
+					ServletSupport.setCookieValue((HttpServletResponse) servletResponse, USER_ID_KEY, user.getId());
 				}
 			}
 
@@ -374,22 +260,26 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 						+ " took " + timeUsed + "ms. (> 100)" ));
 			}
 		}
-		catch (Throwable t)//make sure user gets a controlled response
-		{
+		catch (Throwable t) { //make sure user gets a controlled response
 			//is this the actual entry point or is this entry point wrapped?
-			if ( appRequest != null &&  appRequest.getTimesEntered() > 1)
-			{
+			if ( appRequest != null &&  appRequest.getTimesEntered() > 1) {
 				//it's wrapped, so the exception must be thrown at the top entry point
 				ServletSupport.rethrow(t);
 			}
 			handleException(servletRequest, (HttpServletResponse)servletResponse, t);
-		}
-		finally
-		{
+		} finally {
 			if(accessManager != null) {
 				accessManager.releaseRequest();
 			}
 		}
+	}
+
+	private static String getCookieValueNullIfEmpty(ServletRequest request, String cookieName) {
+		String cookieValue = ServletSupport.getCookieValue(request, cookieName);
+		if (cookieValue != null && cookieValue.isEmpty()) {
+			cookieValue = null;
+		}
+		return cookieValue;
 	}
 
 	/**
@@ -485,8 +375,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 				session.setAttribute(ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN, true);
 			}
 		}
-		if(session != null) {
-		}
 		return session;
 	}
 
@@ -496,8 +384,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 		if (credentialsArray.size() < 2) {
 			throw new IllegalArgumentException("wrong format of encoded credentials: colon separator not found");
 		}
-		Credentials credentials = new SimpleCredentials(credentialsArray.get(0), credentialsArray.get(1));
-		return credentials;
+		return new SimpleCredentials(credentialsArray.get(0), credentialsArray.get(1));
 	}
 
 	protected String decodeString(String encodedString) {
@@ -512,7 +399,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 	}
 
 	private boolean isStaticContent(String servletPath) {
-		return /*!(servletPath.endsWith("/ajaxRequestManager.js")) &&*/ staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp);
+		return (staticContentRegExp != null && PatternMatchingSupport.valueMatchesRegularExpression(servletPath, staticContentRegExp));
 	}
 
 
@@ -553,30 +440,21 @@ public class WebAppEntryPoint implements Filter, EntryPoint
 
 		System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName, cause));
 
-		//print error to screen
+		//print error to screen (for debugging purposes)
 		if(this.printUnhandledExceptions) {
 			if(!response.isCommitted())	{
 				ServletSupport.printException(response, "An exception occurred for which no exception page is defined.\n" +
 						"Make sure you do so if your application is in a production environment.\n" +
-						"(in section [" + exceptionPagesSectionId + "])" +
 						"\n\n" + CollectionSupport.format(messageStack, "\n"), cause);
 				response.setStatus(500);
-			}/* else {
-				System.out.println(new LogEntry(Level.CRITICAL, "exception handled in http-filter " + filterName + " can not be printed: response already committed", cause));
-			}*/
+			}
 		}
 	}
-
-
 
 	/**
 	 * Is invoked when the servlet runner shuts down
 	 */
 	public void destroy() {
 	}
-
-
-
-
 }
 

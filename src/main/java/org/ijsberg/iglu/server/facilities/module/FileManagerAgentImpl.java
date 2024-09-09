@@ -13,6 +13,7 @@ import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.*;
 import org.ijsberg.iglu.server.facilities.FileManagerAgent;
 import org.ijsberg.iglu.server.facilities.FileUploadManager;
+import org.ijsberg.iglu.server.facilities.InvalidFilenameException;
 import org.ijsberg.iglu.server.facilities.model.MultipartUploadProgress;
 import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.http.DownloadSupport;
@@ -320,7 +321,7 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 			if(sendEmail) {
 				notifyAsync(new FileData(getPersonalFileUploadManager().getUploadedFile()));
 			}
-		} catch (IllegalArgumentException iae) { //iae message is safe for users
+		} catch (IllegalArgumentException | InvalidFilenameException iae) { //iae message is safe for users
 			throw new RestException(iae.getMessage(), 400);
 		} catch (IOException e) { // in case of failure in file write in postProcess
 			throw new RestException("An error occurred while post processing upload.", 500);
