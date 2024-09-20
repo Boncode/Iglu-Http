@@ -150,4 +150,8 @@ public class JsonArray implements JsonDecorator {
 		}
 		return attributeValues;
 	}
+
+	public void setValue(int index, float value) {
+		contents.set(index, value);
+	}
 }
