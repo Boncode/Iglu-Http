@@ -26,6 +26,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  */
@@ -153,5 +154,18 @@ public class JsonArray implements JsonDecorator {
 
 	public void setValue(int index, float value) {
 		contents.set(index, value);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof JsonArray)) return false;
+		JsonArray jsonArray = (JsonArray) o;
+		return contents.equals(jsonArray.contents);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(contents);
 	}
 }
