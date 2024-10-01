@@ -251,5 +251,18 @@ public class JsonData implements JsonDecorator {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof JsonData)) return false;
+		JsonData jsonData = (JsonData) o;
+		return attributes.equals(jsonData.attributes);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(attributes);
+	}
 }
 
