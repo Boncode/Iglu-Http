@@ -51,8 +51,11 @@ iglu.util.getParametersAsArray = function(functionParameterString) {
 /*
     To be used to add configurable onclick or onload handling avoiding 'unsafe-eval'
 */
-iglu.util.processFunctionInvocationsString = function(functionParameterString) {
+iglu.util.processFunctionInvocationsString = function(functionParameterString,thisArg) {
 
+    if(typeof thisArg == 'undefined') {
+        thisArg = this;
+    }
     var result;
     let separateCalls = functionParameterString.split(';');
     for(var i in separateCalls) {
@@ -62,7 +65,7 @@ iglu.util.processFunctionInvocationsString = function(functionParameterString) {
             let functionParameters = iglu.util.getParametersAsArray(functionParameterString);
             let definedFunction = iglu.util.getGlobalObject(functionName);
             if(definedFunction != null) {
-                result = definedFunction.apply(this,functionParameters);
+                result = definedFunction.apply(thisArg,functionParameters);
             } else {
                 throw('cannot process\'' + functionParameterString + '\': ' + definedFunction + ' not (yet) defined');
             }
