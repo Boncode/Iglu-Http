@@ -64,11 +64,19 @@ iglu.util.import.getArgumentsAsArray = function(argumentObject) {
 }
 
 iglu.util.import.assignValToVarAndProceed = function(jsonData, callbackInput) {
-	try {
-		iglu.util.setGlobalObject(callbackInput.varName, JSON.parse(jsonData));
-		console.debug('data imported in var: ' + callbackInput.varName/* + ' -> ' + jsonData*/);
-	} catch (e) {
-		console.error('cannot set ' + jsonData + ' for var ' + callbackInput.varName + ' with message: ' + e.message);
+
+    let thisArg = iglu.util.import.callData[callbackInput.callSeqNr].thisArg;
+    if(thisArg != null && callbackInput.varName.startsWith('this.')) {
+        let fieldName = callbackInput.varName.substring(5);
+        thisArg[fieldName] = JSON.parse(jsonData);
+        console.debug('data imported in var: this.' + fieldName/* + ' -> ' + jsonData*/);
+    } else {
+        try {
+            iglu.util.setGlobalObject(callbackInput.varName, JSON.parse(jsonData));
+            console.debug('data imported in var: ' + callbackInput.varName/* + ' -> ' + jsonData*/);
+        } catch (e) {
+            console.error('cannot set ' + jsonData + ' for var ' + callbackInput.varName + ' with message: ' + e.message);
+        }
 	}
 	iglu.util.import.checkNrofFilesToLoad(callbackInput.callSeqNr);
 }
