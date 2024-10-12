@@ -26,13 +26,8 @@ iglu.util.getGlobalObject = function(functionName) {
 
 iglu.util.setGlobalObject = function(varName, value) {
     let functionPathArray = varName.split('.');
-/*    if(functionPathArray.includes('') || functionPathArray.includes(null)) {
-        console.error('part of the function name: '+ varName + ' is empty');
-        return null;
-    }*/
     let currentPlaceInFunctionPath = window;
     for(let i = 0; i < functionPathArray.length; i++) {
-//        console.log('currentPlaceInFunctionPath:' + currentPlaceInFunctionPath + '->' + functionPathArray[i]+'->'+window['DashboardTexts']);
         if(i == functionPathArray.length - 1) {
             currentPlaceInFunctionPath[functionPathArray[i]] = value;
         } else {
