@@ -14,12 +14,12 @@ iglu.util.CallStack.prototype.clearHistory = function() {
 	this.stack = new Array();
 }
 
-iglu.util.CallStack.prototype.mark = function(func, ...args) {
-    if(this.executedCall == null || func != this.executedCall.func || !iglu.common.arrayEquals(this.executedCall.args, args)) {
+iglu.util.CallStack.prototype.mark = function(func, args, object = window) {
+    if(this.executedCall === null || func !== this.executedCall.func || !iglu.common.arrayEquals(this.executedCall.args, args)) {
         if(this.lastHashIndex + 1 < this.stack.length) {
             this.stack.splice(this.lastHashIndex + 1, this.stack.length - (this.lastHashIndex + 1));
         }
-        this.stack.push({func: func, args: args});
+        this.stack.push({object: object, func: func, args: args});
         this.totalMarked++;
         this.lastHashValue = this.totalMarked;
         window.location.hash = "#req" + this.totalMarked;
@@ -46,14 +46,14 @@ iglu.util.CallStack.prototype.navigateToPreviousItem = function() {
     this.lastHashIndex--;
     this.executedCall = this.stack[this.lastHashIndex];
     let previousItem = this.stack[this.lastHashIndex];
-    previousItem.func.apply(window, previousItem.args);
+    previousItem.func.apply(previousItem.object, previousItem.args);
 }
 
 iglu.util.CallStack.prototype.navigateToNextItem = function() {
     this.lastHashIndex++;
     this.executedCall = this.stack[this.lastHashIndex];
     let nextItem = this.stack[this.lastHashIndex];
-    nextItem.func.apply(window, nextItem.args);
+    nextItem.func.apply(nextItem.object, nextItem.args);
 }
 
 window.onhashchange = function() {
