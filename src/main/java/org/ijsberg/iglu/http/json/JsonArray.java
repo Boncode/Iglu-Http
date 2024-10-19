@@ -56,6 +56,11 @@ public class JsonArray implements JsonDecorator {
 		return this;
 	}
 
+	public JsonArray addNullValue() {
+		contents.add(null);
+		return this;
+	}
+
 	public JsonArray addListOfValues(List<Object> objects) {
 		for(Object object : objects) {
 			contents.add(object);
