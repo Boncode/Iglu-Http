@@ -450,7 +450,8 @@ body.waiting * {
 }
 
 .clickable_icon:hover {
-    background-color: var(--icon-background-hover);
+    background-color: var(--icon-background-hover) !important;
+    color: var(--text-color) !important;
     cursor: pointer;
 }
 
@@ -518,7 +519,7 @@ body.waiting * {
     color: var(--default-white-offset);
 }
 
-.inline_tag.DELETED, .inline_tag.N\/A, inline_tag.Basic {
+.inline_tag.DELETED, .inline_tag.N\/A, .inline_tag.Basic {
     background-color: var(--default-grey);
     color: var(--default-white-offset);
 }
