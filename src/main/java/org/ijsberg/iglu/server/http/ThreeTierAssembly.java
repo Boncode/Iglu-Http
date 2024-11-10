@@ -133,7 +133,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         core.connect(SCHEDULER, scheduler);
 
         if(accessManager == null) {
-            creatAccessManagerComponent();
+            createAccessManagerComponent();
         }
         core.connect(ACCESS_MANAGER, accessManager, RequestRegistry.class, AccessManager.class);
         core.connect("RequestRegistry", accessManager, RequestRegistry.class);
@@ -151,7 +151,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         return core;
     }
 
-    private void creatAccessManagerComponent() {
+    private void createAccessManagerComponent() {
         StandardAccessManager standardAccessManager = new StandardAccessManager(MultiTenantAwareComponent.class);
         Properties accessManProps = new Properties();
         accessManProps.setProperty("session_timeout", "" + Integer.parseInt(properties.getProperty("sessionTimeout", "60")));
@@ -170,6 +170,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
             loggerProperties = new IgluProperties();
             loggerProperties.setProperty("log_level", "DEBUG");
             loggerProperties.setProperty("log_to_standard_out", "true");
+            loggerProperties.setProperty("nr_log_files_to_keep", "365");
             try {
                 IgluProperties.saveProperties(loggerProperties, home + "/" + configDir + "/logger.properties");
             } catch (IOException e) {
