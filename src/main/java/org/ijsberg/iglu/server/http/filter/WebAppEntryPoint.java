@@ -144,7 +144,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 		filterName = conf.getFilterName();
 
 		String loginRequiredStr = conf.getInitParameter("login_required");
-		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false); // TODO should default to true
+		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : true);
 		loginPath = conf.getInitParameter("login_path");
 
 		//pass_session_id_secure
