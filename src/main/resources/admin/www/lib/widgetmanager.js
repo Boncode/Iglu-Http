@@ -127,7 +127,7 @@ WidgetManager.prototype.registerWindowResizeListener = function(listener) {
 	this.resizeListeners[this.resizeListeners.length] = listener;
 }
 
-
+//TODO: is this still used?
 WidgetManager.prototype.registerTimerListener = function(listener, frameRate) {
 
 	listener.frameRate = frameRate;
@@ -139,10 +139,10 @@ WidgetManager.prototype.registerTimerListener = function(listener, frameRate) {
 	console.debug('current number of timer listeners: ' + this.timerListeners.length);
 	if(this.timerListeners.length == 1) {
 		console.debug('starting timer');
-    	setTimeout('WidgetManager.instance.tick();', this.TIMER_INTERVAL);
+    	setTimeout(WidgetManager.instance.tick, this.TIMER_INTERVAL);
 	}
 }
-
+//TODO: is this still used?
 WidgetManager.prototype.unregisterTimerListener = function(listener) {
 
 	console.debug('unregistering timer listener ' + listener.id);
@@ -151,7 +151,7 @@ WidgetManager.prototype.unregisterTimerListener = function(listener) {
 
 WidgetManager.prototype.tick = function() {
 	if(this.timerListeners.length > 0) {
-    	setTimeout('WidgetManager.instance.tick();', this.TIMER_INTERVAL);
+    	setTimeout(WidgetManager.instance.tick, this.TIMER_INTERVAL);
     } else {
    		console.debug('stopping timer');
 	}
@@ -188,7 +188,7 @@ WidgetManager.prototype.doAutoRefreshWidget = function(widgetId) {
 			if(this.widgetTimerMap[widgetId] != null && this.widgetTimerMap[widgetId] != 'undefined') {
                 clearTimeout(this.widgetTimerMap[widgetId]);
             }
-			this.widgetTimerMap[widgetId] = setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widgetId + '")', autoRefreshInterval);
+			this.widgetTimerMap[widgetId] = setTimeout(function(){ WidgetManager.instance.doAutoRefreshWidget(widget.id);}, autoRefreshInterval);
 		}
 	} else {
 		console.warn('cannot auto refresh ' + widgetId + ', widget not registered');
@@ -197,7 +197,7 @@ WidgetManager.prototype.doAutoRefreshWidget = function(widgetId) {
 
 WidgetManager.prototype.autoRefreshWidget = function(widget, autoRefreshInterval) {
 	widget.autoRefreshInterval = autoRefreshInterval;
-	this.widgetTimerMap[widget.id] = setTimeout('WidgetManager.instance.doAutoRefreshWidget("' + widget.id + '")', autoRefreshInterval);
+	this.widgetTimerMap[widget.id] = setTimeout(function(){ WidgetManager.instance.doAutoRefreshWidget(widget.id);}, autoRefreshInterval);
 }
 
 WidgetManager.prototype.deployWidget = function(newWidget, x, y) {

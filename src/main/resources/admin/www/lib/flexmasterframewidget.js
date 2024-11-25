@@ -157,12 +157,12 @@ WidgetManager.prototype.registerPopupWidget = function(widget) {
 	if(widget.triggerElement != null) {
 		widget.triggerElement.onmouseout = function(event) {
 			var widget = WidgetManager.instance.getWidget(this.id + '_popup');
-			setTimeout('WidgetManager.instance.destroyPopup("' + this.id + '_popup")', widget.timeout);
+			setTimeout(function(){WidgetManager.instance.destroyPopup(this.id + '_popup')}, widget.timeout);
 			widget.mouseOverTrigger = false;
 		}
 		widget.element.onmouseout = function(event) {
 			var widget = WidgetManager.instance.getWidget(this.id);
-			setTimeout('WidgetManager.instance.destroyPopup("' + this.id + '")', widget.timeout);
+			setTimeout(function(){WidgetManager.instance.destroyPopup(this.id)}, widget.timeout);
 			widget.mouseOverPopup = false;
 		}
 		widget.element.onmouseover = function(event) {
@@ -171,7 +171,7 @@ WidgetManager.prototype.registerPopupWidget = function(widget) {
 		}
 	} else {
 		widget.mouseOverPopup = false;
-		setTimeout('WidgetManager.instance.destroyPopup("' + widget.id + '")', widget.timeout);
+		setTimeout(function(){WidgetManager.instance.destroyPopup(widget.id)}, widget.timeout);
 	}
 	this.activateCurrentWidget(widget);
 }
@@ -189,9 +189,9 @@ WidgetManager.prototype.destroyPopup = function(widgetId) {
 
 
 WidgetManager.prototype.registerNotificationWidget = function(notificationWidget) {
-    setTimeout('WidgetManager.instance.beforeDeployNotification("' + notificationWidget.id + '");', 300);
-    setTimeout('WidgetManager.instance.beforeDestroyNotification("' + notificationWidget.id + '");', notificationWidget.timeout - 300);
-    setTimeout('WidgetManager.instance.destroyNotification("' + notificationWidget.id + '");', notificationWidget.timeout);
+    setTimeout(function(){WidgetManager.instance.beforeDeployNotification(notificationWidget.id);}, 300);
+    setTimeout(function(){WidgetManager.instance.beforeDestroyNotification(notificationWidget.id);}, notificationWidget.timeout - 300);
+    setTimeout(function(){WidgetManager.instance.destroyNotification(notificationWidget.id);}, notificationWidget.timeout);
 	this.activateCurrentWidget(notificationWidget);
 }
 
