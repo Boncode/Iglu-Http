@@ -93,11 +93,11 @@ iglu.util.import.checkNrofFilesToLoad = function(callSeqNr) {
 
 //TODO jsonData should be textData or data, used only once, unclear code
 
-iglu.util.import.loadTextData = function(data, servletPath, callbackWhenDone/*, callbackInput*/) {
+iglu.util.import.loadTextData = function(data, servletPath, callbackWhenDone) {
 	console.debug(data);
 	for(var i in data) {
 	    try {
-		    ajaxRequestManager.doRequest((typeof servletPath != 'undefined' ? servletPath : './') + data[i][1], new Function("jsonData", iglu.util.import.handleLoadTextFile(data[i][0])));
+		    ajaxRequestManager.doRequest((typeof servletPath != 'undefined' ? servletPath : './') + data[i][1], iglu.util.import.handleLoadTextFile, data[i][0]);
         } catch(e) {
             console.error('unable to perform request ' + servletPath + ': ' + e.message);
             console.log(data[i][0]);
@@ -105,6 +105,6 @@ iglu.util.import.loadTextData = function(data, servletPath, callbackWhenDone/*, 
 	}
 }
 
-iglu.util.import.handleLoadTextFile = function(varName) {
-    return "" + varName + " = jsonData";
+iglu.util.import.handleLoadTextFile = function(data, variableName, httpResponse) {
+    window[variableName] = data;
 }

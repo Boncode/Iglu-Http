@@ -159,7 +159,6 @@ function updateProgress(data, dataId) {
 				var relativeProgress = Math.round(((1.0 * parseInt(data.progress.bytesRead)) / (parseInt(data.progress.contentLength))) * 324);
 				document.getElementById('progress_bar_inner').style.width = '' + relativeProgress + 'px';
 			}
-			//setTimeout('updateProgressForm()', 250);
 		}
 	} else {
 		WidgetManager.instance.unregisterTimerListener(uploadWindow);
