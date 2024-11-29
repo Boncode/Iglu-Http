@@ -158,13 +158,13 @@ WidgetManager.prototype.registerPopupWidget = function(widget) {
 
 	if(widget.triggerElement != null) {
 		widget.triggerElement.onmouseout = function(event) {
-			var widget = WidgetManager.instance.getWidget(this.id + '_popup');
-			setTimeout(function(){WidgetManager.instance.destroyPopup(this.id);}, widget.timeout);
+			//var widget = WidgetManager.instance.getWidget(this.id + '_popup');
+			setTimeout(function(){WidgetManager.instance.destroyPopup('' + widget.id);}, widget.timeout);
 			widget.mouseOverTrigger = false;
 		}
 		widget.element.onmouseout = function(event) {
-			var widget = WidgetManager.instance.getWidget(this.id);
-			setTimeout(function(){WidgetManager.instance.destroyPopup(this.id);}, widget.timeout);
+			//var widget = WidgetManager.instance.getWidget(this.id);
+			setTimeout(function(){WidgetManager.instance.destroyPopup('' + widget.id);}, widget.timeout);
 			widget.mouseOverPopup = false;
 		}
 		widget.element.onmouseover = function(event) {
@@ -173,7 +173,7 @@ WidgetManager.prototype.registerPopupWidget = function(widget) {
 		}
 	} else {
 		widget.mouseOverPopup = false;
-		setTimeout(function(){WidgetManager.instance.destroyPopup(widget.id);}, widget.timeout);
+		setTimeout(function(){WidgetManager.instance.destroyPopup ('' + widget.id);}, widget.timeout);
 	}
 	this.activateCurrentWidget(widget);
 }
