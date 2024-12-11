@@ -153,7 +153,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 }
 
 /* TODO remove .projects_table_filter after transition */
-.table_searchbar {
+.table_searchbar, .searchbar {
     padding: 4px 8px;
     font-size: 9pt;
     min-height: 25px;
@@ -164,7 +164,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     color: inherit;
     outline: none;
     top: 0;
-    background-color: var(--widget-background-color);
+    background-color: transparent;
     position: sticky;
 }
 
