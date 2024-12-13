@@ -255,9 +255,8 @@ body.waiting * {
     margin-right: 40px;
     margin-left: 4px;
     border: none;
+    align-content: center;
 }
-
-
 
 .properties_textarea {
     flex: 3;
