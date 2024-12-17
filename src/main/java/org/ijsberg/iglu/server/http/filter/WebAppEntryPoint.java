@@ -145,8 +145,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 
 		String loginRequiredStr = conf.getInitParameter("login_required");
 
-		//TODO following flag could be set to true, but make sure this works when using BoncodeViewer for clickable JARs
-		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : false);
+		loginRequired = (loginRequiredStr != null ? Boolean.valueOf(loginRequiredStr) : true);
 		loginPath = conf.getInitParameter("login_path");
 
 		//pass_session_id_secure
