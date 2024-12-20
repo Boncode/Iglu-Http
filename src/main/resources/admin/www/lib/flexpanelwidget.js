@@ -38,21 +38,27 @@ FlexPanelWidget.prototype.constructFlexPanelWidget = function(settings, content)
 
 
 FlexPanelWidget.prototype.addTitleBarFunction = function(settings) {
-    this.titleBarFunctions.push(settings);
+    let titleBarFunctionElement = document.createElement('div');
+
+    titleBarFunctionElement.innerHTML = '<div ' + (settings.id == null ? '' : ('id="' + this.id + '.' + settings.id + '" ')) + 'class="' + settings.className + '"' +
+    (typeof settings.tooltip != 'undefined' ? ' data-tippy-tooltip data-tippy-content-id="phrase.' + settings.tooltip + '"' : '') +
+    ' onclick="' + settings.onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + ((settings.label !== null && settings.label !== undefined) ? settings.label : '') + '</div>';
+
+    this.titleBarFunctions.push(titleBarFunctionElement.firstChild);
+    return titleBarFunctionElement.firstChild;
 };
 
 FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
-    var html = (this.titleBarFunctions.length == 0 ? '' : '<div class="widget_titlebar_container">');
-    for(var i in this.titleBarFunctions) { // todo turn to elements instead of html string
-        html += '<div ' + (this.titleBarFunctions[i].id == null ? '' : ('id="' + this.id + '.' + this.titleBarFunctions[i].id + '" ')) + 'class="' + this.titleBarFunctions[i].className + '"' +
-        (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' data-tippy-tooltip data-tippy-content-id="phrase.' + this.titleBarFunctions[i].tooltip + '"' : '') +
-        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + ((this.titleBarFunctions[i].label !== null && this.titleBarFunctions[i].label !== undefined) ? this.titleBarFunctions[i].label : '') + '</div>';
+    let titleBarFunctionsContainer = document.createElement('div');
+    if(this.titleBarFunctions.length !== 0) {
+        titleBarFunctionsContainer.className = 'widget_titlebar_container';
+        for(functionElement of this.titleBarFunctions) {
+            titleBarFunctionsContainer.appendChild(functionElement);
+        }
+        this.header.appendChild(titleBarFunctionsContainer);
     }
-    html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
 
-    console.debug('createTitleBarFunctionHtml: ' + html)
-
-    return html;
+    console.debug('createTitleBarFunctionHtml: ' + titleBarFunctionsContainer.outerHTML)
 };
 
 FlexPanelWidget.prototype.onFocus = function() {
@@ -73,10 +79,12 @@ FlexPanelWidget.prototype.createEmptyHeader = function() {
 
 FlexPanelWidget.prototype.setHeaderContent = function() {
     if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title"><div class="title"  data-text-type="PHRASE">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml();
+        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title"><div class="title"  data-text-type="PHRASE">' + this.content.title + '</div></div>';
+        this.createTitleBarFunctionHtml();
     } else {
         if(this.title != null) {
-            this.header.innerHTML = this.title + this.createTitleBarFunctionHtml();
+            this.header.innerHTML = this.title;
+            this.createTitleBarFunctionHtml();
         }
     }
 }
