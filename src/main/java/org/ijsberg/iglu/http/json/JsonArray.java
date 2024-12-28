@@ -171,4 +171,8 @@ public class JsonArray implements JsonDecorator {
 	public int hashCode() {
 		return Objects.hash(contents);
 	}
+
+	public void removeLastValue() {
+		contents.remove(contents.size() - 1);
+	}
 }
