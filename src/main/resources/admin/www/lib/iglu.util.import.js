@@ -70,21 +70,22 @@ iglu.util.import.getArgumentsAsArray = function(argumentObject) {
 iglu.util.import.assignValToVarAndProceed = function(jsonData, callbackInput) {
 
     let thisArg = iglu.util.import.callData[callbackInput.callSeqNr].thisArg;
-    for(var varName of callbackInput.varNames) {
-        if(thisArg != null && varName.startsWith('this.')) {
-            let fieldName = varName.substring(5);
-            thisArg[fieldName] = JSON.parse(jsonData);
-            console.debug('data imported in var: this.' + fieldName/* + ' -> ' + jsonData*/);
-        } else {
-            try {
-                iglu.util.setGlobalObject(varName, JSON.parse(jsonData));
+    try {
+        var parsedJson = JSON.parse(jsonData);
+        for(var varName of callbackInput.varNames) {
+            if(thisArg != null && varName.startsWith('this.')) {
+                let fieldName = varName.substring(5);
+                thisArg[fieldName] = parsedJson;
+                console.debug('data imported in var: this.' + fieldName/* + ' -> ' + jsonData*/);
+            } else {
+                iglu.util.setGlobalObject(varName, parsedJson);
                 console.debug('data imported in var: ' + varName/* + ' -> ' + jsonData*/);
-            } catch (e) {
-                console.error('cannot set ' + jsonData + ' for var ' + varName + ' with message: ' + e.message);
             }
         }
-	}
-	iglu.util.import.checkNrofFilesToLoad(callbackInput.callSeqNr);
+    } catch (e) {
+        console.error('cannot set ' + jsonData + ' for var ' + varName + ' with message: ' + e.message);
+    }
+    iglu.util.import.checkNrofFilesToLoad(callbackInput.callSeqNr);
 }
 
 
