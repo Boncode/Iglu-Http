@@ -41,18 +41,31 @@ FlexPanelWidget.prototype.addTitleBarFunction = function(settings) {
     this.titleBarFunctions.push(settings);
 };
 
-FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
-    var html = (this.titleBarFunctions.length == 0 ? '' : '<div class="widget_titlebar_container">');
-    for(var i in this.titleBarFunctions) { // todo turn to elements instead of html string
-        html += '<div ' + (this.titleBarFunctions[i].id == null ? '' : ('id="' + this.id + '.' + this.titleBarFunctions[i].id + '" ')) + 'class="' + this.titleBarFunctions[i].className + '"' +
-        (typeof this.titleBarFunctions[i].tooltip != 'undefined' ? ' data-tippy-tooltip data-tippy-content-id="phrase.' + this.titleBarFunctions[i].tooltip + '"' : '') +
-        ' onclick="' + this.titleBarFunctions[i].onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + ((this.titleBarFunctions[i].label !== null && this.titleBarFunctions[i].label !== undefined) ? this.titleBarFunctions[i].label : '') + '</div>';
+FlexPanelWidget.prototype.createTitleBarFunctionHtmlElement = function() {
+    if (this.titleBarFunctions.length > 0) {
+        let containerDiv = document.createElement("div");
+        containerDiv.className = "widget_titlebar_container";
+
+        for (let object of this.titleBarFunctions) {
+            let functionDiv = document.createElement("div");
+            functionDiv.className = object.className
+            if (object.id) {
+                functionDiv.id = this.id + "." + object.id;
+            }
+            if (object.tooltip) {
+                functionDiv.setAttribute("data-tippy-tooltip", "");
+                functionDiv.setAttribute("data-tippy-content-id", "phrase." + object.tooltip);
+                functionDiv.setAttribute("onclick", object.onclickFunctionAsString + "(\'" + this.getId() + "\',event)");
+            }
+            if (object.label) {
+                functionDiv.innerText = object.label;
+            }
+            containerDiv.appendChild(functionDiv);
+        }
+
+        console.debug('createTitleBarFunctionHtmlElement: ' + containerDiv.outerHTML);
+        return containerDiv;
     }
-    html += (this.titleBarFunctions.length == 0 ? '' : '</div>');
-
-    console.debug('createTitleBarFunctionHtml: ' + html)
-
-    return html;
 };
 
 FlexPanelWidget.prototype.onFocus = function() {
@@ -72,11 +85,28 @@ FlexPanelWidget.prototype.createEmptyHeader = function() {
 }
 
 FlexPanelWidget.prototype.setHeaderContent = function() {
-    if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title"><div class="title"  data-text-type="PHRASE">' + this.content.title + '</div></div>'+ this.createTitleBarFunctionHtml();
+    if (this.content.title != null) {
+        let headerDiv = document.createElement("div");
+        headerDiv.className = "panelheadertitle";
+        headerDiv.id = this.id + "_header_title";
+
+        let titleDiv = document.createElement("div");
+        titleDiv.className = "title";
+        titleDiv.innerText = this.content.title;
+        titleDiv.setAttribute("data-text-type", "PHRASE");
+
+        headerDiv.appendChild(titleDiv);
+
+        this.header.appendChild(headerDiv);
+        this.header.appendChild(this.createTitleBarFunctionHtmlElement());
     } else {
-        if(this.title != null) {
-            this.header.innerHTML = this.title + this.createTitleBarFunctionHtml();
+        if (this.title != null) {
+            let titleDiv = document.createElement("div");
+            titleDiv.className = "title";
+            titleDiv.innerText = this.content.title;
+
+            this.header.appendChild(titleDiv);
+            this.header.appendChild(this.createTitleBarFunctionHtmlElement());
         }
     }
 }
