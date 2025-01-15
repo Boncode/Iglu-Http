@@ -38,27 +38,34 @@ FlexPanelWidget.prototype.constructFlexPanelWidget = function(settings, content)
 
 
 FlexPanelWidget.prototype.addTitleBarFunction = function(settings) {
-    let titleBarFunctionElement = document.createElement('div');
-
-    titleBarFunctionElement.innerHTML = '<div ' + (settings.id == null ? '' : ('id="' + this.id + '.' + settings.id + '" ')) + 'class="' + settings.className + '"' +
-    (typeof settings.tooltip != 'undefined' ? ' data-tippy-tooltip data-tippy-content-id="phrase.' + settings.tooltip + '"' : '') +
-    ' onclick="' + settings.onclickFunctionAsString + '(\'' + this.getId() + '\',event)">' + ((settings.label !== null && settings.label !== undefined) ? settings.label : '') + '</div>';
-
-    this.titleBarFunctions.push(titleBarFunctionElement.firstChild);
-    return titleBarFunctionElement.firstChild;
+    this.titleBarFunctions.push(settings);
 };
 
-FlexPanelWidget.prototype.createTitleBarFunctionHtml = function() {
-    let titleBarFunctionsContainer = document.createElement('div');
-    if(this.titleBarFunctions.length !== 0) {
-        titleBarFunctionsContainer.className = 'widget_titlebar_container';
-        for(functionElement of this.titleBarFunctions) {
-            titleBarFunctionsContainer.appendChild(functionElement);
-        }
-        this.header.appendChild(titleBarFunctionsContainer);
-    }
+FlexPanelWidget.prototype.createTitleBarFunctionHtmlElement = function() {
+    if (this.titleBarFunctions.length > 0) {
+        let containerDiv = document.createElement("div");
+        containerDiv.className = "widget_titlebar_container";
 
-    console.debug('createTitleBarFunctionHtml: ' + titleBarFunctionsContainer.outerHTML)
+        for (let object of this.titleBarFunctions) {
+            let functionDiv = document.createElement("div");
+            functionDiv.className = object.className
+            if (object.id) {
+                functionDiv.id = this.id + "." + object.id;
+            }
+            if (object.tooltip) {
+                functionDiv.setAttribute("data-tippy-tooltip", "");
+                functionDiv.setAttribute("data-tippy-content-id", "phrase." + object.tooltip);
+                functionDiv.setAttribute("onclick", object.onclickFunctionAsString + "(\'" + this.getId() + "\',event)");
+            }
+            if (object.label) {
+                functionDiv.innerText = object.label;
+            }
+            containerDiv.appendChild(functionDiv);
+        }
+
+        console.debug('createTitleBarFunctionHtmlElement: ' + containerDiv.outerHTML);
+        return containerDiv;
+    }
 };
 
 FlexPanelWidget.prototype.onFocus = function() {
@@ -78,13 +85,28 @@ FlexPanelWidget.prototype.createEmptyHeader = function() {
 }
 
 FlexPanelWidget.prototype.setHeaderContent = function() {
-    if(this.content.title != null) {
-        this.header.innerHTML = '<div class="panelheadertitle" id="' + this.id + '_header_title"><div class="title"  data-text-type="PHRASE">' + this.content.title + '</div></div>';
-        this.createTitleBarFunctionHtml();
+    if (this.content.title != null) {
+        let headerDiv = document.createElement("div");
+        headerDiv.className = "panelheadertitle";
+        headerDiv.id = this.id + "_header_title";
+
+        let titleDiv = document.createElement("div");
+        titleDiv.className = "title";
+        titleDiv.innerText = this.content.title;
+        titleDiv.setAttribute("data-text-type", "PHRASE");
+
+        headerDiv.appendChild(titleDiv);
+
+        this.header.appendChild(headerDiv);
+        this.header.appendChild(this.createTitleBarFunctionHtmlElement());
     } else {
-        if(this.title != null) {
-            this.header.innerHTML = this.title;
-            this.createTitleBarFunctionHtml();
+        if (this.title != null) {
+            let titleDiv = document.createElement("div");
+            titleDiv.className = "title";
+            titleDiv.innerText = this.content.title;
+
+            this.header.appendChild(titleDiv);
+            this.header.appendChild(this.createTitleBarFunctionHtmlElement());
         }
     }
 }
