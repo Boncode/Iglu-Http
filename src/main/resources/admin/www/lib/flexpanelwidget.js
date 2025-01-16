@@ -86,6 +86,7 @@ FlexPanelWidget.prototype.createEmptyHeader = function() {
 }
 
 FlexPanelWidget.prototype.setHeaderContent = function() {
+    this.header.innerHTML = '';
     if (this.content.title != null) {
         let headerDiv = document.createElement("div");
         headerDiv.className = "panelheadertitle";
