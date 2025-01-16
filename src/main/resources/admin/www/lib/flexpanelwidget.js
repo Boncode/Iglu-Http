@@ -66,6 +66,7 @@ FlexPanelWidget.prototype.createTitleBarFunctionHtmlElement = function() {
         console.debug('createTitleBarFunctionHtmlElement: ' + containerDiv.outerHTML);
         return containerDiv;
     }
+    return document.createElement("span");
 };
 
 FlexPanelWidget.prototype.onFocus = function() {
