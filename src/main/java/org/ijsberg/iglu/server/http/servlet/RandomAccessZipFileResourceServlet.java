@@ -29,7 +29,7 @@ public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
         if(resourceDir == null) {
             throw new ServletException("please provide parameter resource_dir");
         }
-        fileCollection = new FSFileCollection(resourceDir, new FileFilterRuleSet().setIncludeFilesWithNameMask("*.zip|*.jar"));
+        fileCollection = new FSFileCollection(resourceDir, new FileFilterRuleSet().setIncludeFilesWithNameMask("*.jar"));
         mapResources(fileCollection);
     }
 
