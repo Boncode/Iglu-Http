@@ -34,40 +34,40 @@ FlexPanelWidget.prototype.constructFlexPanelWidget = function(settings, content)
 	//invoke super
 	this.constructFlexFrameWidget(settings, content);
 	this.titleBarFunctions = new Array();
+	this.titleBarFunctionsContainerElement = document.createElement("div");
+    this.titleBarFunctionsContainerElement.className = "widget_titlebar_container";
 };
 
 
-FlexPanelWidget.prototype.addTitleBarFunction = function(settings) {
-    this.titleBarFunctions.push(settings);
+FlexPanelWidget.prototype.addTitleBarFunctionElement = function(settings) {
+    let functionElement = this.createTitleBarElement(settings);
+    this.titleBarFunctions.push(functionElement);
+    this.titleBarFunctionsContainerElement.appendChild(functionElement);
+    return functionElement;
 };
 
-FlexPanelWidget.prototype.createTitleBarFunctionHtmlElement = function() {
-    if (this.titleBarFunctions.length > 0) {
-        let containerDiv = document.createElement("div");
-        containerDiv.className = "widget_titlebar_container";
-
-        for (let object of this.titleBarFunctions) {
-            let functionDiv = document.createElement("div");
-            functionDiv.className = object.className
-            if (object.id) {
-                functionDiv.id = this.id + "." + object.id;
-            }
-            if (object.tooltip) {
-                functionDiv.setAttribute("data-tippy-tooltip", "");
-                functionDiv.setAttribute("data-tippy-content-id", "phrase." + object.tooltip);
-                functionDiv.setAttribute("onclick", object.onclickFunctionAsString + "(\'" + this.getId() + "\',event)");
-            }
-            if (object.label) {
-                functionDiv.innerText = object.label;
-            }
-            containerDiv.appendChild(functionDiv);
-        }
-
-        console.debug('createTitleBarFunctionHtmlElement: ' + containerDiv.outerHTML);
-        return containerDiv;
+FlexPanelWidget.prototype.createTitleBarElement = function(settings) {
+    let functionElement = document.createElement("div");
+    functionElement.className = settings.className
+    if (settings.id) {
+        functionElement.id = this.id + "." + settings.id;
     }
-    return document.createElement("span");
-};
+    if (settings.tooltip) {
+        functionElement.setAttribute("data-tippy-tooltip", "");
+        functionElement.setAttribute("data-tippy-content-id", "phrase." + settings.tooltip);
+    }
+    if(settings.onclickFunction) {
+        functionElement.setAttribute("onclick", settings.onclickFunction);
+    }
+    else if(settings.onclickFunctionAsString) {
+        functionElement.setAttribute("onclick", settings.onclickFunctionAsString + "(\'" + this.getId() + "\',event)");
+    }
+
+    if (settings.label) {
+        functionElement.innerText = settings.label;
+    }
+    return functionElement;
+}
 
 FlexPanelWidget.prototype.onFocus = function() {
 	//highlight title
@@ -99,7 +99,7 @@ FlexPanelWidget.prototype.setHeaderContent = function() {
         headerDiv.appendChild(titleDiv);
 
         this.header.appendChild(headerDiv);
-        this.header.appendChild(this.createTitleBarFunctionHtmlElement());
+        this.header.appendChild(this.titleBarFunctionsContainerElement);
     } else {
         if (this.title != null) {
             let titleDiv = document.createElement("div");
@@ -107,7 +107,7 @@ FlexPanelWidget.prototype.setHeaderContent = function() {
             titleDiv.innerText = this.content.title;
 
             this.header.appendChild(titleDiv);
-            this.header.appendChild(this.createTitleBarFunctionHtmlElement());
+            this.header.appendChild(this.titleBarFunctionsContainerElement);
         }
     }
 }
@@ -124,16 +124,4 @@ FlexPanelWidget.prototype.writeHTML = function() {
 
     this.createEmptyHeader();
     this.setHeaderContent();
-
-//    var contentFrame;
-//    if(!this.content instanceof FlexFrameWidget) {
-//        contentFrame = new FlexFrameWidget({
-//            id : this.id + '_frame',
-//            cssClassName : 'flexpanelcontentframe',
-//	    }, this.content);
-//    } else {
-//        console.debug('contentFrame is already a FlexFrameWidget (ChartWidget probably).');
-//        contentFrame = this.content;
-//    }
-//	this.subWidgets[this.id] = contentFrame;
 };

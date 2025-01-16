@@ -114,6 +114,9 @@ FlexFrameWidget.prototype.onDeploy = function() {
         this.element.onclick = new Function(onclick);
     }
     this.element.style.overflow = null;
+    if(this.content && typeof this.content.type !== 'undefined' && this.content.type !== 'web_content') {
+        this.createChartContextMenu();
+    }
 	this.display();
 };
 
@@ -134,3 +137,33 @@ FlexFrameWidget.prototype.onFocus = function() {
 FlexFrameWidget.prototype.onBlur = function() {
 };
 
+FlexFrameWidget.prototype.createChartContextMenu = function() {
+    if(typeof this.outerFrame === 'undefined' || typeof this.outerFrame.chartPanel === 'undefined') {
+        console.warn('The outerFrame of this chart does not have a chartPanel, chart context menu is not created.\n');
+        console.warn(this);
+    } else {
+        this.createChartOptionsDropdownMenu();
+    }
+}
+
+FlexFrameWidget.prototype.createChartOptionsDropdownMenu = function() {
+    let chartPanel = this.outerFrame.chartPanel;
+
+    let dropdownMenuButton = chartPanel.addTitleBarFunctionElement({
+        id: chartPanel.id + '.dropdown_button',
+        className: 'widget_titlebar_icon chart_menu_item bi bi-sliders',
+        onclickFunctionAsString: 'FlexFrameWidget.toggleChartContextMenu',
+        tooltip: 'More options'
+    });
+
+    let optionsDropdownMenu = new WidgetDropdownMenu(dropdownMenuButton, chartPanel.content);
+    for(menuItem of Object.values(this.content.optionsDropdownMenuItems)) {
+        optionsDropdownMenu.addMenuItem(menuItem.label, menuItem.onClickFunction, menuItem.icon);
+    }
+    chartPanel.optionsDropdownMenu = optionsDropdownMenu
+}
+
+FlexFrameWidget.toggleChartContextMenu = function(widgetId, event) {
+    let chartPanel = WidgetManager.instance.getWidget(widgetId);
+    chartPanel.optionsDropdownMenu.toggleVisibility();
+}
