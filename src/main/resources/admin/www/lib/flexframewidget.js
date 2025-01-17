@@ -149,14 +149,13 @@ FlexFrameWidget.prototype.createChartContextMenu = function() {
 FlexFrameWidget.prototype.createChartOptionsDropdownMenu = function() {
     let chartPanel = this.outerFrame.chartPanel;
 
-    let dropdownMenuButton = chartPanel.addTitleBarFunctionElement({
+    chartPanel.addTitleBarFunctionElement({
         id: chartPanel.id + '.dropdown_button',
         className: 'widget_titlebar_icon chart_menu_item bi bi-sliders',
         onclickFunctionAsString: 'FlexFrameWidget.toggleChartContextMenu',
         tooltip: 'More options'
     });
-
-    let optionsDropdownMenu = new WidgetDropdownMenu(dropdownMenuButton, chartPanel.content);
+    let optionsDropdownMenu = new WidgetDropdownMenu(chartPanel.titleBarFunctionsContainerElement, chartPanel.content);
     for(menuItem of Object.values(this.content.optionsDropdownMenuItems)) {
         optionsDropdownMenu.addMenuItem(menuItem.label, menuItem.onClickFunction, menuItem.icon);
     }
