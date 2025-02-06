@@ -135,35 +135,29 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 		);
 	}
 
-	@Override
-	@RequireOneOrMorePermissions(permission = {UPLOAD})
-		@Endpoint(inputType = JSON_POST, path = "add_comment", method = POST,
-			description = "Add a comment to a previously uploaded file.")
-	public void addCommentToUploadedFile(UploadedFileCommentDto uploadedFileCommentDto) {
-		if(getUserUploadsFileCollection().containsFile(uploadedFileCommentDto.getFileName())) {
-			String metadataPropertiesFileName = uploadDir + "/" + getUserDir() + "/" + uploadedFileCommentDto.getFileName() + ".metadata.properties";
-			if(IgluProperties.propertiesExist(metadataPropertiesFileName)) {
-				IgluProperties metadataProperties = IgluProperties.loadProperties(metadataPropertiesFileName);
-				metadataProperties.setProperty("comment", uploadedFileCommentDto.getComment());
-				try {
-					IgluProperties.saveProperties(metadataProperties, metadataPropertiesFileName);
-				} catch (IOException e) {
-					System.out.println(new LogEntry(Level.DEBUG, "Saving metadata properties for file " + uploadedFileCommentDto.getFileName() + " has failed.", e));
-					throw new RestException("Saving comment failed", 500);
-				}
-			} else {
-				// create new metadataproperties
-				IgluProperties metadataProperties = createMetadataPropertiesForUploadedFile();
-				metadataProperties.setProperty("comment", uploadedFileCommentDto.getComment());
-				try {
-					IgluProperties.saveProperties(metadataProperties, metadataPropertiesFileName);
-				} catch (IOException e) {
-					System.out.println(new LogEntry(Level.DEBUG, "Saving metadata properties for file " + uploadedFileCommentDto.getFileName() + " has failed.", e));
-					throw new RestException("Saving comment failed", 500);
-				}
-			}
-		}
-	}
+    @Override
+    @RequireOneOrMorePermissions(permission = {UPLOAD})
+    @Endpoint(inputType = JSON_POST, path = "add_comment", method = POST,
+            description = "Add a comment to a previously uploaded file.")
+    public void addCommentToUploadedFile(UploadedFileCommentDto uploadedFileCommentDto) {
+
+        if (getUserUploadsFileCollection().containsFile(uploadedFileCommentDto.getFileName())) {
+            String metadataPropertiesFileName = uploadDir + "/" + getUserDir() + "/" + uploadedFileCommentDto.getFileName() + ".metadata.properties";
+            IgluProperties metadataProperties;
+            if (IgluProperties.propertiesExist(metadataPropertiesFileName)) {
+                metadataProperties = IgluProperties.loadProperties(metadataPropertiesFileName);
+            } else { // create new metadata properties
+                metadataProperties = createMetadataPropertiesForUploadedFile();
+            }
+            metadataProperties.setProperty("comment", uploadedFileCommentDto.getComment());
+            try {
+                IgluProperties.saveProperties(metadataProperties, metadataPropertiesFileName);
+            } catch (IOException e) {
+                System.out.println(new LogEntry(Level.DEBUG, "Saving metadata properties for file " + uploadedFileCommentDto.getFileName() + " has failed.", e));
+                throw new RestException("Saving comment failed", 500);
+            }
+        }
+    }
 
 
 	@Override
