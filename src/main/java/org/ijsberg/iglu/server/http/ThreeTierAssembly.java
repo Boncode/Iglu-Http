@@ -8,6 +8,9 @@ import org.ijsberg.iglu.access.component.StandardAccessManager;
 import org.ijsberg.iglu.configuration.Assembly;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.configuration.Component;
+import org.ijsberg.iglu.configuration.component.ApplicationSettingsManager;
+import org.ijsberg.iglu.configuration.component.ApplicationSettingsProvider;
+import org.ijsberg.iglu.configuration.component.StandardApplicationSettingsManager;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.event.ServiceBroker;
@@ -23,17 +26,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * Created by jeroen on 06/01/2018.
- */
 public abstract class ThreeTierAssembly extends BasicAssembly {
 
-    public static final String LOGGER = "Logger";
-    public static final String SCHEDULER = "Scheduler";
-    public static final String ACCESS_MANAGER = "AccessManager";
-    public static final String SERVICE_BROKER = "ServiceBroker";
-    public static final String ASSET_ACCESS_MANAGER = "AssetAccessManager";
-    public static final String ROOT_CONSOLE = "RootConsole";
+    protected static final String LOGGER = "Logger";
+    protected static final String SCHEDULER = "Scheduler";
+    protected static final String ACCESS_MANAGER = "AccessManager";
+    protected static final String REQUEST_REGISTRY = "RequestRegistry";
+    protected static final String SERVICE_BROKER = "ServiceBroker";
+    protected static final String ASSET_ACCESS_MANAGER = "AssetAccessManager";
+    protected static final String ROOT_CONSOLE = "RootConsole";
+    protected static final String APPLICATION_SETTINGS_MANAGER = "ApplicationSettingsManager";
 
     protected Component logger;
     protected Component rootConsole;
@@ -42,6 +44,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     protected Component accessManager;
     protected Component serviceBroker;
     protected Component assetAccessManager;
+    protected Component applicationSettingsManager;
 
     protected Cluster infraLayer;
     protected Cluster dataLayer;
@@ -49,42 +52,15 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     protected Cluster presentationLayer;
 
 
-
     public ThreeTierAssembly(Properties properties) {
         super(properties);
         createLayers(properties);
     }
 
-/*    public ThreeTierAssembly(Properties properties, Component accessManager) {
-        super(properties);
-        this.accessManager = accessManager;
-        createLayers(properties);
-    }*/
-
-    /*
-    public ThreeTierAssembly(Properties properties, Component accessManager, Component scheduler) {
-        super(properties);
-        this.accessManager = accessManager;
-        this.scheduler = scheduler;
-        createLayers(properties);
-    }
-*/
-/*    public ThreeTierAssembly(Properties properties, Component[] providedComponents) {
-        super(properties);
-        this.accessManager = providedComponents[0];
-        this.scheduler = providedComponents[1];
-        if(providedComponents.length > 2) {
-            this.serviceBroker = providedComponents[2];
-        }
-        if(providedComponents.length > 3) {
-            this.assetAccessManager = providedComponents[3];
-        }
-        createLayers(properties);
-    }*/
-
     public ThreeTierAssembly(Properties properties, Assembly coreAssembly) {
         super(properties);
         Map<String,Component> coreClusterComponents = coreAssembly.getCoreCluster().getInternalComponents();
+        applicationSettingsManager = coreClusterComponents.get(APPLICATION_SETTINGS_MANAGER);
         logger = coreClusterComponents.get(LOGGER);
         rootConsole = coreClusterComponents.get(ROOT_CONSOLE);
         scheduler = coreClusterComponents.get(SCHEDULER);
@@ -117,10 +93,16 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
 
     protected Cluster createInfraLayer() {
 
+        if(applicationSettingsManager == null) {
+            applicationSettingsManager = new StandardComponent(new StandardApplicationSettingsManager(home + "/" + configDir));
+        }
+        core.connect(APPLICATION_SETTINGS_MANAGER, applicationSettingsManager, ApplicationSettingsProvider.class, ApplicationSettingsManager.class);
+
+
         if(logger == null) {
             createLoggerComponent();
         }
-        core.connect("Logger", logger);
+        core.connect(LOGGER, logger);
 
         if(rootConsole == null) {
             rootConsole = new StandardComponent(new RootConsole(this));
@@ -136,7 +118,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
             createAccessManagerComponent();
         }
         core.connect(ACCESS_MANAGER, accessManager, RequestRegistry.class, AccessManager.class);
-        core.connect("RequestRegistry", accessManager, RequestRegistry.class);
+        core.connect(REQUEST_REGISTRY, accessManager, RequestRegistry.class);
 
         if(serviceBroker == null) {
             serviceBroker = new StandardComponent(new BasicServiceBroker());
@@ -153,11 +135,16 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
 
     private void createAccessManagerComponent() {
         StandardAccessManager standardAccessManager = new StandardAccessManager(MultiTenantAwareComponent.class);
-        Properties accessManProps = new Properties();
-        accessManProps.setProperty("session_timeout", "" + Integer.parseInt(properties.getProperty("sessionTimeout", "60")));
-        accessManProps.setProperty("session_timeout_logged_in", "" + Integer.parseInt(properties.getProperty("sessionTimeoutLoggedIn", "1800")));
-        standardAccessManager.setProperties(accessManProps);
+        standardAccessManager.setProperties(getAccessManagerSettings());
         accessManager = new StandardComponent(standardAccessManager);
+    }
+
+    private Properties getAccessManagerSettings() {
+        ApplicationSettingsProvider settingsProvider = applicationSettingsManager.getProxy(ApplicationSettingsProvider.class);
+        Properties accessManProps = new Properties();
+        accessManProps.setProperty("session_timeout", String.valueOf(settingsProvider.getApplicationSettings().getSessionTimeout()));
+        accessManProps.setProperty("session_timeout_logged_in", String.valueOf(settingsProvider.getApplicationSettings().getSessionTimeoutLoggedIn()));
+        return accessManProps;
     }
 
     private void createLoggerComponent() {
@@ -183,6 +170,4 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
             rotatingFileLogger.addAppender(new StandardOutLogger());
         }
     }
-
-
 }
