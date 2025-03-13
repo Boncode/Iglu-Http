@@ -41,6 +41,7 @@ import org.ijsberg.iglu.util.misc.StringSupport;
 
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.eclipse.jetty.http.HttpCookie.SAME_SITE_STRICT_COMMENT;
@@ -290,21 +291,19 @@ public abstract class ServletSupport extends HttpEncodingSupport
 		return retval;
 	}
 
-	public static Properties convertUrlEncodedData(String data) throws UnsupportedEncodingException {
-		Properties retval = new Properties(/*"http-request-parameters"*/);
-
-		StringTokenizer tokenizer = new StringTokenizer(data, "&", false);
-		while (tokenizer.hasMoreElements())
-		{
-			String nameValuePair = tokenizer.nextToken();
-			int separator = nameValuePair.indexOf('=');
-			if (separator != -1)
-			{
-				String name = URLDecoder.decode(nameValuePair.substring(0, separator), "UTF-8");
-				String value = URLDecoder.decode(nameValuePair.substring(separator + 1), "UTF-8");
+	public static Properties convertUrlEncodedData(String queryString) {
+		Properties retval = new Properties();
+		StringTokenizer tokenizer = new StringTokenizer(queryString, "&", false);
+		while (tokenizer.hasMoreElements()) {
+			String queryParameter = tokenizer.nextToken();
+			int separator = queryParameter.indexOf('=');
+			if (separator != -1) {
+				String name = URLDecoder.decode(queryParameter.substring(0, separator), StandardCharsets.UTF_8);
+				String value = URLDecoder.decode(queryParameter.substring(separator + 1), StandardCharsets.UTF_8);
 				retval.setProperty(name, value);
-
-				//System.out.println(new LogEntry("request parameter found: [" + name + '=' + value + ']'));
+			} else {
+				String name = URLDecoder.decode(queryParameter, StandardCharsets.UTF_8);
+				retval.setProperty(name, "true");
 			}
 		}
 		return retval;
