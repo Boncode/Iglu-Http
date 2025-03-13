@@ -7,28 +7,28 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+
 public class HttpSupportTest {
 
     @Test
     public void testGetParams() {
 //        String requestBody = "param1=Blablabla&param2=yeeterskeeeter&param3=bla3asd&extraOption1&extra2";
-        String requestBody = "RelayState=&someParam=5&TestBooleanParam&SAMLResponse=Ble%%2BPFNpZ25lZEluZm8%asdkjakjdwlbnQ%%%2B";
-        Map<String, String> paramsMap = new HashMap<>();
-        System.out.println(new LogEntry(Level.DEBUG, "Body: " + requestBody));
-        String[] params = requestBody.split("&");
-        for(String param : params) {
-            boolean isKeyValuePair = param.contains("=");
+        String requestBody = "RelayState&someParam=5&TestBooleanParam&SAMLResponse=Ble%%2BPFNpZ25lZEluZm8%asdkjakjdwlbnQ%%%2B";
+        Map<String, String> parameterMap = new HashMap<>();
+        String[] requestBodyParameters = requestBody.split("&");
+        for (String requestBodyParameterString : requestBodyParameters) {
+            boolean isKeyValuePair = requestBodyParameterString.split("=").length == 2;
             if (isKeyValuePair) {
-                String key = param.split("=")[0];
-                String value = param.split("=").length == 2 ? param.split("=")[1] : "";
-                System.out.println(new LogEntry(Level.DEBUG, "Found param for SAML Response: " + key + " = " + value));
-                paramsMap.put(key, value);
+                String[] keyValuePair = requestBodyParameterString.split("=");
+                parameterMap.put(keyValuePair[0], keyValuePair[1]);
             } else {
-                String key = param;
-                String value = "true";
-                System.out.println(new LogEntry(Level.DEBUG, "Found param for SAML Response: " + key + " = " + value));
-                paramsMap.put(key, value);
+                parameterMap.put(requestBodyParameterString, "true");
             }
         }
+        assertEquals("true",parameterMap.get("RelayState"));
+        assertEquals("5",parameterMap.get("someParam"));
+        assertEquals("true",parameterMap.get("TestBooleanParam"));
+        assertEquals("Ble%%2BPFNpZ25lZEluZm8%asdkjakjdwlbnQ%%%2B",parameterMap.get("SAMLResponse"));
     }
 }
