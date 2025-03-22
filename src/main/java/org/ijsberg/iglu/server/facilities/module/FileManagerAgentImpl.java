@@ -2,7 +2,9 @@ package org.ijsberg.iglu.server.facilities.module;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.ijsberg.iglu.access.*;
+import org.ijsberg.iglu.access.AgentFactory;
+import org.ijsberg.iglu.access.BasicAgentFactory;
+import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.event.messaging.MessageStatus;
@@ -32,7 +34,10 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;

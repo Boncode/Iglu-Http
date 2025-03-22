@@ -1,7 +1,5 @@
 package org.ijsberg.iglu.util.http;
 
-import org.ijsberg.iglu.logging.Level;
-import org.ijsberg.iglu.logging.LogEntry;
 import org.junit.Test;
 
 import java.util.HashMap;

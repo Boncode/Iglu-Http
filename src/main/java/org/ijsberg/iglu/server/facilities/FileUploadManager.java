@@ -5,7 +5,6 @@ import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
-import org.ijsberg.iglu.rest.RestException;
 import org.ijsberg.iglu.server.facilities.model.MultipartUploadProgress;
 import org.ijsberg.iglu.server.facilities.model.UploadStatus;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;

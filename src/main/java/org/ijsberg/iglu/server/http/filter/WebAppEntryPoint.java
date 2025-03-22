@@ -19,7 +19,10 @@ import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 
 import static org.ijsberg.iglu.http.client.Constants.ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN;
 import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
