@@ -37,9 +37,7 @@
     <url>http://iglu.ijsberg.org</url>
 
     <properties>
-        <!-- jetty.version>9.2.28.v20190418</jetty.version -->
-        <jetty.version>11.0.13</jetty.version>
-        <java.version>11</java.version>
+        <jetty.version>11.0.24</jetty.version>
     </properties>
 
     <dependencies>
@@ -70,26 +68,6 @@
             <artifactId>jetty-slf4j-impl</artifactId>
             <version>${jetty.version}</version>
         </dependency>
-
-
-
-        <!-- dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-jsp</artifactId>
-            <version>9.2.28.v20190418</version>
-        </dependency -->
-        <!--dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-        </dependency-->
-        <!-- https://mvnrepository.com/artifact/org.glassfish/javax.resource -->
-        <!-- dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.resource</artifactId>
-            <version>3.0.1-b10</version>
-        </dependency -->
-
         <dependency>
             <groupId>org.ijsberg</groupId>
             <artifactId>iglu</artifactId>
@@ -132,7 +110,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <release>11</release>
+                    <release>17</release>
                 </configuration>
             </plugin>
             <plugin>
