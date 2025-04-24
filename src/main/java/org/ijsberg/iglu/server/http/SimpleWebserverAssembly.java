@@ -1,6 +1,6 @@
 package org.ijsberg.iglu.server.http;
 
-import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.ee10.servlet.DefaultServlet;
 import org.ijsberg.iglu.assembly.StandardApplication;
 import org.ijsberg.iglu.configuration.Component;
 import org.ijsberg.iglu.configuration.ConfigurationException;

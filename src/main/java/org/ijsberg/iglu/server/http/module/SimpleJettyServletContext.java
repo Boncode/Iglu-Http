@@ -1,22 +1,3 @@
-/*
- * Copyright 2011-2014 Jeroen Meetsma - IJsberg Automatisering BV
- *
- * This file is part of Iglu.
- *
- * Iglu is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Iglu is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Iglu.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.ijsberg.iglu.server.http.module;
 
 
@@ -26,11 +7,10 @@ import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContextListener;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.Holder;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.MultiException;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
+import org.eclipse.jetty.ee10.servlet.Holder;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
@@ -110,13 +90,6 @@ public class SimpleJettyServletContext implements Startable {
 //			ctx.getServletHandler().initialize();
 		}
 		catch (Exception e) {
-			if (e instanceof MultiException) {
-				MultiException me = (MultiException) e;
-				for(Object t : me.getThrowables()) {
-					log((Throwable)t);
-				}
-				throw new ConfigurationException("cannot start webserver at port " + port, me);
-			}
 			throw new ConfigurationException("cannot start webserver at port " + port, e);
 		}
 	}
@@ -162,7 +135,8 @@ public class SimpleJettyServletContext implements Startable {
 			setPropertiesFromIgluConfig();
 
 			server = new Server();
-			ctx = new ServletContextHandler(server, contextPath, ServletContextHandler.SESSIONS);
+			ctx = new ServletContextHandler(contextPath, ServletContextHandler.SESSIONS);
+			server.setHandler(ctx);
 
 			initializeContext(properties);
 
@@ -198,7 +172,7 @@ public class SimpleJettyServletContext implements Startable {
 		ctx.getSessionHandler().setMaxInactiveInterval(sessionTimeout);
 		//set root directory
 		if(FileSupport.fileExists(documentRoot)) {
-			ctx.setResourceBase(documentRoot);
+			ctx.setBaseResourceAsString(documentRoot);
 		}
 //			addInitParameters(ctx.getInitParams(), section);
 
@@ -280,7 +254,6 @@ public class SimpleJettyServletContext implements Startable {
 						addInitParameters(servletHolder, subSection);
 						servletHolder.setInitOrder(initOrder++);
 						servletHolder.setAsyncSupported(true);
-
 
 						for (String urlPattern : urlPatterns) {
 							//add servlet for each alias

@@ -44,7 +44,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static org.eclipse.jetty.http.HttpCookie.SAME_SITE_STRICT_COMMENT;
+//import static org.eclipse.jetty.http.HttpCookie.SAME_SITE_STRICT_COMMENT;
 
 //import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
 
@@ -674,7 +674,7 @@ public abstract class ServletSupport extends HttpEncodingSupport
 		cookie.setPath(path);
 		cookie.setHttpOnly(true); //mitigates client accessing session id from browser
 		cookie.setSecure(secure);
-		cookie.setComment(SAME_SITE_STRICT_COMMENT);
+//		cookie.setComment(SAME_SITE_STRICT_COMMENT);
 		cookie.setMaxAge(maxAge);
 		response.addCookie(cookie);
 	}
