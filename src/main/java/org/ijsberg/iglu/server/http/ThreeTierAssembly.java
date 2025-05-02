@@ -2,7 +2,7 @@ package org.ijsberg.iglu.server.http;
 
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.asset.AssetAccessManager;
-import org.ijsberg.iglu.access.asset.StandardAssetAccessManager;
+import org.ijsberg.iglu.access.asset.module.StandardAssetAccessManager;
 import org.ijsberg.iglu.access.component.RequestRegistry;
 import org.ijsberg.iglu.access.component.StandardAccessManager;
 import org.ijsberg.iglu.configuration.Assembly;
