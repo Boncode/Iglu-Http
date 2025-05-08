@@ -127,6 +127,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
 
         if(assetAccessManager == null) {
             assetAccessManager = new StandardComponent(new StandardAssetAccessManager());
+            assetAccessManager.setProperties(properties);
         }
         core.connect(ASSET_ACCESS_MANAGER, assetAccessManager, AssetAccessManager.class);
 
