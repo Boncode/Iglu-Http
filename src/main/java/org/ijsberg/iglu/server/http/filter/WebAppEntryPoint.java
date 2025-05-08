@@ -51,7 +51,6 @@ import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
 public class WebAppEntryPoint implements Filter, EntryPoint {
 
 	private static final String SESSION_TOKEN_KEY = "IGLU_SESSION_TOKEN";
-	private static final String USER_ID_KEY = "IGLU_USER_ID";
 
 	private String xorKey;
 
@@ -114,11 +113,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	public void onSessionUpdate(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		ServletSupport.setCookieValue(response, SESSION_TOKEN_KEY, session.getToken());
-		if(session.getUser() != null) {
-			ServletSupport.setCookieValue(response, USER_ID_KEY, session.getUser().getId());
-		} else {
-			ServletSupport.setCookieValue(response, USER_ID_KEY, null);
-		}
 	}
 
 	/**
@@ -129,7 +123,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	public void onSessionDestruction(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		ServletSupport.setCookieValue(response, SESSION_TOKEN_KEY, null);
-		ServletSupport.setCookieValue(response, USER_ID_KEY, null);
 	}
 
     public void exportUserSettings(Request currentRequest, Properties properties) {
@@ -202,7 +195,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 		Request appRequest = null;
 		try {
 			String sessionToken = getCookieValueNullIfEmpty(servletRequest, SESSION_TOKEN_KEY);
-			String userId = getCookieValueNullIfEmpty(servletRequest, USER_ID_KEY);
 
 			appRequest = accessManager.bindRequest(this);
 			try {
@@ -213,7 +205,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 
 			Session session;
 			if(sessionToken != null) {
-				session = appRequest.resolveSession(sessionToken, userId);
+				session = appRequest.resolveSession(sessionToken, null);
 			} else {
 				try {
 					session = getAccessByToken((HttpServletRequest) servletRequest, appRequest);
@@ -229,14 +221,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 
 			//set response headers
 			setResponseHeaders(servletRequest, servletResponse, session);
-
-			//if a user logged in, the user id must be stored
-			if(userId == null) {
-				User user = appRequest.getUser();
-				if(user != null) {
-					ServletSupport.setCookieValue((HttpServletResponse) servletResponse, USER_ID_KEY, user.getId());
-				}
-			}
 
 			if(loginRequired) {
 				User user = appRequest.getUser();
