@@ -176,6 +176,17 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	}
 
 	/**
+	 * Enable CORS requests for development (frontend is running on localhost:3000 in React)
+	 * So some extra headers are provided through this method to allow for requests from this port
+	 * @param corsProperties
+	 */
+	public void enableCORS(IgluProperties corsProperties) {
+		for(String headerName : corsProperties.getRootKeys()) {
+			additionalHeaders.setProperty(headerName, corsProperties.getProperty(headerName));
+		}
+	}
+
+	/**
 	 * Must handle all incoming http requests.
 	 * Contains hooks for request and session management.
 	 * After filtering, request is delegated to the corresponding servlet for the path, so /auth/* for example delegates
@@ -185,6 +196,12 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	 * @throws IOException
 	 */
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
+		//todo this could be done with a new jetty filter instead of in here
+		if(((HttpServletRequest)servletRequest).getMethod().equals("OPTIONS")) {
+			setResponseHeaders(servletRequest, servletResponse, null);
+			((HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_OK);
+			return;
+		}
 
 		String pathInfo = getPath(servletRequest);
 
