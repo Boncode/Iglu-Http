@@ -84,9 +84,15 @@ public class MenuItem extends JsonData {
 	}
 
 	public MenuItem setPropertyToggle(String name, String onValue, String offValue) {
+		setPropertyToggle(name, onValue, offValue, offValue);
+		return this;
+	}
+
+	public MenuItem setPropertyToggle(String name, String onValue, String offValue, String defaultValue) {
 		addHtmlEscapedStringAttribute("toggleProperty_key", name);
 		addHtmlEscapedStringAttribute("toggleProperty_on", onValue);
 		addHtmlEscapedStringAttribute("toggleProperty_off", offValue);
+		addHtmlEscapedStringAttribute("toggleProperty_value", defaultValue);
 		return this;
 	}
 
