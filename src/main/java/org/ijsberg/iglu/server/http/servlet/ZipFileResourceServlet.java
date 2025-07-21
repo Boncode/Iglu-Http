@@ -28,6 +28,7 @@ import org.ijsberg.iglu.util.io.FileSupport;
 import java.io.IOException;
 
 /**
+ * Referenced in AnalysisSingleResultWebServerAssembly properties !
  */
 public class ZipFileResourceServlet extends BinaryResourceServlet implements ZipFileResource {
 
