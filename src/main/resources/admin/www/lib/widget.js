@@ -40,7 +40,8 @@ Widget.prototype.refreshSettings = function(settings) {
 
 Widget.prototype.set = function(name, value, defaultValue) {
 	if(typeof this[name] == 'undefined') {
-		throw(new Error('attribute "' + name + '" is not declared in ' + this.constructor.name));
+		//throw(new Error('attribute "' + name + '" is not declared in ' + this.constructor.name));
+		console.error('attribute "' + name + '" is not declared in ' + this.constructor.name);
 	} else if(typeof value != 'undefined') {
 		this[name] = value;
 	} else if(typeof defaultValue != 'undefined') {

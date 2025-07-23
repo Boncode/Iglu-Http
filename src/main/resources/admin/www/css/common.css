@@ -126,6 +126,10 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     background-color: var(--filetree-selected) !important;
 }
 
+.boncode_table_large .selected2 {
+    background-color: purple !important;
+}
+
 .boncode_list_heading {
     /*height: 20px;*/
     font-size: 11pt;
