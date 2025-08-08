@@ -224,7 +224,7 @@ body.waiting * {
     display: none !important;
 }
 
-.analyzer_application_tag { /* todo rename more generic */
+.selected_item_tag {
     width: auto;
     height: auto;
     font-size: 10px;
@@ -239,14 +239,14 @@ body.waiting * {
     margin: 2px;
 }
 
-.analyzer_application_tag a {
+.selected_item_tag a {
     padding: 4px;
     padding-right: 5px;
     margin-left: 3px;
     margin-right: 2px;
 }
 
-.analyzer_application_tag a img {
+.selected_item_tag a img {
     width: 10px;
 }
 
