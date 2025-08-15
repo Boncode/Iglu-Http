@@ -13,7 +13,11 @@ import org.ijsberg.iglu.configuration.component.ApplicationSettingsProvider;
 import org.ijsberg.iglu.configuration.component.StandardApplicationSettingsManager;
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
+import org.ijsberg.iglu.event.EventBus;
+import org.ijsberg.iglu.event.IgluEventType;
 import org.ijsberg.iglu.event.ServiceBroker;
+import org.ijsberg.iglu.event.model.BasicEvent;
+import org.ijsberg.iglu.event.model.EventTopic;
 import org.ijsberg.iglu.event.module.BasicServiceBroker;
 import org.ijsberg.iglu.invocation.RootConsole;
 import org.ijsberg.iglu.logging.module.RotatingFileLogger;
@@ -33,6 +37,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     protected static final String ACCESS_MANAGER = "AccessManager";
     protected static final String REQUEST_REGISTRY = "RequestRegistry";
     protected static final String SERVICE_BROKER = "ServiceBroker";
+    protected static final String EVENT_BUS = "EventBus";
     protected static final String ASSET_ACCESS_MANAGER = "AssetAccessManager";
     protected static final String ROOT_CONSOLE = "RootConsole";
     protected static final String APPLICATION_SETTINGS_MANAGER = "ApplicationSettingsManager";
@@ -122,8 +127,20 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
 
         if(serviceBroker == null) {
             serviceBroker = new StandardComponent(new BasicServiceBroker());
+            //todo move to some CoreAssembly...
+            serviceBroker.getProxy(EventBus.class)
+                    .registerEventTopic(
+                            new EventTopic<>(
+                                    "IGLU_EVENTS",
+                                    "Iglu events",
+                                    "Events related to the Iglu Framework",
+                                    BasicEvent.class
+                            ),
+                            IgluEventType.values()
+                    );
         }
         core.connect(SERVICE_BROKER, serviceBroker, ServiceBroker.class);
+        core.connect(EVENT_BUS, serviceBroker, EventBus.class);
 
         if(assetAccessManager == null) {
             assetAccessManager = new StandardComponent(new StandardAssetAccessManager());

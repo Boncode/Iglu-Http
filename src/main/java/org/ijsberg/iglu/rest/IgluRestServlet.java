@@ -495,6 +495,7 @@ public class IgluRestServlet extends HttpServlet {
                     result = result.toString();
                 } else {
                     ObjectMapper mapper = new ObjectMapper();
+                    mapper.findAndRegisterModules();
                     result = mapper.writeValueAsString(result);
                 }
             }
