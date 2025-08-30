@@ -473,7 +473,7 @@ body.waiting * {
     flex-direction: row;
 }
 
-.inline_tag {
+.inline_tag, .score_tag {
     display: flex;
     gap: 7px;
     line-height: 20px;
@@ -483,6 +483,13 @@ body.waiting * {
     width: max-content;
     padding: 0px 7px;
     border-radius: 3px;
+}
+
+.score_tag {
+    width: 1.5em;
+    justify-content: center;
+    color: var(--text-color);
+    font-family: Lato, sans-serif;
 }
 
 .inline_tag.clickable:hover {
