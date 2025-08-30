@@ -67,11 +67,16 @@ iglu.util.import.getArgumentsAsArray = function(argumentObject) {
     return argumentsArray;
 }
 
-iglu.util.import.assignValToVarAndProceed = function(jsonData, callbackInput) {
+iglu.util.import.assignValToVarAndProceed = function(jsonData, callbackInput, httpResponse) {
 
     let thisArg = iglu.util.import.callData[callbackInput.callSeqNr].thisArg;
     try {
-        var parsedJson = JSON.parse(jsonData);
+        var parsedJson = null;
+        if(httpResponse.status == 200) {
+            parsedJson = JSON.parse(jsonData);
+        } else {
+            console.error('will not process response with status: ' + httpResponse.status + ', response: ' + jsonData);
+        }
         for(var varName of callbackInput.varNames) {
             if(thisArg != null && varName.startsWith('this.')) {
                 let fieldName = varName.substring(5);
