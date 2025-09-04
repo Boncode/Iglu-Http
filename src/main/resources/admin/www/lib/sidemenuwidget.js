@@ -95,8 +95,19 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 		var branchDiv = document.createElement('div');
         branchDiv.setAttribute('id', itemId + '.submenu');
 
-		itemDiv.onclick = function(){toggleSubmenu(itemId)};
 		itemDiv.classList.add('clickable');
+		if(typeof(item.onclick) != 'undefined') {
+			//itemDiv.onclick = new Function('event.stopPropagation();' + item.onclick + ';');
+			itemDiv.onclick = function() {
+				event.stopPropagation();
+				iglu.util.processFunctionInvocationsString(item.onclick);
+				toggleSubmenu(itemId);
+			};
+		} else {
+			itemDiv.onclick = function(){toggleSubmenu(itemId)};
+		}
+
+
 //		itemDiv.onmouseout = new Function('hideSubmenu(\'' + itemId + '\');');
 
 		if(typeof(item.submenu_class_name) != 'undefined') {
