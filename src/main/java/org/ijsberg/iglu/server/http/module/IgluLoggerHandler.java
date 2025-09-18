@@ -1,4 +1,4 @@
-package org.slf4j.impl;
+package org.ijsberg.iglu.server.http.module;
 
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;

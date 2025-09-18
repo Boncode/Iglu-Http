@@ -5,12 +5,12 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContextListener;
-import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.ee10.servlet.FilterHolder;
 import org.eclipse.jetty.ee10.servlet.Holder;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.configuration.Startable;
@@ -21,7 +21,6 @@ import org.ijsberg.iglu.util.misc.EncodingSupport;
 import org.ijsberg.iglu.util.misc.StringSupport;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 import org.ijsberg.iglu.util.reflection.ReflectionSupport;
-import org.slf4j.impl.Slf4jHack;
 
 import java.io.File;
 import java.util.*;
@@ -55,7 +54,7 @@ public class SimpleJettyServletContext implements Startable {
 	}
 
 	public void setLogger(Logger logger) {
-		Slf4jHack.init(logger);
+		IgluJettyLogAppender.init(logger);
 	}
 
 	public SimpleJettyServletContext(String xorKey) {
