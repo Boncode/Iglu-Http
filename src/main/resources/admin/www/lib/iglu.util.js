@@ -37,27 +37,20 @@ iglu.util.setGlobalObject = function(varName, value) {
 }
 
 
-iglu.util.getParametersAsArray = function(functionParameterString) {
-    let jsonArrayString = JSON.parse('[' + functionParameterString.split('\'').join('"') + ']');
-    return jsonArrayString;
-}
-
-
 /*
     To be used to add configurable onclick or onload handling avoiding 'unsafe-eval'
 */
 iglu.util.processFunctionInvocationsString = function(functionParameterString,thisArg) {
 
-    if(typeof thisArg == 'undefined') {
+    if(thisArg === undefined || thisArg === null) {
         thisArg = this;
     }
     var result;
     let separateCalls = functionParameterString.split(';');
     for(var i in separateCalls) {
-        let functionName = separateCalls[i].split('(')[0].trim();
-        if(functionName != '') {
-            let functionParameterString = separateCalls[i].split('(')[1].split(')').join('').trim();
-            let functionParameters = iglu.util.getParametersAsArray(functionParameterString);
+        let functionName = iglu.util.getFunctionNameFromFunctionCallString(separateCalls[i]);
+        if(functionName !== '') {
+            let functionParameters = iglu.util.getParameterDeclarationsFromFunctionCallString(separateCalls[i]);
             let definedFunction = iglu.util.getGlobalObject(functionName);
             if(definedFunction != null) {
                 result = definedFunction.apply(thisArg,functionParameters);
@@ -67,4 +60,31 @@ iglu.util.processFunctionInvocationsString = function(functionParameterString,th
         }
     }
     return result;
+}
+
+iglu.util.getFunctionNameFromFunctionCallString = function(callDeclaration) {
+    return callDeclaration.split('(')[0].trim();
+}
+
+iglu.util.getParameterDeclarationsFromFunctionCallString = function(callDeclaration) {
+    let functionParameterString = callDeclaration.split('(')[1].split(')').join('').trim();
+    let functionParameters = iglu.util.getParametersAsArray(functionParameterString);
+    return functionParameters;
+}
+
+iglu.util.getParameterNameDeclarationsFromFunctionCallString = function(callDeclaration) {
+    let functionParameterString = callDeclaration.split('(')[1].split(')').join('').trim();
+    let functionParameters = iglu.util.getParametersNamesAsArray(functionParameterString);
+    return functionParameters;
+}
+
+//this resolves primitives
+iglu.util.getParametersAsArray = function(functionParameterString) {
+    let jsonArrayString = JSON.parse('[' + functionParameterString.split('\'').join('"') + ']');
+    return jsonArrayString;
+}
+
+iglu.util.getParametersNamesAsArray = function(functionParameterString) {
+    let jsonArrayString = functionParameterString.split(',');
+    return jsonArrayString;
 }
