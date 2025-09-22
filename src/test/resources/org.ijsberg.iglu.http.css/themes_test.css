@@ -1,0 +1,138 @@
+/* ---------- Naming Conventions ----------- */
+/* --{item}-{attribute}-[specification] */
+/* --text-color */
+/* --text-color-accent */
+/* --text-color-hyperlink */
+
+
+/* ------------ Default Colors ------------- */
+:root {
+    --default-red: rgba(255, 0, 0, 1);
+    --default-red-highlight: rgba(255, 0, 0, 0.06);
+    --default-darkred: rgba(185, 2, 2, 1);
+    --default-yellow: rgba(255, 140, 0, 1); /* orange? */
+    --default-yellow-highlight: rgba(255, 140, 0, 0.07);
+    --default-green: rgba(0, 128, 10, 1);
+    --default-green-highlight: rgba(0, 128, 10, 0.06);
+    --default-blue: rgba(41, 95, 150, 1);
+    --default-blue-highlight: rgba(41, 95, 150, 0.2);
+    --default-lightgrey: rgba(183, 201, 226, 1);
+    --default-grey: rgba(108, 123, 143, 1);
+    --default-darkgrey: rgba(51, 51, 51, 1);
+
+    --default-header-color: rgba(0, 27, 51, 1);
+    --default-black: black;
+    --default-black-offset: rgba(0, 10, 18, 1);
+    --default-black-offset-secondary: rgba(13, 19, 26, 1);
+    --default-white: white;
+    --strong-white-offset: rgba(220, 223, 233, 1);
+    --default-white-offset: rgba(234, 241, 247, 1);
+    --subtle-white-offset: rgba(245, 250, 253, 1);
+}
+
+
+/* ------------- Light Theme -------------- */
+
+
+:root {
+    --boncode-logo-svg: url("/img/logo/SVG/normal.svg");
+
+    --text-color: rgba(0, 0, 0, 1);
+    --menu-text-color: var(--default-header-color);
+    --text-color-contrast: rgba(243, 243, 243, 1);
+    --text-color-accent: rgba(46, 163, 242, 1);
+    --text-color-unhighlighted: rgba(134, 164, 194, 1);
+    --heading-color: var(--default-header-color);
+
+    --background-color: rgba(245, 251, 255, 1);
+    --widget-background-color: var(--default-white);
+    --widget-background-color-alternate: var(--subtle-white-offset);
+    --widget-background-color-contrast: var(--default-white-offset);
+    --notification-background-color: var(--default-white);
+    --window-background: var(--default-white);
+    --titlebar-background-color: var(--default-blue);
+
+    --box-shadow-color: rgba(0, 0, 0, 0.5);
+
+    --filetree-selected: rgba(215, 233, 245, 1);
+    --filetree-hover: rgba(234, 244, 251, 1);
+
+    --hairline-color: var(--default-white-offset);
+
+    --form-input-background-color: var(--default-white-offset);
+    --form-input-background-color-hover: var(--default-lightgrey);
+    --form-input-background-color-active: var(--default-grey);
+    --form-input-background-color-disabled: rgba(207, 216, 224, 1);
+
+    --date-icon-color-scheme: normal;
+
+    --icon-background-hover: var(--default-lightgrey);
+    --icon-background-active: var(--default-grey);
+    --icon-background-selected: var(--default-darkgrey);
+    --toggle-icon-text-color: var(--default-white-offset);
+
+    --scrollbar-color: var(--default-lightgrey);
+    --table-resize-border-color: var(--default-lightgrey);
+}
+
+/* ------------- Dark Theme --------------- */
+
+[data-theme="dark"] {
+    --boncode-logo-svg: url("/img/logo/SVG/normal_inverted.svg");
+
+    --text-color: var(--strong-white-offset);
+    --menu-text-color: var(--default-header-color);
+    --text-color-contrast: var(--default-white-offset);
+    --text-color-accent: rgba(46, 163, 242, 1);
+    --text-color-unhighlighted: rgba(114, 136, 174, 1);
+    --heading-color: var(--default-white-offset);
+
+    --background-color: var(--default-black-offset);
+    --widget-background-color: var(--default-black-offset-secondary);
+    --widget-background-color-alternate: var(--default-black-offset);
+    --widget-background-color-contrast: var(--default-black);
+    --notification-background-color: var(--default-black-offset);
+    --window-background: var(--default-black);
+    --titlebar-background-color: var(--default-header-color);
+
+    --box-shadow-color: var(--default-black);
+
+    --filetree-selected: rgba(72, 80, 85, 1);
+    --filetree-hover: rgba(38, 42, 45, 1);
+
+    --hairline-color: var(--default-black-offset);
+
+    --form-input-background-color: var(--background-color);
+    --form-input-background-color-hover: var(--default-black);
+    --form-input-background-color-active: var(--default-black);
+    --form-input-background-color-disabled: var(--default-black);
+
+    --date-icon-color-scheme: dark;
+
+    --icon-background-hover: var(--default-darkgrey);
+    --icon-background-active: var(--default-grey);
+    --icon-background-selected: var(--default-lightgrey);
+    --toggle-icon-text-color: var(--default-black-offset);
+
+    --scrollbar-color: var(--default-grey);
+    --table-resize-border-color: var(--default-grey);
+}
+
+
+/* todo doesnt work with dark mode, doesnt cover all obfuscatables */
+/* todo slimme opmerking MJ: obfuscation is a theme, where text-shadow and color are set */
+[data-obfuscate="true"] .obfuscatable,
+[data-obfuscate="true"] .BaseToken,
+[data-obfuscate="true"] .Comment,
+[data-obfuscate="true"] .flex_code_links_panel,
+[data-obfuscate="true"] .code_header_title,
+[data-obfuscate="true"] .window_title,
+[data-obfuscate="true"] .code_link_item,
+[data-obfuscate="true"] .navigation_tree_item_name {
+    color: rgba(0, 0, 0, 0);
+    text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.5);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
