@@ -51,13 +51,20 @@ iglu.util.processFunctionInvocationsString = function(functionParameterString,th
         let functionName = iglu.util.getFunctionNameFromFunctionCallString(separateCalls[i]);
         if(functionName !== '') {
             let functionParameters = iglu.util.getParameterDeclarationsFromFunctionCallString(separateCalls[i]);
-            let definedFunction = iglu.util.getGlobalObject(functionName);
-            if(definedFunction != null) {
-                result = definedFunction.apply(thisArg,functionParameters);
-            } else {
-                throw('cannot process\'' + functionParameterString + '\': ' + definedFunction + ' not (yet) defined');
-            }
+            result = iglu.util.processFunctionInvocation(functionName, functionParameters, thisArg);
+        } else {
+            throw('cannot process\'' + functionParameterString + '\': functionname cannot be determined');
         }
+    }
+    return result;
+}
+
+iglu.util.processFunctionInvocation = function (functionName, functionParameters, thisArg) {
+    let definedFunction = iglu.util.getGlobalObject(functionName);
+    if(definedFunction != null) {
+        result = definedFunction.apply(thisArg,functionParameters);
+    } else {
+        throw('cannot process\'' + functionName + '\': it is not (yet) defined');
     }
     return result;
 }
