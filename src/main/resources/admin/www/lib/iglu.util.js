@@ -40,7 +40,7 @@ iglu.util.setGlobalObject = function(varName, value) {
 /*
     To be used to add configurable onclick or onload handling avoiding 'unsafe-eval'
 */
-iglu.util.processFunctionInvocationsString = function(functionParameterString,thisArg) {
+iglu.util.processFunctionInvocationsString = function(functionParameterString, thisArg) {
 
     if(thisArg === undefined || thisArg === null) {
         thisArg = this;
@@ -48,12 +48,14 @@ iglu.util.processFunctionInvocationsString = function(functionParameterString,th
     var result;
     let separateCalls = functionParameterString.split(';');
     for(var i in separateCalls) {
-        let functionName = iglu.util.getFunctionNameFromFunctionCallString(separateCalls[i]);
-        if(functionName !== '') {
-            let functionParameters = iglu.util.getParameterDeclarationsFromFunctionCallString(separateCalls[i]);
-            result = iglu.util.processFunctionInvocation(functionName, functionParameters, thisArg);
-        } else {
-            throw('cannot process\'' + functionParameterString + '\': functionname cannot be determined');
+        if(separateCalls[i].trim() !== '') {
+            let functionName = iglu.util.getFunctionNameFromFunctionCallString(separateCalls[i]);
+            if (functionName !== '') {
+                let functionParameters = iglu.util.getParameterDeclarationsFromFunctionCallString(separateCalls[i]);
+                result = iglu.util.processFunctionInvocation(functionName, functionParameters, thisArg);
+            } else {
+                throw ('cannot process\'' + functionParameterString + '\': functionname cannot be determined');
+            }
         }
     }
     return result;
