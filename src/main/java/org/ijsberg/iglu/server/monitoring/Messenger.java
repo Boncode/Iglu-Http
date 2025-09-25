@@ -6,11 +6,11 @@ import org.ijsberg.iglu.event.messaging.UserConsumableMessage;
 import org.ijsberg.iglu.event.messaging.message.MailMessage;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
-import org.ijsberg.iglu.mail.MailClient;
+import org.ijsberg.iglu.mail.SMTPClient;
 import org.ijsberg.iglu.scheduling.Pageable;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import java.net.InetAddress;
 import java.util.Properties;
 
@@ -21,7 +21,7 @@ public class Messenger implements Pageable, Startable, EntryPoint {
     private AccessManager accessManager;
     //private Request request;
     private Session session;
-    private MailClient mailClient;
+    private SMTPClient SMTPClient;
 
     private String hostDescription;
 
@@ -55,7 +55,7 @@ public class Messenger implements Pageable, Startable, EntryPoint {
             if (userMessage instanceof MailMessage) {
                 MailMessage mailMessage = (MailMessage) userMessage;
                 try {
-                    mailClient.sendMail(
+                    SMTPClient.sendMail(
                             mailProperties.getProperty("user"),
                             mailProperties.getProperty("recipient", mailProperties.getProperty("user")),
                             mailMessage.getSubject() + hostDescription,
@@ -73,7 +73,7 @@ public class Messenger implements Pageable, Startable, EntryPoint {
     public void start() {
         isStarted = true;
         loginAsSystem();
-        mailClient = new MailClient(xorKey, mailProperties);
+        SMTPClient = new SMTPClient(xorKey, mailProperties);
         try {
             InetAddress inetAddress = InetAddress.getLocalHost();
             hostDescription = " " + inetAddress.getHostName() + " : " + inetAddress.getHostAddress();
