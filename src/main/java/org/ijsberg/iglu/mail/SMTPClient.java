@@ -1,15 +1,13 @@
 package org.ijsberg.iglu.mail;
 
+import jakarta.mail.internet.*;
 import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
 
 import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeBodyPart;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
+import java.util.List;
 import java.util.Properties;
 
 public class SMTPClient implements MailClient {
@@ -33,22 +31,22 @@ public class SMTPClient implements MailClient {
         }
     }
 
-    public void sendHTMLMail(String sender, String recipient, String subject, String messageTxt) throws MessagingException {
-        sendMail(sender, recipient, subject, WebContentType.HTML, messageTxt);
+    public void sendHTMLMail(String senderEmailAddress, String[] recipientEmailAddresses, String subject, String messageTxt) throws MessagingException {
+        sendMail(senderEmailAddress, recipientEmailAddresses, subject, WebContentType.HTML, messageTxt);
     }
 
-    public void sendMail(String sender, String recipient, String subject, String messageTxt) throws MessagingException {
-        sendMail(sender, recipient, subject, WebContentType.TXT, messageTxt);
+    public void sendMail(String senderEmailAddress, String[] recipientEmailAddresses, String subject, String messageTxt) throws MessagingException {
+        sendMail(senderEmailAddress, recipientEmailAddresses, subject, WebContentType.TXT, messageTxt);
     }
 
-    public void sendMail(String sender, String recipient, String subject, WebContentType contentType, String messageTxt) throws MessagingException {
+    public void sendMail(String senderEmailAddress, String[] recipientEmailAddresses, String subject, WebContentType contentType, String messageTxt) throws MessagingException {
         Session session = Session.getInstance(properties, authenticator);
 
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(sender));
+        message.setFrom(new InternetAddress(senderEmailAddress));
 
         message.setRecipients(
-                Message.RecipientType.TO, InternetAddress.parse(recipient));
+                Message.RecipientType.TO, getInternetAddresses(recipientEmailAddresses));
         message.setSubject(subject);
 
         MimeBodyPart mimeBodyPart = new MimeBodyPart();
@@ -59,5 +57,13 @@ public class SMTPClient implements MailClient {
         message.setContent(multipart);
 
         Transport.send(message);
+    }
+
+    private Address[] getInternetAddresses(String[] recipientEmailAddresses) throws AddressException {
+        Address[] addresses = new Address[recipientEmailAddresses.length];
+        for(int i = 0; i < recipientEmailAddresses.length; i++) {
+            addresses[i] = InternetAddress.parse(recipientEmailAddresses[i])[0];
+        }
+        return addresses;
     }
 }
