@@ -6,17 +6,12 @@ iglu.util = new Object();
 
 iglu.util.getGlobalObject = function(functionName) {
     let functionPathArray = functionName.split('.');
-/*    if(functionPathArray.includes('') || functionPathArray.includes(null)) {
-        console.error('part of the function name: '+ functionName + ' is empty');
-        return null;
-    }*/
     let currentPlaceInFunctionPath = window;
     for(let i = 0; i < functionPathArray.length; i++) {
-//        console.log('currentPlaceInFunctionPath:' + currentPlaceInFunctionPath + '->' + functionPathArray[i]+'->'+window['DashboardTexts']);
         currentPlaceInFunctionPath = currentPlaceInFunctionPath[functionPathArray[i]];
-//        console.log(functionName + ' -> ' + i + ':' + currentPlaceInFunctionPath + ':' + functionPathArray);
         if(typeof currentPlaceInFunctionPath === 'undefined') {
             console.error('object \'' + functionName + '\' was not found.');
+            console.trace();
             return null;
         }
     }
