@@ -16,6 +16,7 @@ import org.ijsberg.iglu.rest.*;
 import org.ijsberg.iglu.server.facilities.FileManagerAgent;
 import org.ijsberg.iglu.server.facilities.FileUploadManager;
 import org.ijsberg.iglu.server.facilities.InvalidFilenameException;
+import org.ijsberg.iglu.server.facilities.UploadObserver;
 import org.ijsberg.iglu.server.facilities.model.MultipartUploadProgress;
 import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.http.DownloadSupport;
@@ -47,7 +48,7 @@ import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
 
-public class FileManagerAgentImpl implements FileManagerAgent {
+public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 
 	public static final String FILE_MANAGER_AGENT_NAME = "FileManagerAgent";
 
@@ -317,9 +318,6 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 	public void startPersonalUpload(HttpServletRequest req, HttpServletResponse res) {
 		try {
 			getPersonalFileUploadManager().upload(req);
-			if(sendEmail) {
-				notifyAsync(new FileData(getPersonalFileUploadManager().getUploadedFile()));
-			}
 		} catch (IllegalArgumentException | InvalidFilenameException iae) { //iae message is safe for users
 			throw new RestException(iae.getMessage(), 400);
 		} catch (IOException e) { // in case of failure in file write in postProcess
@@ -352,7 +350,7 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 			IgluProperties generalFileUploadProperties = new IgluProperties();
 			generalFileUploadProperties.merge(properties);
 			generalFileUploadProperties.setProperty("upload_dir", generalFileUploadProperties.getProperty("upload_dir") + getUserDir());
-			personalFileUploadManager = new FileUploadManager(generalFileUploadProperties, requestRegistry);
+			personalFileUploadManager = new FileUploadManager(generalFileUploadProperties, requestRegistry, this);
 		}
 		return personalFileUploadManager;
 	}
@@ -389,17 +387,24 @@ public class FileManagerAgentImpl implements FileManagerAgent {
 		return metadata;
 	}
 
-	private void notifyAsync(FileData fileData) {
-		String message = fileData.getFileName() + " has been uploaded to " + getUserDir();
-		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
-		requestRegistry.dropMessage("System", new MailMessage(getUserDir() + " : upload notification", message));
-	}
-
 	private String getUserDir() {
 		return ServletSupport.getUserDir(requestRegistry) + "/";
 	}
 
 	private String getUserDownloadDir() {
 		return uploadDir + getUserDir() + "downloads/";
+	}
+
+	private void notify(FileData fileData) {
+		String message = fileData.getFileName() + " has been uploaded to " + getUserDir();
+		System.out.println(new LogEntry(Level.VERBOSE, "about to mail: " + message));
+		requestRegistry.dropMessage("System", new MailMessage(getUserDir() + " : upload notification", message));
+	}
+
+	@Override
+	public void onUploadDone() {
+		if(sendEmail) {
+			notify(new FileData(getPersonalFileUploadManager().getUploadedFile()));
+		}
 	}
 }

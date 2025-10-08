@@ -30,8 +30,9 @@ public class FileUploadManager implements FileNameChecker {
     private final String targetDir;
 
     private final RequestRegistry requestRegistry;
+    private final UploadObserver uploadObserver;
 
-    public FileUploadManager(IgluProperties properties, RequestRegistry requestRegistry) {
+    public FileUploadManager(IgluProperties properties, RequestRegistry requestRegistry, UploadObserver observer) {
         this.uploadDir = properties.getProperty("upload_dir");
         this.targetDir = properties.getProperty("target_dir");
         this.allowedFormatsWildcardExpressions = properties.getPropertyAsArray("allowed_files_wildcard");
@@ -39,6 +40,7 @@ public class FileUploadManager implements FileNameChecker {
 
         this.uploadReader = new MultiPartReader(uploadDir, this);
         this.requestRegistry = requestRegistry;
+        this.uploadObserver = observer;
     }
 
     @Override
@@ -93,6 +95,7 @@ public class FileUploadManager implements FileNameChecker {
         try {
             postProcess();
             uploadStatus = UploadStatus.DONE;
+            uploadObserver.onUploadDone();
         } catch (IOException e) {
             System.out.println(new LogEntry(Level.CRITICAL, "cannot move file (or metadata) to target dir", e));
             uploadReader.cancel();
