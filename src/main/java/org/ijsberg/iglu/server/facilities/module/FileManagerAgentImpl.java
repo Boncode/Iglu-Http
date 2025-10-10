@@ -402,7 +402,7 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 	}
 
 	@Override
-	public void onUploadDone() {
+	public void onUploadDone(File file) {
 		if(sendEmail) {
 			notify(new FileData(getPersonalFileUploadManager().getUploadedFile()));
 		}

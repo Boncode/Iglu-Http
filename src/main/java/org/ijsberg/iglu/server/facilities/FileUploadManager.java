@@ -95,7 +95,7 @@ public class FileUploadManager implements FileNameChecker {
         try {
             postProcess();
             uploadStatus = UploadStatus.DONE;
-            uploadObserver.onUploadDone();
+            uploadObserver.onUploadDone(uploadReader.getUploadedFile());
         } catch (IOException e) {
             System.out.println(new LogEntry(Level.CRITICAL, "cannot move file (or metadata) to target dir", e));
             uploadReader.cancel();
