@@ -23,7 +23,7 @@ public class DownloadSupport {
 
         File downloadable = new File(resourcePath);
         if (!downloadable.exists()) {
-            throw new FileNotFoundException("file does not exist");
+            throw new FileNotFoundException("file " + resourcePath + " does not exist");
         }
 
         return downloadable;
