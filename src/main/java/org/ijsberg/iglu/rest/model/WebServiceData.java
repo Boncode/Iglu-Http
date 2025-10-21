@@ -3,6 +3,7 @@ package org.ijsberg.iglu.rest.model;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.Endpoint;
+import org.ijsberg.iglu.util.ResourceException;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -34,6 +35,12 @@ public class WebServiceData {
     private final Map<String, EndpointData> endpointDataByPath = new HashMap<>();
 
     private void populate() {
+        Method[] methods;
+        try {
+            methods = implClass.getDeclaredMethods();
+        } catch (Throwable t) {
+            throw new ResourceException("cannot get declared methods from " + implClass.getName(), t);
+        }
         for (Method method : implClass.getDeclaredMethods()) {
             Endpoint endpoint = method.getAnnotation(Endpoint.class);
             if (endpoint != null) {
