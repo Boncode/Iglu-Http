@@ -140,6 +140,7 @@ public class IgluRestServlet extends HttpServlet {
             }
         }
 
+        //TODO respond with authorization result instead, avoiding bloated logging
         public void assertUserAuthorized() {
             if(requiredPermissions != null) {
                 User user = accessManager.getCurrentRequest().getUser();
