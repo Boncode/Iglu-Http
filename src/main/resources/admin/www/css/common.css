@@ -452,6 +452,7 @@ body.waiting * {
     cursor: pointer;
 }
 
+/*Should not hard set the colour but instead do a nice transition.*/
 .clickable_icon:hover {
     background-color: var(--icon-background-hover) !important;
     color: var(--text-color) !important;
@@ -483,6 +484,11 @@ body.waiting * {
     width: max-content;
     padding: 0px 7px;
     border-radius: 3px;
+}
+
+.orphaned_asset {
+    background-color: var(--action-attention-color);
+    color: var(--strong-white-offset);
 }
 
 .score_tag {
