@@ -11,7 +11,7 @@ iglu.util.getGlobalObject = function(functionName) {
         currentPlaceInFunctionPath = currentPlaceInFunctionPath[functionPathArray[i]];
         if(typeof currentPlaceInFunctionPath === 'undefined') {
             console.error('object \'' + functionName + '\' was not found.');
-            console.trace();
+            //console.trace();
             return null;
         }
     }

@@ -36,8 +36,7 @@ import java.util.*;
 import static org.ijsberg.iglu.access.Permissions.FULL_CONTROL;
 import static org.ijsberg.iglu.http.client.Constants.ATTRIBUTE_SESSION_RESOLVED_BY_TOKEN;
 import static org.ijsberg.iglu.http.client.Constants.HEADER_X_CSRF_TOKEN;
-import static org.ijsberg.iglu.logging.Level.CRITICAL;
-import static org.ijsberg.iglu.logging.Level.TRACE;
+import static org.ijsberg.iglu.logging.Level.*;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.*;
 import static org.ijsberg.iglu.util.http.HttpEncodingSupport.urlEncodeXSSRiskCharacters;
@@ -511,17 +510,17 @@ public class IgluRestServlet extends HttpServlet {
     public static String purgeXSS(String stringResponse, RestMethodData restMethodData) {
         int start = 0;
         int index = 0;
+        //FIXME content, not even dashboards should contain script snippets
         if(restMethodData != null/*i.e. endpoint not defined*/ && !restMethodData.allowScriptSnippets && stringResponse.indexOf('<', start) != -1) {
+            //return StringSupport.replaceAll(stringResponse, new String[]{"<",">"},new String[]{"&lt;","&gt;"});
             String stringResponseLowerCase = stringResponse.toLowerCase();
-            if(stringResponseLowerCase.contains("script")) {
-                stringResponseLowerCase = StringSupport.replaceAll(stringResponseLowerCase, new String[]{"\t", " "}, new String[]{"",""});
-                while((index = stringResponseLowerCase.indexOf("</script>", start)) > 0) {
-                    start++;
-                    if(stringResponseLowerCase.charAt(index - 1) != '>') {
-                        System.out.println(new LogEntry(CRITICAL, "script entry not empty for " + restMethodData.endpoint.path(), stringResponseLowerCase.substring(0, index + 50)));
-                        return StringSupport.replaceAll(stringResponse, new String[]{"<",">"},new String[]{"&lt;","&gt;"});
-                    }
-                }
+            stringResponseLowerCase = StringSupport.replaceAll(stringResponseLowerCase, new String[]{"\t", " "}, new String[]{"", ""});
+            if(stringResponseLowerCase.contains("<script")) {
+//                stringResponseLowerCase = StringSupport.replaceAll(stringResponseLowerCase, new String[]{"\t", " "}, new String[]{"", ""});
+//                if (stringResponseLowerCase.contains("<script>")) {
+                    System.out.println(new LogEntry(CRITICAL, "script entry not empty for " + restMethodData.endpoint.path(), stringResponseLowerCase.substring(0, index + 50)));
+                    return StringSupport.replaceAll(stringResponse, new String[]{"<", ">"}, new String[]{"&lt;", "&gt;"});
+//                }
             }
         }
         return stringResponse;
@@ -533,7 +532,7 @@ public class IgluRestServlet extends HttpServlet {
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("text/plain");
             if(e instanceof RestException) {
-                System.out.println(new LogEntry(Level.DEBUG, "process request failed with predictable error", e));
+                System.out.println(new LogEntry(DEBUG, "process request failed with predictable error", e));
                 respondWithError(response, restMethodData, ((RestException) e).getHttpStatusCode(), e.getMessage());
             } else if(e instanceof SecurityException) {
                 System.out.println(new LogEntry(Level.CRITICAL, "processing request failed with security exception", e));
