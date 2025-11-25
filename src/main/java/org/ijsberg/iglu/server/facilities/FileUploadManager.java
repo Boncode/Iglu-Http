@@ -2,7 +2,7 @@ package org.ijsberg.iglu.server.facilities;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.ijsberg.iglu.access.User;
-import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.facilities.model.MultipartUploadProgress;

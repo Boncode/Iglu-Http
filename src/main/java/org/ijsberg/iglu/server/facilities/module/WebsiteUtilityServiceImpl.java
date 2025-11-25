@@ -20,7 +20,7 @@
 package org.ijsberg.iglu.server.facilities.module;
 
 import org.ijsberg.iglu.access.Request;
-import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.content.TextProvider;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;

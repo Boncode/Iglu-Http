@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.access.AgentFactory;
 import org.ijsberg.iglu.access.BasicAgentFactory;
 import org.ijsberg.iglu.access.User;
-import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.event.messaging.MessageStatus;
 import org.ijsberg.iglu.event.messaging.message.MailMessage;

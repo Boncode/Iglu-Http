@@ -20,7 +20,7 @@
 package org.ijsberg.iglu.server.facilities.module;
 
 import org.ijsberg.iglu.access.*;
-import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.server.facilities.UserAgent;
 

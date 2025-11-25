@@ -29,7 +29,7 @@ import org.ijsberg.iglu.access.AuthenticationException;
 import org.ijsberg.iglu.access.Base64EncodedCredentials;
 import org.ijsberg.iglu.access.Request;
 import org.ijsberg.iglu.access.User;
-import org.ijsberg.iglu.access.component.RequestRegistry;
+import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
