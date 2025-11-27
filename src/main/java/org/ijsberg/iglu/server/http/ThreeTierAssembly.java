@@ -23,6 +23,8 @@ import org.ijsberg.iglu.invocation.RootConsole;
 import org.ijsberg.iglu.logging.module.RotatingFileLogger;
 import org.ijsberg.iglu.logging.module.StandardOutLogger;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
+import org.ijsberg.iglu.usermanagement.UserManager;
+import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
 import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareComponent;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
@@ -36,11 +38,12 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     protected static final String SCHEDULER = "Scheduler";
     protected static final String ACCESS_MANAGER = "AccessManager";
     protected static final String REQUEST_REGISTRY = "RequestRegistry";
-    protected static final String SERVICE_BROKER = "ServiceBroker";
-    protected static final String EVENT_BUS = "EventBus";
+    public static final String SERVICE_BROKER = "ServiceBroker";
+    public static final String EVENT_BUS = "EventBus";
     protected static final String ASSET_ACCESS_MANAGER = "AssetAccessManager";
     protected static final String ROOT_CONSOLE = "RootConsole";
     protected static final String APPLICATION_SETTINGS_MANAGER = "ApplicationSettingsManager";
+    protected static final String USER_MANAGER = "UserManager";
 
     protected Component logger;
     protected Component rootConsole;
@@ -50,6 +53,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
     protected Component serviceBroker;
     protected Component assetAccessManager;
     protected Component applicationSettingsManager;
+    protected Component userManager;
 
     protected Cluster infraLayer;
     protected Cluster dataLayer;
@@ -72,6 +76,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         accessManager = coreClusterComponents.get(ACCESS_MANAGER);
         serviceBroker = coreClusterComponents.get(SERVICE_BROKER);
         assetAccessManager = coreClusterComponents.get(ASSET_ACCESS_MANAGER);
+        userManager = coreClusterComponents.get(USER_MANAGER);
         createLayers(properties);
     }
 
@@ -122,6 +127,12 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         if(accessManager == null) {
             createAccessManagerComponent();
         }
+
+        if(userManager == null) {
+            initUserManager();
+        }
+        core.connect(USER_MANAGER, userManager);
+
         core.connect(ACCESS_MANAGER, accessManager, RequestRegistry.class, AccessManager.class);
         core.connect(REQUEST_REGISTRY, accessManager, RequestRegistry.class);
 
@@ -149,6 +160,24 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         core.connect(ASSET_ACCESS_MANAGER, assetAccessManager, AssetAccessManager.class);
 
         return core;
+    }
+
+    private UserManager initUserManager() {
+        StandardUserManager stdUserManager = new StandardUserManager("dakp[F(io3udsua.&*990adduX=".getBytes());
+        Properties properties = new Properties();
+        properties.setProperty("data_dir", home + "/data");
+//        try {
+//            FileSupport.copyFile(home + "/data/JsonSimpleAccount.json", "./data/JsonSimpleAccount.json", true);
+//        } catch (IOException e) {
+//            System.out.println(new LogEntry(Level.CRITICAL, "cannot copy user file to directory that is being backed up"));
+//        }
+        stdUserManager.setProperties(properties);
+
+        userManager = new StandardComponent(stdUserManager);
+        //layer.connect("UserManager", userManagerComponent, UserManager.class);
+        stdUserManager.start();
+        return stdUserManager;
+//        userManager.start();
     }
 
     private void createAccessManagerComponent() {
