@@ -14,7 +14,6 @@ import org.ijsberg.iglu.configuration.component.StandardApplicationSettingsManag
 import org.ijsberg.iglu.configuration.module.BasicAssembly;
 import org.ijsberg.iglu.configuration.module.StandardComponent;
 import org.ijsberg.iglu.event.EventBus;
-import org.ijsberg.iglu.event.IgluEventType;
 import org.ijsberg.iglu.event.ServiceBroker;
 import org.ijsberg.iglu.event.model.BasicEvent;
 import org.ijsberg.iglu.event.model.EventTopic;
@@ -146,8 +145,7 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
                                     "Iglu events",
                                     "Events related to the Iglu Framework",
                                     BasicEvent.class
-                            ),
-                            IgluEventType.values()
+                            )
                     );
         }
         core.connect(SERVICE_BROKER, serviceBroker, ServiceBroker.class);
