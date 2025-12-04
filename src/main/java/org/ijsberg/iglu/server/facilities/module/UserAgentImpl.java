@@ -20,7 +20,6 @@
 package org.ijsberg.iglu.server.facilities.module;
 
 import org.ijsberg.iglu.access.*;
-import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.server.facilities.UserAgent;
 
@@ -56,6 +55,7 @@ public class UserAgentImpl implements UserAgent {
 			session.login(new SimpleCredentials(userName, password));
 		} catch (AuthenticationException e) {
 			//TODO return reason
+			//TODO publish event
 			return false;
 		}
 		return session.getUser() != null;

@@ -20,7 +20,6 @@
 package org.ijsberg.iglu.server.admin.module;
 
 import org.ijsberg.iglu.access.*;
-import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.configuration.Cluster;
 import org.ijsberg.iglu.http.widget.MenuItem;
 import org.ijsberg.iglu.logging.LogEntry;

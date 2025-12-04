@@ -1,13 +1,11 @@
 package org.ijsberg.iglu.mail;
 
+import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
-
-import jakarta.mail.*;
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
-import java.util.List;
 import java.util.Properties;
 
 public class SMTPClient implements MailClient {
