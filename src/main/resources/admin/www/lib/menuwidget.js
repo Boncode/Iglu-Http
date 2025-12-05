@@ -265,8 +265,8 @@ function createLink(item, alternativeLabel) {
 	}
 
 	if(typeof(item.link) != 'undefined' && item.link.length > 0) {
-	    //alert('item.link ' + item.link);
-		for(var i in item.link) {
+	    console.error('menu item link is deprecated ' + item.link);
+		/*for(var i in item.link) {
 			var link = item.link[i];
 			if(link.functionName != null) {
 				onclick += link.functionName + '(\'' + link.url + '\', \'' + link.target_label + '\');';
@@ -277,7 +277,7 @@ function createLink(item, alternativeLabel) {
             } else {
 				onclick += 'linkToHtml(\'' + link.url + '\', \'' + link.target + '\', \'' + link.target_label + '\');';
 			}
-		}
+		}*/
 	}
 
     var itemLabel = '<span data-text-id="menu.' + item.id + '.label">' + (typeof alternativeLabel !== 'undefined' ? alternativeLabel : item.label) + '</span>';
@@ -288,6 +288,19 @@ function createLink(item, alternativeLabel) {
 		return itemLabel;
 	}
 }
+
+function toggleProperty(key, on, off) {
+
+	var value = WidgetManager.instance.settings[key];
+
+	if(value == off) {
+		WidgetManager.instance.settings[key] = on;
+	} else {
+		WidgetManager.instance.settings[key] = off;
+	}
+	document.getElementById(key + '_select').innerHTML = (value == off ? '&#x2713;' : '&nbsp;');
+}
+
 
 
 function getSubMenuChevronDownHTML() {

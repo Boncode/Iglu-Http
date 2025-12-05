@@ -191,10 +191,7 @@ AjaxRequestManager.prototype.sendMultiPartRequest = function(ajaxRequest, url, p
 AjaxRequestManager.prototype.setCrsfToken = function(ajaxRequest, url) {
 	ajaxRequest.url = url;
 	if(typeof AjaxRequestManager.X_CSRF_Token != 'undefined' && AjaxRequestManager.X_CSRF_Token != null) {
-//	    console.debug('X-CSRF-Token:' + AjaxRequestManager.X_CSRF_Token);
 	    ajaxRequest.setRequestHeader('X-CSRF-Token', AjaxRequestManager.X_CSRF_Token);
-	} else {
-//	    console.debug('NO X-CSRF-Token:' + url);
 	}
 }
 
@@ -222,7 +219,6 @@ AjaxRequestManager.prototype.createAjaxRequest = function(handler) {
 }
 
 AjaxRequestManager.prototype.abortRequest = function(requestNr) {
-//TODO test
 	ajaxRequestManager.ajaxRequests[requestNr].abort();
 	removeFromRequestQueue(requestNr);
 }
@@ -230,7 +226,6 @@ AjaxRequestManager.prototype.abortRequest = function(requestNr) {
 
 function dispatchResponse(requestNr)
 {
-	//	alert('handling result: ' + message);
 	//serverResponse.status: 200, 500, 503, 404);
 
 	if (ajaxRequestManager.ajaxRequests[requestNr].readyState == 4 || ajaxRequestManager.ajaxRequests[requestNr].readyState == 'complete')
@@ -241,18 +236,6 @@ function dispatchResponse(requestNr)
         if(typeof X_CSRF_Token != 'undefined' && X_CSRF_Token != null) {
             AjaxRequestManager.X_CSRF_Token = X_CSRF_Token;
         }
-//		console.debug('====----==-=================   ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader:' + ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader('Referrer-Policy'));
-//		console.debug('============================  ' + ajaxRequestManager.ajaxRequests[requestNr].url + ' ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader:' + ajaxRequestManager.ajaxRequests[requestNr].getResponseHeader('X-CSRF-Token'));
-
-/*		if(ajaxRequestManager.callbackInputObjects[requestNr] != null) {
-			if(typeof ajaxRequestManager.callbackInputObjects[requestNr].handleAjaxResponse != 'undefined') {
-				ajaxRequestManager.callbackInputObjects[requestNr].handleAjaxResponse(ajaxRequestManager.ajaxRequests[requestNr].responseText);
-		        removeFromRequestQueue(requestNr);
-				return;
-			}
-		}*/
-
-
 
 		if(typeof ajaxRequestManager.callbacks[requestNr] != 'function') {
 			alert('' + ajaxRequestManager.callbacks[requestNr] + ' is not a function');
@@ -261,19 +244,7 @@ function dispatchResponse(requestNr)
                 ajaxRequestManager.handleNotAuthenticated();
 			}
 
-/*			if(ajaxRequestManager.ajaxRequests[requestNr].status == 403) {
-				window.location.href = ajaxRequestManager.ajaxRequests[requestNr].responseText;
-        		removeFromRequestQueue(requestNr);
-				//alert(ajaxRequestManager.ajaxRequests[requestNr].responseText);
-				return;
-			}
-*/
-/*			if(ajaxRequestManager.callbackInputObjects[requestNr] == null) {
-				ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText);
-			} else {
-*/				//calls callback(response, callbackInput[])
-				ajaxRequestManager.callbacks[requestNr](ajaxRequestManager.ajaxRequests[requestNr].responseText, ajaxRequestManager.callbackInputObjects[requestNr], ajaxRequestManager.ajaxRequests[requestNr]);
-//			}
+			ajaxRequestManager.callbacks[requestNr].call(null, ajaxRequestManager.ajaxRequests[requestNr].responseText, ajaxRequestManager.callbackInputObjects[requestNr], ajaxRequestManager.ajaxRequests[requestNr]);
 		}
         removeFromRequestQueue(requestNr);
 	}
@@ -303,61 +274,4 @@ function ignoreResponse() {
 var ajaxRequestManager = new AjaxRequestManager();
 
 
-////// UTILITIES
-//TODO move to menu (?)
-
-function loadPageJson(contents, callbackInput) {
-	var panelContents = document.getElementById(callbackInput.target + '_contents');
-	panelContents.innerHTML = '';
-
-	var panelHeader = document.getElementById(callbackInput.target + '_header');
-	panelHeader.innerHTML = callbackInput.title;
-}
-
-function loadPageJavaScript(contents, callbackInput) {
-	var panelContents = document.getElementById(callbackInput.target + '_contents');
-	panelContents.innerHTML = '';
-
-	var panelHeader = document.getElementById(callbackInput.target + '_header');
-	panelHeader.innerHTML = callbackInput.title;
-
-}
-
-function linkToJavaScript(source, target, title) {
-	var callbackInput = new Object();
-	callbackInput.target = target;
-	callbackInput.title = title;
-	ajaxRequestManager.doRequest('./' + source, loadPageJavaScript, callbackInput);
-	return false;
-}
-
-function linkToJson(source, target, title) {
-	var callbackInput = new Object();
-	callbackInput.target = target;
-	callbackInput.title = title;
-	ajaxRequestManager.doRequest('./' + source, loadPageJson, callbackInput);
-	return false;
-}
-
-function toggleProperty(key, on, off) {
-
-	var value = WidgetManager.instance.settings[key];
-
-	if(value == off) {
-		WidgetManager.instance.settings[key] = on;
-	} else {
-		WidgetManager.instance.settings[key] = off;
-	}
-	document.getElementById(key + '_select').innerHTML = (value == off ? '&#x2713;' : '&nbsp;');
-}
-
-function getToggleProperty(value, on, off) {
-
-	if(value == on) {
-		return '&#x2713;';
-	}
-	if(value == off) {
-		return '&nbsp;';
-	}
-}
 
