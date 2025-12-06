@@ -115,7 +115,7 @@ public class FileUploadManager implements FileNameChecker {
     private void postProcess() throws IOException {
         File uploadedFile = getUploadedFile();
 
-        FileData fileData = new FileData(uploadedFile.getPath());
+        FileData fileData = new FileData(uploadedFile.getPath(), 0);
         String permanentFileName = fileData.getFullFileName();
         if(targetDir != null) {
             String tmpFileName = targetDir + "/ignore.tmp";

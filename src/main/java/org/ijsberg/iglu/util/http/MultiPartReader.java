@@ -173,7 +173,7 @@ public class MultiPartReader {
     private void getStorageOutputStream() throws IOException {
         if (fullFileName != null && uploadDir != null) {
             //check if file exists
-            FileData file = new FileData(fullFileName/*, contentType*/);
+            FileData file = new FileData(fullFileName, 0);
             uploadFile = new File(uploadDir + '/' + file.getFileName());
             if(uploadFile.exists()) {
                 uploadFile = getFileWithUniqueName(file, uploadFile);

@@ -40,7 +40,7 @@ public class RandomAccessZipFileResourceServlet extends BinaryResourceServlet {
 
     public void mapResources(FileCollection fileCollection) {
         for(String fileName : fileCollection.getFileNames()) {
-            FileData fileData = new FileData(fileName);
+            FileData fileData = new FileData(fileName, 0);
             resources.put(fileData.getFileNameWithoutExtension(), fileName);
         }
     }

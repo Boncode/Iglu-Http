@@ -31,6 +31,7 @@ import org.ijsberg.iglu.util.io.model.UploadedFileCommentDto;
 import org.ijsberg.iglu.util.io.model.UploadedFileDto;
 import org.ijsberg.iglu.util.mail.WebContentType;
 import org.ijsberg.iglu.util.properties.IgluProperties;
+import org.ijsberg.iglu.util.time.TimeSupport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -89,8 +90,10 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 		description = "Retrieve a list of downloadable files for the current user.")
 	public FileCollectionDto getDownloadableFileNames() {
 		FSFileCollection fileCollection = getUserDownloadsFileCollection();
-		return new FileCollectionDto(fileCollection.getFileNames().stream()
-				.map(fileName -> new FileDto(fileName, getUserDir()))
+		return new FileCollectionDto(
+			fileCollection.getFileNames().stream()
+				.map(fileName -> new FileDto(fileName, getUserDir(),
+					TimeSupport.getTimeStampExcel(fileCollection.getFileData(fileName).lastModified())	))
 				.collect(Collectors.toList()));
 	}
 
@@ -212,7 +215,7 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 					if(uploadedFile.getName().endsWith(".metadata.properties")) {
 						continue;
 					}
-					fileDtos.add(new FileDto(uploadedFile.getName(), userDir.getName()));
+					fileDtos.add(new FileDto(uploadedFile.getName(), userDir.getName(), TimeSupport.getTimeStampExcel(uploadedFile.lastModified())));
 				}
 			}
 		}
@@ -239,7 +242,7 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 						if (downloadableFile.isDirectory() || downloadableFile.getName().endsWith(".metadata.properties")) {
 							continue;
 						}
-						downloadableFiles.add(new FileDto(downloadableFile.getName(), customerName));
+						downloadableFiles.add(new FileDto(downloadableFile.getName(), customerName, TimeSupport.getTimeStampExcel(downloadableFile.lastModified())));
 					}
 				}
 			}
@@ -369,10 +372,10 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 			String newFileName = uploadDir + customerName + "/" + "downloads/" + fileName;
 
 			//todo check if customerName is legit, but only administrator can do this currently
-			FileSupport.moveFile(fullFileName, newFileName, true);
+			FileSupport.moveFileKeepDate(fullFileName, newFileName, true);
 			File metadata = new File(fullFileName + ".metadata.properties");
 			if(metadata.exists()) {
-				FileSupport.moveFile(fullFileName + ".metadata.properties", newFileName + ".metadata.properties", true);
+				FileSupport.moveFileKeepDate(fullFileName + ".metadata.properties", newFileName + ".metadata.properties", true);
 			}
 		} else {
 			throw new RestException("File not found: " + fileName, 404);
