@@ -92,7 +92,7 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 		FSFileCollection fileCollection = getUserDownloadsFileCollection();
 		return new FileCollectionDto(
 			fileCollection.getFileNames().stream()
-				.map(fileName -> new FileDto(fileName, getUserDir(),
+				.map(fileName -> new FileDto(fileName, ServletSupport.getUserDir(requestRegistry),
 					TimeSupport.getTimeStampExcel(fileCollection.getFileData(fileName).lastModified())	))
 				.collect(Collectors.toList()));
 	}
