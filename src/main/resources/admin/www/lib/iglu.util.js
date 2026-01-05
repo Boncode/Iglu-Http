@@ -56,6 +56,23 @@ iglu.util.processFunctionInvocationsString = function(functionParameterString, t
     return result;
 }
 
+iglu.util.getValueFromObject = function (varName, object) {
+    let varArray = varName.split('.');
+    for(let i = 0; i < varArray.length; i++) {
+        let varNamePart = varArray[i];
+        if(i === varArray.length - 1) {
+            return object[varNamePart];
+        } else {
+            object = object[varNamePart];
+            if (object === undefined || object === null) {
+                return null;
+            }
+        }
+    }
+    return null;
+}
+
+
 iglu.util.processFunctionInvocation = function (functionName, functionParameters, thisArg) {
     let definedFunction = iglu.util.getGlobalObject(functionName);
     if(definedFunction != null) {
