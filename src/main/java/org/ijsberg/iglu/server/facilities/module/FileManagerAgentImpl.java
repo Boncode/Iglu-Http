@@ -7,6 +7,7 @@ import org.ijsberg.iglu.access.BasicAgentFactory;
 import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.configuration.Cluster;
+import org.ijsberg.iglu.event.EventBus;
 import org.ijsberg.iglu.event.messaging.MessageStatus;
 import org.ijsberg.iglu.event.messaging.message.MailMessage;
 import org.ijsberg.iglu.event.messaging.message.StatusMessage;
@@ -54,6 +55,7 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 	public static final String FILE_MANAGER_AGENT_NAME = "FileManagerAgent";
 
 	private RequestRegistry requestRegistry;
+	private EventBus eventBus;
 
 	private Properties properties;
 	private String uploadDir = "uploads/";
@@ -78,6 +80,10 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 
 	public void setProperties(Properties properties) {
 
+	}
+
+	public void setEventBus(EventBus eventBus) {
+		this.eventBus = eventBus;
 	}
 
 	public void setRequestRegistry(RequestRegistry requestRegistry) {
