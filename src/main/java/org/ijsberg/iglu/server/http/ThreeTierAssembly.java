@@ -227,17 +227,21 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         Map<String, AssetAccessSettings> servicesByServiceName = new HashMap<>();
         for(AssetAccessSettings asset : assetAccessManager.
             getProxy(AssetAccessManager.class).
-            getAssetAccessSettingsByType(ASSET_TYPE_SERVICE.getId())) {
-            servicesByServiceName.put(asset.getName(), asset);
+                getAssetAccessSettingsByType(ASSET_TYPE_SERVICE.getId())) {
+                servicesByServiceName.put(asset.getName(), asset);
         }
         return servicesByServiceName;
     }
 
-    protected void registerService(String serviceName) {
+    protected AssetAccessSettings registerService(String serviceName) {
         Map<String, AssetAccessSettings> servicesByServiceName = getAsAssetRegisteredServicesByServiceName();
+        AssetAccessSettings assetAccessSettings = servicesByServiceName.get(serviceName);
         if(!servicesByServiceName.containsKey(serviceName)) {
+            String assetId = IdGenerator.newId();
             assetAccessManager.getProxy(AssetAccessManager.class).registerAsset(
-                IdGenerator.newId(), ASSET_TYPE_SERVICE.getId(), serviceName);
+                assetId, ASSET_TYPE_SERVICE.getId(), serviceName);
+            assetAccessSettings = assetAccessManager.getProxy(AssetAccessManager.class).getAssetAccessSettings(assetId);
         }
+        return assetAccessSettings;
     }
 }
