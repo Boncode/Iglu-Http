@@ -266,7 +266,8 @@ function createLink(item, alternativeLabel) {
 
 	if(typeof(item.link) != 'undefined' && item.link.length > 0) {
 	    console.error('menu item link is deprecated ' + item.link);
-		/*for(var i in item.link) {
+		//still used in top X lists
+		for(var i in item.link) {
 			var link = item.link[i];
 			if(link.functionName != null) {
 				onclick += link.functionName + '(\'' + link.url + '\', \'' + link.target_label + '\');';
@@ -277,7 +278,7 @@ function createLink(item, alternativeLabel) {
             } else {
 				onclick += 'linkToHtml(\'' + link.url + '\', \'' + link.target + '\', \'' + link.target_label + '\');';
 			}
-		}*/
+		}
 	}
 
     var itemLabel = '<span data-text-id="menu.' + item.id + '.label">' + (typeof alternativeLabel !== 'undefined' ? alternativeLabel : item.label) + '</span>';
