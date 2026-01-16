@@ -7,16 +7,15 @@ import org.ijsberg.iglu.access.BasicAgentFactory;
 import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.access.User;
 import org.ijsberg.iglu.configuration.Cluster;
+import org.ijsberg.iglu.event.EventBus;
 import org.ijsberg.iglu.event.messaging.MessageStatus;
 import org.ijsberg.iglu.event.messaging.message.MailMessage;
 import org.ijsberg.iglu.event.messaging.message.StatusMessage;
+import org.ijsberg.iglu.event.model.IgluEvent;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.rest.*;
-import org.ijsberg.iglu.server.facilities.FileManagerAgent;
-import org.ijsberg.iglu.server.facilities.FileUploadManager;
-import org.ijsberg.iglu.server.facilities.InvalidFilenameException;
-import org.ijsberg.iglu.server.facilities.UploadObserver;
+import org.ijsberg.iglu.server.facilities.*;
 import org.ijsberg.iglu.server.facilities.model.MultipartUploadProgress;
 import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.http.DownloadSupport;
@@ -36,6 +35,7 @@ import org.ijsberg.iglu.util.time.TimeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +47,7 @@ import static org.ijsberg.iglu.access.Permissions.UPLOAD;
 import static org.ijsberg.iglu.rest.Endpoint.ParameterType.*;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.GET;
 import static org.ijsberg.iglu.rest.Endpoint.RequestMethod.POST;
+import static org.ijsberg.iglu.server.facilities.FileExchangeEvent.FileExchangeEventType.FILE_UPLOADED;
 import static org.ijsberg.iglu.util.mail.WebContentType.JSON;
 
 public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
@@ -54,30 +55,36 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 	public static final String FILE_MANAGER_AGENT_NAME = "FileManagerAgent";
 
 	private RequestRegistry requestRegistry;
+	private EventBus eventBus;
 
 	private Properties properties;
 	private String uploadDir = "uploads/";
 	private boolean sendEmail;
 
 	private FileUploadManager personalFileUploadManager;
+	private String assetId;
 
-
-	public static AgentFactory<FileManagerAgent> getAgentFactory(Cluster cluster, Properties agentProperties) {
+	public static AgentFactory<FileManagerAgent> getAgentFactory(Cluster cluster, Properties agentProperties, String assetId) {
 		return new BasicAgentFactory<>(cluster, FILE_MANAGER_AGENT_NAME, agentProperties) {
 			public FileManagerAgent createAgentImpl() {
-				return new FileManagerAgentImpl(getAgentProperties());
+				return new FileManagerAgentImpl(getAgentProperties(), assetId);
 			}
 		};
 	}
 
-	public FileManagerAgentImpl(Properties agentProperties) {
+	public FileManagerAgentImpl(Properties agentProperties, String assetId) {
 		this.properties = agentProperties;
 		uploadDir = properties.getProperty("upload_dir", uploadDir);
 		sendEmail = Boolean.parseBoolean(properties.getProperty("send_email", "false"));
+		this.assetId = assetId;
 	}
 
 	public void setProperties(Properties properties) {
 
+	}
+
+	public void setEventBus(EventBus eventBus) {
+		this.eventBus = eventBus;
 	}
 
 	public void setRequestRegistry(RequestRegistry requestRegistry) {
@@ -92,7 +99,7 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 		FSFileCollection fileCollection = getUserDownloadsFileCollection();
 		return new FileCollectionDto(
 			fileCollection.getFileNames().stream()
-				.map(fileName -> new FileDto(fileName, getUserDir(),
+				.map(fileName -> new FileDto(fileName, ServletSupport.getUserDir(requestRegistry),
 					TimeSupport.getTimeStampExcel(fileCollection.getFileData(fileName).lastModified())	))
 				.collect(Collectors.toList()));
 	}
@@ -406,8 +413,9 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 
 	@Override
 	public void onUploadDone(File file) {
+		eventBus.publish(new FileExchangeEvent(FILE_UPLOADED, assetId, "file " + file.getName() + " has been uploaded to " + getUserDir()));
 		if(sendEmail) {
-			notify(new FileData(getPersonalFileUploadManager().getUploadedFile()));
+			notify(new FileData(file));
 		}
 	}
 }

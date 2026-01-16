@@ -1,9 +1,11 @@
 package org.ijsberg.iglu.server.http;
 
+import org.ijsberg.iglu.AssetType;
 import org.ijsberg.iglu.access.AccessManager;
 import org.ijsberg.iglu.access.RequestRegistry;
 import org.ijsberg.iglu.access.component.StandardAccessManager;
 import org.ijsberg.iglu.asset.AssetAccessManager;
+import org.ijsberg.iglu.asset.AssetAccessSettings;
 import org.ijsberg.iglu.asset.component.StandardAssetAccessManager;
 import org.ijsberg.iglu.configuration.Assembly;
 import org.ijsberg.iglu.configuration.Cluster;
@@ -21,6 +23,7 @@ import org.ijsberg.iglu.event.module.BasicServiceBroker;
 import org.ijsberg.iglu.invocation.RootConsole;
 import org.ijsberg.iglu.logging.module.RotatingFileLogger;
 import org.ijsberg.iglu.logging.module.StandardOutLogger;
+import org.ijsberg.iglu.persistence.IdGenerator;
 import org.ijsberg.iglu.scheduling.module.StandardScheduler;
 import org.ijsberg.iglu.usermanagement.UserManager;
 import org.ijsberg.iglu.usermanagement.module.StandardUserManager;
@@ -28,6 +31,8 @@ import org.ijsberg.iglu.usermanagement.multitenancy.component.MultiTenantAwareCo
 import org.ijsberg.iglu.util.properties.IgluProperties;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -214,5 +219,29 @@ public abstract class ThreeTierAssembly extends BasicAssembly {
         if (Boolean.parseBoolean(loggerProperties.getProperty("log_to_standard_out", "false"))) {
             rotatingFileLogger.addAppender(new StandardOutLogger());
         }
+    }
+
+    private static final AssetType ASSET_TYPE_SERVICE = new AssetType("SERVICE");
+
+    private Map<String, AssetAccessSettings> getAsAssetRegisteredServicesByServiceName() {
+        Map<String, AssetAccessSettings> servicesByServiceName = new HashMap<>();
+        for(AssetAccessSettings asset : assetAccessManager.
+            getProxy(AssetAccessManager.class).
+                getAssetAccessSettingsByType(ASSET_TYPE_SERVICE.getId())) {
+                servicesByServiceName.put(asset.getName(), asset);
+        }
+        return servicesByServiceName;
+    }
+
+    protected AssetAccessSettings registerService(String serviceName) {
+        Map<String, AssetAccessSettings> servicesByServiceName = getAsAssetRegisteredServicesByServiceName();
+        AssetAccessSettings assetAccessSettings = servicesByServiceName.get(serviceName);
+        if(!servicesByServiceName.containsKey(serviceName)) {
+            String assetId = IdGenerator.newId();
+            assetAccessManager.getProxy(AssetAccessManager.class).registerAsset(
+                assetId, ASSET_TYPE_SERVICE.getId(), serviceName);
+            assetAccessSettings = assetAccessManager.getProxy(AssetAccessManager.class).getAssetAccessSettings(assetId);
+        }
+        return assetAccessSettings;
     }
 }
