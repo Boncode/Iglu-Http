@@ -110,8 +110,9 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    padding: 0 10px;
+    /*padding: 0 10px;*/
     flex: 1;
+    padding: 1px 4px;
 }
 
 .boncode_table_large tbody td.flex_content {
@@ -157,12 +158,13 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 
 /* Filter */
 .projects_table_filter {
-    padding: 4px 8px;
+    /*padding: 4px 8px;*/
+    width: 100%;
     font-size: 9pt;
     min-height: 25px;
     border: none;
     border-bottom-style: solid;
-    border-bottom-width: 2px;
+    border-bottom-width: 1px;
     border-color: #dddddd;
     color: inherit;
     outline: none;
