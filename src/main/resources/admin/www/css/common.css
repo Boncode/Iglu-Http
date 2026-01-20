@@ -246,8 +246,8 @@ body.waiting * {
     height: auto;
     font-size: 10px;
     font-weight: 700;
-    color: #666;
-    background-color: #eaeaea;
+    color: var(--text-color);
+    background-color: var(--icon-background-hover);
     float: left;
     padding: 5px;
     padding-left: 10px;
