@@ -329,9 +329,9 @@ public class FileManagerAgentImpl implements FileManagerAgent, UploadObserver {
 		try {
 			getPersonalFileUploadManager().upload(req);
 		} catch (IllegalArgumentException | InvalidFilenameException iae) { //iae message is safe for users
-			throw new RestException(iae.getMessage(), 400);
+			throw new RestException(iae.getMessage(), 400, iae);
 		} catch (IOException e) { // in case of failure in file write in postProcess
-			throw new RestException("An error occurred while post processing upload.", 500);
+			throw new RestException("An error occurred while post processing upload.", 500, e);
 		}
 	}
 
