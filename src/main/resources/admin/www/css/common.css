@@ -247,7 +247,7 @@ body.waiting * {
     font-size: 10px;
     font-weight: 700;
     color: var(--text-color);
-    background-color: var(--icon-background-hover);
+    background-color: var(--filetree-hover);
     float: left;
     padding: 5px;
     padding-left: 10px;
