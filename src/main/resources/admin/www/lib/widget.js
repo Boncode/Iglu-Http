@@ -262,13 +262,20 @@ WidgetContent.prototype.refresh = function() {
       	this.writeHTML();
     }
 	if(this.source != null) {
-	    if(typeof this[this.source_load_action] != 'undefined') {
-		    ajaxRequestManager.doRequest(this.source, this[this.source_load_action], this);
-		} else {
-		    let definedFunction = iglu.util.getGlobalObject(this.source_load_action);
-		    if(definedFunction != null) {
-                ajaxRequestManager.doRequest(this.source, definedFunction, this);
-            }
+		if (this.source_load_action !== undefined && this.source_load_action != null) {
+			let separateCalls = this.source_load_action.split(';');
+			for(var i in separateCalls) {
+				let separateCall = separateCalls[i];
+				if (typeof this[separateCall] != 'undefined') {
+					//call function within widget "class"
+					ajaxRequestManager.doRequest(this.source, this[separateCall], this);
+				} else {
+					let definedFunction = iglu.util.getGlobalObject(separateCall);
+					if (definedFunction != null) {
+						ajaxRequestManager.doRequest(this.source, definedFunction, this);
+					}
+				}
+			}
 		}
 	}
 };
