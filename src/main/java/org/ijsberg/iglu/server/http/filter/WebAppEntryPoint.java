@@ -385,6 +385,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 
 	private Credentials decodeCredentials(String encodedCredentials) {
 		String decodedCredentials = decodeString(encodedCredentials);
+		//TODO split on first colon to allow for colon in password
 		List<String> credentialsArray = StringSupport.split(decodedCredentials, ":");
 		if (credentialsArray.size() < 2) {
 			throw new IllegalArgumentException("wrong format of encoded credentials: colon separator not found");
