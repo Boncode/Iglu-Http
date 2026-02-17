@@ -59,9 +59,10 @@ SideMenuWidget.prototype.writeHTML = function() {
 
 SideMenuWidget.prototype.addItem = function(item, container) {
     //check if item has any items otherwise don't make the item FIXME: check for dashboard can be removed when dashboards are not loaded dynamically
-    if(typeof(item.submenu) !== 'undefined' && !this.containsVisibleItems(item.submenu) && item.id !== 'dashboards') {
+/*    if(typeof(item.submenu) !== 'undefined' && !this.containsVisibleItems(item.submenu) && item.id !== 'dashboards') {
+		console.error('cannot create menu item ' + item.id);
         return;
-    }
+    }*/
 
     if(item.id == 'expert_mode') {
 //        item.toggleProperty_value = this.expertMode ? item.toggleProperty_on : item.toggleProperty_off;
@@ -72,7 +73,7 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 
 	//TODO if item can be toggled
 	let htmlType = item.htmlType || 'div';
-	var itemDiv = document.createElement(htmlType);
+	let itemDiv = document.createElement(htmlType);
 
     if(typeof item.oninput != 'undefined') {
         itemDiv.setAttribute('oninput', item.oninput);
@@ -90,9 +91,11 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 	itemDiv.innerHTML = itemLabel;
     itemDiv.setAttribute('id', itemId);
 
+	let branchDiv = null;
+
 	if(typeof(item.submenu) != 'undefined') {
 
-		var branchDiv = document.createElement('div');
+		branchDiv = document.createElement('div');
         branchDiv.setAttribute('id', itemId + '.submenu');
 
 		itemDiv.classList.add('clickable');
@@ -143,6 +146,7 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 		    itemDiv.classList.add('clickable');
 	    }
 	}
+	return branchDiv;
 }
 
 //SideMenuWidget.prototype.togglePinned = function() {
