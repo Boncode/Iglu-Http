@@ -7,7 +7,7 @@ function SideMenuWidget(id, content, callback, grantedPermissions) {
 	if(typeof(content) != 'undefined') {
 		this.content = content;
 	} else {
-		this.content = null;
+		this.content = null
 	}
 	this.callback = callback;
 	this.isLoaded = false;
@@ -57,16 +57,17 @@ SideMenuWidget.prototype.writeHTML = function() {
 //    element.appendChild(pinnedElement);
 //}
 
-SideMenuWidget.prototype.addItem = function(item, container) {
-    //check if item has any items otherwise don't make the item FIXME: check for dashboard can be removed when dashboards are not loaded dynamically
-/*    if(typeof(item.submenu) !== 'undefined' && !this.containsVisibleItems(item.submenu) && item.id !== 'dashboards') {
-		console.error('cannot create menu item ' + item.id);
+SideMenuWidget.prototype.addItem = function(item, container, index) {
+    //check if item has any items otherwise don't make the item
+    if(typeof(item.submenu) !== 'undefined' && !this.containsVisibleItems(item.submenu)) {
+		console.info('will not create empty submenu item ' + item.id);
         return;
-    }*/
+    }
 
-    if(item.id == 'expert_mode') {
+/*    if(item.id == 'expert_mode') {
 //        item.toggleProperty_value = this.expertMode ? item.toggleProperty_on : item.toggleProperty_off;
     }
+*/
 
 	var itemId = container.id + '.' + item.id;
 	var itemLabel = createSideMenuLabel(item);
@@ -86,7 +87,12 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 	if(typeof(item.item_class_name) != 'undefined') {
 		itemDiv.className = item.item_class_name;
 	}
-	container.appendChild(itemDiv);
+	if(index && container.childNodes.length > 0 && index < container.childNodes.length) {
+		//console.log('==> insert ITEM before ' + index + ': ' + JSON.stringify(container.childNodes[index]));
+		container.insertBefore(itemDiv, container.childNodes[index]);
+	} else {
+		container.appendChild(itemDiv);
+	}
 
 	itemDiv.innerHTML = itemLabel;
     itemDiv.setAttribute('id', itemId);
@@ -128,7 +134,15 @@ SideMenuWidget.prototype.addItem = function(item, container) {
                 '<span id="' + itemId + '.chevron" class="menu_chevron">' +
                 '</span>';
         }
-	    container.appendChild(branchDiv);
+
+		if(index && container.childNodes.length > 0 && index < container.childNodes.length) {
+			//console.log('==> insert BRANCH before ' + index + ': ' + JSON.stringify(container.childNodes[index]));
+			container.insertBefore(branchDiv, container.childNodes[index + 1]);//after itemDiv
+		} else {
+			container.appendChild(branchDiv);
+		}
+
+		//container.appendChild(branchDiv);
 		this.createTree(item.submenu, branchDiv);
 	} else {
 	    itemDiv.setAttribute('id', itemId);
@@ -146,7 +160,6 @@ SideMenuWidget.prototype.addItem = function(item, container) {
 		    itemDiv.classList.add('clickable');
 	    }
 	}
-	return branchDiv;
 }
 
 //SideMenuWidget.prototype.togglePinned = function() {
