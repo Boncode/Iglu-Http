@@ -63,6 +63,13 @@ Widget.prototype.cloneSettings = function(extraSettingsNames) {
 	for(var i in extraSettingsNames) {
 	    if(typeof this[extraSettingsNames[i]] != 'undefined') {
       	    clonedSettings[extraSettingsNames[i]] = JSON.parse(JSON.stringify(this[extraSettingsNames[i]]));
+		/*	  if(extraSettingsNames[i] === 'chartJSOptions') {
+				  let settings = this[extraSettingsNames[i]];
+				  if (settings.scales && settings.scales.x && settings.scales.x.min) {
+					  //alert('1. ' + this.constructionType + ' -> ' + settings.scales.x.min);
+					  alert('2. ' + this.constructionType + ' -> ' + JSON.stringify(JSON.parse(JSON.stringify(settings.scales.x.min))));
+				  }
+			  }*/
       	}
     }
     return clonedSettings;
