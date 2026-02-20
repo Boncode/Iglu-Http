@@ -16,10 +16,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Iglu.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 function MenuWidget(id, content, callback, grantedPermissions) {
 
-	//Widget.call(this);
 	this.id = id;
 	this.source = null;
 	if(typeof(content) != 'undefined') {
@@ -27,6 +25,7 @@ function MenuWidget(id, content, callback, grantedPermissions) {
 	} else {
 		this.content = null;
 	}
+	//note: callback still in use by sidemenuwidget
 	this.callback = callback;
 	this.isLoaded = false;
 
@@ -342,7 +341,7 @@ MenuWidget.prototype.load = function(contents, menuWidget) {
 		menuWidget.menu = JSON.parse(contents).menu;
 		menuWidget.writeHTML();
 		menuWidget.isLoaded = true;
-		if(typeof menuWidget.callback != 'undefined') {
+		if(menuWidget.callback) {
 		    menuWidget.callback(menuWidget);
 		}
 	} else {
