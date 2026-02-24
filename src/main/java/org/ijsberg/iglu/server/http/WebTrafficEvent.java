@@ -1,18 +1,16 @@
-package org.ijsberg.iglu.server.facilities;
+package org.ijsberg.iglu.server.http;
 
 import org.ijsberg.iglu.event.model.BasicEvent;
 import org.ijsberg.iglu.event.model.EventType;
 
 import java.time.Instant;
 
-public class FileExchangeEvent extends BasicEvent {
-
+public class WebTrafficEvent extends BasicEvent {
     private String message;
 
-    public enum FileExchangeEventType implements EventType {
+    public enum WebTrafficEventType implements EventType {
 
-        FILE_UPLOADED,
-        FILE_DOWNLOADED;
+        SUSPECTED_HACKING_ATTEMPT;
 
         @Override
         public String getId() {
@@ -26,7 +24,7 @@ public class FileExchangeEvent extends BasicEvent {
     }
 
 
-    public FileExchangeEvent(FileExchangeEventType type, String assetId, String message) {
+    public WebTrafficEvent(WebTrafficEventType type, String assetId, String message) {
         super(type, Instant.now(), assetId);
         this.message = message;
     }
@@ -34,4 +32,5 @@ public class FileExchangeEvent extends BasicEvent {
     public String getMessage() {
         return message;
     }
+
 }

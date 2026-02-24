@@ -63,7 +63,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	//debug mode
 	private final boolean printUnhandledExceptions = false;
 
-	private ThreadLocal httpRequest = new ThreadLocal();
+//	private ThreadLocal httpRequest = new ThreadLocal();
 	private ThreadLocal httpResponse = new ThreadLocal();
 
 	private boolean loginRequired = false;
@@ -123,16 +123,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	public void onSessionDestruction(Request currentRequest, Session session) {
 		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
 		ServletSupport.setCookieValue(response, SESSION_TOKEN_KEY, null);
-	}
-
-    public void exportUserSettings(Request currentRequest, Properties properties) {
-		HttpServletResponse response = (HttpServletResponse)httpResponse.get();
-		ServletSupport.exportCookieValues(response, properties, "/", userPrefsMaxAge);
-	}
-
-    public void importUserSettings(Request currentRequest, Properties properties) {
-		ServletRequest request = (ServletRequest)httpRequest.get();
-		ServletSupport.importCookieValues(request, properties);
 	}
 
 	//TODO document init params
@@ -206,7 +196,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 		String pathInfo = getPath(servletRequest);
 
 		servletRequest.setCharacterEncoding("UTF-8");
-		httpRequest.set(servletRequest);
+//		httpRequest.set(servletRequest);
 		httpResponse.set(servletResponse);
 
 		Request appRequest = null;
@@ -233,7 +223,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 				}
 			}
 			if(session == null) {
-				System.out.println(new LogEntry(Level.VERBOSE, "no session yet for IP " + ((HttpServletRequest)servletRequest).getHeader("X-Forwarded-For")));
+				System.out.println(new LogEntry(Level.VERBOSE, "no session yet for IP " + getClientIpAddress((HttpServletRequest)servletRequest)) + " " + ((HttpServletRequest)servletRequest).getPathInfo());
 			}
 
 			//set response headers
@@ -439,7 +429,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 		if(cause instanceof RestException)
 		{
 			if(!response.isCommitted())	{
-				response.getOutputStream().println(((RestException)cause).getMessage());
+				response.getOutputStream().println((cause.getMessage()));
 				response.setStatus(((RestException)cause).getHttpStatusCode());
 			}
 		}
