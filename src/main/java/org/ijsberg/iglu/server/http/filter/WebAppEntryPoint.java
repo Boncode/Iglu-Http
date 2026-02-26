@@ -207,7 +207,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 			try {
 				appRequest.setAttribute("IP-Address", getClientIpAddress((HttpServletRequest) servletRequest));
 			} catch (Throwable t) {
-				System.out.println(new LogEntry("retrieving IP-adddress failed", t));
+				System.out.println(new LogEntry("retrieving IP-address failed", t));
 			}
 
 			Session session;
