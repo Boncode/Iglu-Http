@@ -12,6 +12,7 @@ import org.ijsberg.iglu.rest.RestException;
 import org.ijsberg.iglu.server.http.servlet.ServletRequestAlreadyRedirectedException;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.formatting.PatternMatchingSupport;
+import org.ijsberg.iglu.util.http.HttpSupport;
 import org.ijsberg.iglu.util.http.ServletSupport;
 import org.ijsberg.iglu.util.misc.EncodingSupport;
 import org.ijsberg.iglu.util.misc.KeyGenerator;
@@ -205,7 +206,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 
 			appRequest = accessManager.bindRequest(this);
 			try {
-				appRequest.setAttribute("IP-Address", getClientIpAddress((HttpServletRequest) servletRequest));
+				appRequest.setAttribute("IP-Address", HttpSupport.getClientIpAddress((HttpServletRequest) servletRequest));
 			} catch (Throwable t) {
 				System.out.println(new LogEntry("retrieving IP-address failed", t));
 			}
@@ -223,7 +224,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 				}
 			}
 			if(session == null) {
-				System.out.println(new LogEntry(Level.VERBOSE, "no session yet for IP " + getClientIpAddress((HttpServletRequest)servletRequest)) + " " + ((HttpServletRequest)servletRequest).getPathInfo());
+				System.out.println(new LogEntry(Level.VERBOSE, "no session yet for IP " + HttpSupport.getClientIpAddress((HttpServletRequest)servletRequest)) + " " + ((HttpServletRequest)servletRequest).getPathInfo());
 			}
 
 			//set response headers
@@ -275,27 +276,6 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 			cookieValue = null;
 		}
 		return cookieValue;
-	}
-
-	/**
-	 * Retrieves the client IP address for a given HttpServletRequest.
-	 * First tries the X-Forwarded-For header. If that holds no value it falls back on the remote address. If the
-	 * X-Forwarded-For header contains multiple IPs (caused by load-balancers and/or proxies), we take the left-most
-	 * value, which is usually the client IP.
-	 * @param servletRequest
-	 * @return the client IP address as a string
-	 */
-	private static String getClientIpAddress(HttpServletRequest servletRequest) {
-		String xForwardedFor = servletRequest.getHeader("X-Forwarded-For");
-		if(xForwardedFor == null) {
-			return servletRequest.getRemoteAddr();
-		}
-
-		// could be multiple forward/reverse proxies, client ip is first in the list
-		if(xForwardedFor.contains(",")) {
-			return xForwardedFor.split(",")[0];
-		}
-		return xForwardedFor;
 	}
 
 	/**
