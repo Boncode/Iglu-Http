@@ -19,15 +19,16 @@ public class WebTrafficFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-        if(!webTrafficMonitor.allowRequest((HttpServletRequest)servletRequest, (HttpServletResponse)servletResponse)) {
-            System.out.println("Web traffic not allowed");
+        /*if(!webTrafficMonitor.allowRequest((HttpServletRequest)servletRequest, (HttpServletResponse)servletResponse)) {
+            //System.out.println("Web traffic not allowed");
             ((HttpServletResponse) servletResponse).sendError(418);
             return;
-        }
+        }*/
 
         String pathInfo = ((HttpServletRequest) servletRequest).getPathInfo();
         filterChain.doFilter(servletRequest, servletResponse);
-        if(!"/messages/latest".equals(pathInfo)) {
+        if(     webTrafficMonitor.allowRequest((HttpServletRequest)servletRequest, (HttpServletResponse)servletResponse)
+                && !"/messages/latest".equals(pathInfo)) {
             //System.out.println(new LogEntry(((HttpServletRequest)servletRequest).getPathInfo() + " " + ((HttpServletResponse)servletResponse).getStatus()));
             webTrafficMonitor.allowResponse((HttpServletRequest)servletRequest, (HttpServletResponse)servletResponse);
         }
@@ -35,6 +36,7 @@ public class WebTrafficFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        //todo get paths to ignore
         Filter.super.init(filterConfig);
     }
 
