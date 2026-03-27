@@ -187,6 +187,7 @@ public class WebAppEntryPoint implements Filter, EntryPoint {
 	 * @throws IOException
 	 */
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
+
 		//todo this could be done with a new jetty filter instead of in here
 		if(((HttpServletRequest)servletRequest).getMethod().equals("OPTIONS")) {
 			setResponseHeaders(servletRequest, servletResponse, null);

@@ -13,14 +13,13 @@ import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.scheduling.Pageable;
 import org.ijsberg.iglu.server.http.WebTrafficEvent;
 import org.ijsberg.iglu.server.http.WebTrafficMonitor;
+import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.dataanalysis.OccurrenceRecord;
 import org.ijsberg.iglu.util.time.TimePeriod;
 import org.ijsberg.iglu.util.time.TimeUnit;
 
 import javax.management.monitor.Monitor;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import static org.ijsberg.iglu.server.http.WebTrafficEvent.WebTrafficEventType.SUSPECTED_HACKING_ATTEMPT;
 import static org.ijsberg.iglu.util.http.HttpSupport.getClientIpAddress;
@@ -58,15 +57,16 @@ public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Page
             if(!isDevToolRequest(req)) {
                 String clientIpAddress = getClientIpAddress(req);
                 OccurrenceRecord record = getAccessDeniedRecord(clientIpAddress);
-                record.recordOccurrence(req.getPathInfo());
-//                System.out.println("--> " + req.getPathInfo() + ":" + status + " : " + record.getNrOccurrences());
+                record.recordOccurrence(req.getRequestURI());
+                System.out.println(new LogEntry("HTTP request noticed: " + clientIpAddress + " " + status + " '" + req.getRequestURI() + "' " + req.getHeader("User-Agent")));
                 if(!record.isNrOccurrencesBelow(5, new TimePeriod(5, TimeUnit.SECOND))) {
                     //System.out.println("=======================================================================");
                     //System.out.println(" SUSPECTED HACKING ATTEMPT " + clientIpAddress);
                     //System.out.println("=======================================================================");
+                    List<String> details = record.getDetails();
                     suspicousIps.add(clientIpAddress);
                     System.out.println(new LogEntry(Level.CRITICAL, "suspected hacking attempt from " + clientIpAddress + ", requesting " + req.getPathInfo()));
-                    eventBus.publish(new WebTrafficEvent(SUSPECTED_HACKING_ATTEMPT, assetId, "suspected hacking attempt from " + clientIpAddress + ", requesting " + req.getPathInfo()));
+                    eventBus.publish(new WebTrafficEvent(SUSPECTED_HACKING_ATTEMPT, assetId, "suspected hacking attempt from " + clientIpAddress + ", requesting " + CollectionSupport.format(details, ", ")));
                 }
             }
         }
@@ -126,7 +126,7 @@ public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Page
             if(monitorEvent.getRemoteEventTypeId().equals(SUSPECTED_HACKING_ATTEMPT.getId())) {
                 System.out.println(new LogEntry("Suspected hacking attempt from " + monitorEvent.getRemoteEventTypeId()));
                 eventBus.publish(new WebTrafficEvent(SUSPECTED_HACKING_ATTEMPT, assetId,
-                    "suspected hacking attempt at server " + monitorEvent.getRemoteSystemId() + " with message: " + monitorEvent.getMessage()));
+                    "suspected hacking attempt at " + Date.from(monitorEvent.getTimestampUtc()) + " at server " + monitorEvent.getRemoteSystemId() + " with message: " + monitorEvent.getRemoteMessage()));
             }
         }
     }
