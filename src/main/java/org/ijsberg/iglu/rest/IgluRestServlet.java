@@ -1,5 +1,6 @@
 package org.ijsberg.iglu.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
@@ -487,24 +488,29 @@ public class IgluRestServlet extends HttpServlet {
             ServletOutputStream out = servletResponse.getOutputStream();
             servletResponse.setContentType(contentType.getContentType());
 
-            if (errorResult != null) {
-                result = errorResult.toString();
-                servletResponse.setStatus((Integer) errorResult.getAttribute("status"));
-            } else if (!(result instanceof String) && restMethodData.endpoint.returnType() == JSON) {
-                if(result instanceof JsonData) {
-                    result = result.toString();
-                } else {
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.findAndRegisterModules();
-                    result = mapper.writeValueAsString(result);
-                }
-            }
+            result = createResult(servletResponse, errorResult, result, restMethodData);
             out.print(result != null ? purgeXSS(result.toString(), restMethodData) : "");
         } catch(Exception e) {
             handleException(restMethodData, servletResponse, e);
         }
         System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
                 " finished in " + (System.currentTimeMillis() - start) + " ms"));
+    }
+
+    private static Object createResult(HttpServletResponse servletResponse, JsonData errorResult, Object result, RestMethodData restMethodData) throws JsonProcessingException {
+        if (errorResult != null) {
+            result = errorResult.toString();
+            servletResponse.setStatus((Integer) errorResult.getAttribute("status"));
+        } else if (!(result instanceof String) && restMethodData.endpoint.returnType() == JSON) {
+            if(result instanceof JsonData) {
+                result = result.toString();
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.findAndRegisterModules();
+                result = mapper.writeValueAsString(result);
+            }
+        }
+        return result;
     }
 
     public static String purgeXSS(String stringResponse, RestMethodData restMethodData) {
