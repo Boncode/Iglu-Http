@@ -55,6 +55,11 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
     line-height: 1.6em;
 }
 
+.boncode_table_small .metric_value {
+    text-wrap: nowrap;
+    text-align: right;
+  /*  font-family: 'Roboto Mono', monospace;*/
+}
 
 /* Table large rows */
 .boncode_table_large, .boncode_table_large tbody {
