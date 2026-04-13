@@ -160,11 +160,6 @@ public class IgluRestServlet extends HttpServlet {
                 return serviceComponent;
             } else {
                 try {
-/*                    return assembly.getCoreCluster().getInternalComponents().
-                            get("AccessManager").getProxy(AccessManager.class).
-                            getCurrentRequest().getSession(true).
-                            getAgent(agentName);
-*/
                     return accessManager.getCurrentRequest().getSession(true).getAgent(agentName);
                 } catch (NullPointerException e) {
                     System.out.println(assembly.getCoreCluster().getInternalComponents());
