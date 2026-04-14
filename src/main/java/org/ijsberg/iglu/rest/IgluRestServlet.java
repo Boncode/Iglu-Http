@@ -60,7 +60,6 @@ public class IgluRestServlet extends HttpServlet {
         Method method;
         Endpoint endpoint;
         String[] requiredPermissions;
-//        String requiredAccessRight;
         //rest method can either be invoked on:
         Component serviceComponent;
         //or by retrieving stateful agent by:
