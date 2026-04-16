@@ -13,7 +13,7 @@
 
 .progress_message {
     flex: 0 0 20px;
-    font-size: 9pt;
+    font-size: 10pt;
     margin: 0px 8px;
     color: var(--heading-color);
     height: auto;

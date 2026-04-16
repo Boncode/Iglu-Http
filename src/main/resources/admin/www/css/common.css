@@ -42,7 +42,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 }
 
 .boncode_table_small table {
-    font-size: 9pt;
+    font-size: 10pt;
     text-align: left;
     width: 100%;
     height: auto;
@@ -92,7 +92,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 }
 
 .boncode_table_large tbody {
-    font-size: 9pt;
+    font-size: 10pt;
     text-align: left;
     table-layout: fixed;
     width: inherit;
@@ -165,7 +165,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 .projects_table_filter {
     /*padding: 4px 8px;*/
     width: 100%;
-    font-size: 9pt;
+    font-size: 10pt;
     min-height: 25px;
     border: none;
     border-bottom-style: solid;
@@ -181,7 +181,7 @@ body .boncode_table_small table tbody>tr:nth-child(odd) {
 /* TODO remove .projects_table_filter after transition */
 .table_searchbar, .searchbar {
     padding: 4px 8px;
-    font-size: 9pt;
+    font-size: 10pt;
     min-height: 25px;
     border: none;
     border-bottom-style: solid;
@@ -249,7 +249,7 @@ body.waiting * {
 .selected_item_tag {
     width: auto;
     height: auto;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--text-color);
     background-color: var(--filetree-hover);
@@ -353,7 +353,7 @@ body.waiting * {
 .properties_label {
     flex: 2;
     line-height: 62px;
-    font-size: 10pt;
+    font-size: 11pt;
     color: var(--heading-color);
     padding-left: 40px;
 }
