@@ -3,7 +3,7 @@
     justify-content: center;
 	background-color: var(--progress-bar-background-color);
 /*	border: 1px solid #ccc;*/
-	flex: 0 0 12px;
+	flex: 0 0 14px;
 	padding: 0px;
 	margin: 3px 8px;
 	border-radius: 12px;
