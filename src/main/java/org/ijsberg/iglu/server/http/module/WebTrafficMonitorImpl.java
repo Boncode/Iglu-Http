@@ -3,6 +3,7 @@ package org.ijsberg.iglu.server.http.module;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.configuration.Startable;
+import org.ijsberg.iglu.configuration.component.ApplicationSettingsManager;
 import org.ijsberg.iglu.event.EventBus;
 import org.ijsberg.iglu.event.EventListener;
 import org.ijsberg.iglu.event.model.Event;
@@ -43,6 +44,12 @@ public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Page
     }
 
     //private boolean testMessageSent = false;
+
+    private ApplicationSettingsManager applicationSettingsManager;
+
+    public void setApplicationSettingsManager(ApplicationSettingsManager applicationSettingsManager) {
+        this.applicationSettingsManager = applicationSettingsManager;
+    }
 
     @Override
     public boolean allowRequest(HttpServletRequest req, HttpServletResponse resp) {
