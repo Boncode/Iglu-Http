@@ -3,6 +3,8 @@ package org.ijsberg.iglu.server.http.module;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.ijsberg.iglu.configuration.Startable;
+import org.ijsberg.iglu.configuration.component.ApplicationSettingsManager;
+import org.ijsberg.iglu.configuration.model.WebTrafficSettingsDto;
 import org.ijsberg.iglu.event.EventBus;
 import org.ijsberg.iglu.event.EventListener;
 import org.ijsberg.iglu.event.model.Event;
@@ -21,6 +23,7 @@ import org.ijsberg.iglu.util.time.TimeUnit;
 import javax.management.monitor.Monitor;
 import java.util.*;
 
+import static org.ijsberg.iglu.configuration.model.IpAccessPolicy.DISABLED;
 import static org.ijsberg.iglu.server.http.WebTrafficEvent.WebTrafficEventType.SUSPECTED_HACKING_ATTEMPT;
 import static org.ijsberg.iglu.util.http.HttpSupport.getClientIpAddress;
 
@@ -31,7 +34,7 @@ public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Page
     private String assetId;
     private EventBus eventBus;
     private boolean isStarted;
-    private HashSet<String> suspicousIps = new HashSet<>();
+    //private HashSet<String> suspicousIps = new HashSet<>();
     private Map<String, OccurrenceRecord> accessDeniedRecordsByIp = new HashMap<>();
 
     public WebTrafficMonitorImpl(String assetId) {
@@ -44,17 +47,23 @@ public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Page
 
     //private boolean testMessageSent = false;
 
-    @Override
-    public boolean allowRequest(HttpServletRequest req, HttpServletResponse resp) {
-        String clientIpAddress = getClientIpAddress(req);
-        return !suspicousIps.contains(clientIpAddress);
+    private ApplicationSettingsManager applicationSettingsManager;
+
+    public void setApplicationSettingsManager(ApplicationSettingsManager applicationSettingsManager) {
+        this.applicationSettingsManager = applicationSettingsManager;
     }
 
     @Override
-    public boolean allowResponse(HttpServletRequest req, HttpServletResponse resp) {
+    public boolean allowRequest(HttpServletRequest req, HttpServletResponse resp) {
+        String clientIpAddress = getClientIpAddress(req);
+        return /*!suspicousIps.contains(clientIpAddress) &&*/ applicationSettingsManager.getWebTrafficSettings().isAllowed(clientIpAddress);
+    }
+
+    @Override
+    public void checkResponse(HttpServletRequest req, HttpServletResponse resp) {
         int status = resp.getStatus();
         if(status != 200) {
-            if(!isDevToolRequest(req)) {
+            //if(!isDevToolRequest(req)) {
                 String clientIpAddress = getClientIpAddress(req);
                 OccurrenceRecord record = getAccessDeniedRecord(clientIpAddress);
                 record.recordOccurrence(req.getRequestURI());
@@ -64,18 +73,21 @@ public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Page
                     //System.out.println(" SUSPECTED HACKING ATTEMPT " + clientIpAddress);
                     //System.out.println("=======================================================================");
                     List<String> details = record.getDetails();
-                    suspicousIps.add(clientIpAddress);
+                    handleSuspiciousIp(clientIpAddress);
                     System.out.println(new LogEntry(Level.CRITICAL, "suspected hacking attempt from " + clientIpAddress + ", requesting " + req.getPathInfo()));
                     eventBus.publish(new WebTrafficEvent(SUSPECTED_HACKING_ATTEMPT, assetId, "suspected hacking attempt from " + clientIpAddress + ", requesting " + CollectionSupport.format(details, ", ")));
                 }
-            }
+            //}
         }
-        return true;
     }
 
-    private boolean isDevToolRequest(HttpServletRequest req) {
-        String path = req.getPathInfo();
-        return path.endsWith("devtools.json") || path.endsWith(".map");
+    private void handleSuspiciousIp(String clientIpAddress) {
+        //suspicousIps.add(clientIpAddress);
+        WebTrafficSettingsDto webTrafficSettings = applicationSettingsManager.getWebTrafficSettings();
+//        if(webTrafficSettings.getIpAccessPolicy() != DISABLED) {
+            webTrafficSettings.addToBlackList(clientIpAddress);
+            applicationSettingsManager.saveWebTrafficSettings(webTrafficSettings);
+//        }
     }
 
     private OccurrenceRecord getAccessDeniedRecord(String ip) {
@@ -106,7 +118,7 @@ public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Page
     @Override
     public void onPageEvent(long officialTime) {
         //cleanup
-        suspicousIps.clear();
+       // suspicousIps.clear();
     }
 
     @Override

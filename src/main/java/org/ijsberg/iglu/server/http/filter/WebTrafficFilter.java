@@ -22,24 +22,22 @@ public class WebTrafficFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-        /*if(!webTrafficMonitor.allowRequest((HttpServletRequest)servletRequest, (HttpServletResponse)servletResponse)) {
+        String pathInfo = ((HttpServletRequest) servletRequest).getPathInfo();
+        if(webTrafficMonitor.allowRequest((HttpServletRequest)servletRequest, (HttpServletResponse)servletResponse)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            if(!shouldIgnorePath(pathInfo)) {
+                webTrafficMonitor.checkResponse((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
+            }
+        } else {
+            /*
             //System.out.println("Web traffic not allowed");
             ((HttpServletResponse) servletResponse).sendError(418);
-            return;
-        }*/
-
-        String pathInfo = ((HttpServletRequest) servletRequest).getPathInfo();
-        filterChain.doFilter(servletRequest, servletResponse);
-        if(webTrafficMonitor.allowRequest((HttpServletRequest)servletRequest, (HttpServletResponse)servletResponse)) {
-            if(!("/messages/latest".equals(pathInfo) || shouldIgnorePath(pathInfo))) {
-                webTrafficMonitor.allowResponse((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
-            }
+            */
         }
     }
-
     private boolean shouldIgnorePath(String pathInfo) {
         for(String path : pathsToIgnore) {
-            if(pathInfo.startsWith(path)) {
+            if(pathInfo.endsWith(path)) {
                 return true;
             }
         }
