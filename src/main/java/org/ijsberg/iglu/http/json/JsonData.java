@@ -57,6 +57,11 @@ public class JsonData implements JsonDecorator {
 		return this;
 	}
 
+	public JsonData insertAllAttributes(JsonData jsonData) {
+		attributes.putAll(jsonData.attributes);
+		return this;
+	}
+
 	public JsonData insertStringAttribute(String name, String value) {
 		return insertAttribute(name, "\"" + value + "\"");
 	}
