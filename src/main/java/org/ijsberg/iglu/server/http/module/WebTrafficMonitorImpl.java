@@ -75,7 +75,7 @@ public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Page
                     List<String> details = record.getDetails();
                     handleSuspiciousIp(clientIpAddress);
                     System.out.println(new LogEntry(Level.CRITICAL, "suspected hacking attempt from " + clientIpAddress + ", requesting " + req.getPathInfo()));
-                    eventBus.publish(new WebTrafficEvent(SUSPECTED_HACKING_ATTEMPT, assetId, "suspected hacking attempt from " + clientIpAddress + ", requesting " + CollectionSupport.format(details, ", ")));
+                    //eventBus.publish(new WebTrafficEvent(SUSPECTED_HACKING_ATTEMPT, assetId, "suspected hacking attempt from " + clientIpAddress + ", requesting " + CollectionSupport.format(details, ", ")));
                 }
             //}
         }
