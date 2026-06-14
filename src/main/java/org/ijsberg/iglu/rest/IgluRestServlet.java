@@ -19,6 +19,7 @@ import org.ijsberg.iglu.configuration.ConfigurationException;
 import org.ijsberg.iglu.http.json.JsonData;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
+import org.ijsberg.iglu.rest.model.VerboseHttpResponse;
 import org.ijsberg.iglu.util.ResourceException;
 import org.ijsberg.iglu.util.collection.ArraySupport;
 import org.ijsberg.iglu.util.collection.CollectionSupport;
@@ -501,6 +502,9 @@ public class IgluRestServlet extends HttpServlet {
             } else {
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.findAndRegisterModules();
+                if(result instanceof VerboseHttpResponse) {
+                    servletResponse.setStatus(((VerboseHttpResponse)result).getStatusCode());
+                }
                 result = mapper.writeValueAsString(result);
             }
         }
