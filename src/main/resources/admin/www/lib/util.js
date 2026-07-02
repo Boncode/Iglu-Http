@@ -295,16 +295,18 @@ function getUrlParameters(url) {
 function scrollToElementInContainer(containerId, scrollTargetId, scrollBehavior) {
 	let scrollTarget = document.getElementById(scrollTargetId);
 	let container = document.getElementById(containerId);
-
     console.debug('trying to scroll in container ' + containerId + ', scrolling to element ' + scrollTargetId);
     let containerOffset = container.offsetTop;
     console.debug('container position in document: ' + containerOffset);
     let scrollOffset = 0;
     scrollBehavior = scrollBehavior || 'instant';
 	if(scrollTarget != null) {
-		scrollOffset = scrollTarget.offsetTop - containerOffset;
+        scrollOffset = scrollTarget.offsetTop - containerOffset;
+        console.debug('scrolling to: ' + scrollOffset + ', target: ' + scrollTarget + ' -> ' +
+            JSON.stringify(scrollTarget) + ' in container ' + containerId);
 	} else {
-    	console.debug('cannot scroll ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
+    	console.debug('cannot scroll in container ' +  containerId + ' to ' + scrollTargetId + ', scrollTarget not found');
 	}
-	container.scrollTo({top: scrollOffset, behavior: scrollBehavior});
+    container.scrollTo({top: scrollOffset, behavior: scrollBehavior});
+
 }
