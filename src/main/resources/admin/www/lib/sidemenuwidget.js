@@ -87,9 +87,15 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 	if(typeof(item.item_class_name) != 'undefined') {
 		itemDiv.className = item.item_class_name;
 	}
-	if(index && container.childNodes.length > 0 && index < container.childNodes.length) {
-		//console.log('==> insert ITEM before ' + index + ': ' + JSON.stringify(container.childNodes[index]));
-		container.insertBefore(itemDiv, container.childNodes[index]);
+	// if(index && container.childNodes.length > 0 && index < container.childNodes.length) {
+	// 	//console.log('==> insert ITEM before ' + index + ': ' + JSON.stringify(container.childNodes[index]));
+	// 	container.insertBefore(itemDiv, container.childNodes[index]);
+	// } else {
+	// 	container.appendChild(itemDiv);
+	// }
+	let refNode = (typeof index === 'number') ? this.getItemNodeAtIndex(container, index) : null;
+	if (refNode) {
+		container.insertBefore(itemDiv, refNode);
 	} else {
 		container.appendChild(itemDiv);
 	}
@@ -135,12 +141,13 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
                 '</span>';
         }
 
-		if(index && container.childNodes.length > 0 && index < container.childNodes.length) {
-			//console.log('==> insert BRANCH before ' + index + ': ' + JSON.stringify(container.childNodes[index]));
-			container.insertBefore(branchDiv, container.childNodes[index + 1]);//after itemDiv
-		} else {
-			container.appendChild(branchDiv);
-		}
+		// if(index && container.childNodes.length > 0 && index < container.childNodes.length) {
+		// 	//console.log('==> insert BRANCH before ' + index + ': ' + JSON.stringify(container.childNodes[index]));
+		// 	container.insertBefore(branchDiv, container.childNodes[index + 1]);//after itemDiv
+		// } else {
+		// 	container.appendChild(branchDiv);
+		// }
+		itemDiv.insertAdjacentElement('afterend', branchDiv);
 
 		//container.appendChild(branchDiv);
 		this.createTree(item.submenu, branchDiv);
@@ -160,6 +167,16 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 		    itemDiv.classList.add('clickable');
 	    }
 	}
+}
+
+SideMenuWidget.prototype.getItemNodeAtIndex = function(container, index) {
+	let count = 0;
+	for (const child of container.children) {
+		if (child.id && child.id.endsWith('.submenu')) { continue; } // We ignore branch nodes here
+		if (count === index) { return child; }
+		count++;
+	}
+	return null; // --> append
 }
 
 //SideMenuWidget.prototype.togglePinned = function() {
