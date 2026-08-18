@@ -38,14 +38,14 @@ public class FSorCPResourceServlet extends BinaryResourceServlet {
 	public void init(ServletConfig conf) throws ServletException {
 		super.init(conf);
 
-		classPathRoot = conf.getInitParameter("classpath_root");
-		if(classPathRoot == null) {
-			classPathRoot = "";
-		}
-
 		fileSystemRoot = conf.getInitParameter("filesystem_root");
 		if(fileSystemRoot == null) {
 			fileSystemRoot = "";
+		}
+
+		classPathRoot = conf.getInitParameter("classpath_root");
+		if(classPathRoot == null) {
+			classPathRoot = "";
 		}
 
 		allowedContentRegExp = conf.getInitParameter("allowed_content_reg_exp");
