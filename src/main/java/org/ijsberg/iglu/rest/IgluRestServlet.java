@@ -243,6 +243,9 @@ public class IgluRestServlet extends HttpServlet {
 
         InvocationHandlerData serviceData = obtainHandler(config, "service");
         if(serviceData != null) {
+            if(assembly.getClusters().get("ServiceCluster") == null) {
+                throw new FatalException("assembly " + assembly.getClass().getSimpleName() + " has no cluster \"ServiceCluster\"; service component " + serviceData.name + " cannot be wired");
+            }
             setServiceComponent(
                     assembly.getClusters().get("ServiceCluster").getInternalComponents().get(serviceData.name),
                     serviceData.type);
