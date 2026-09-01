@@ -422,6 +422,11 @@ public class IgluRestServlet extends HttpServlet {
 
     public void service(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException {
 
+
+/*        if(!servletRequest.getPathInfo().startsWith("/messages/")) {
+            System.out.println("processing " + servletRequest.getHeader("BONCODE_ORIGINAL_REQUEST"));
+        }
+*/
         long start = System.currentTimeMillis();
 
 
