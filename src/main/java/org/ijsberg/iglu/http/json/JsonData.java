@@ -57,6 +57,15 @@ public class JsonData implements JsonDecorator {
 		return this;
 	}
 
+	public JsonData addStringAttributeWithNullCheck(String name, String value) {
+		if(value == null) {
+			attributes.put(name, null);
+		} else {
+			addStringAttribute(name, value);
+		}
+		return this;
+	}
+
 	public JsonData insertAllAttributes(JsonData jsonData) {
 		attributes.putAll(jsonData.attributes);
 		return this;
