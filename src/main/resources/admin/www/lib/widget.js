@@ -15,6 +15,7 @@ Widget.prototype.constructWidget = function(settings) {
 
 	this.id = null;
 	this.cssClassName = null;
+
 	this.visibility = 'visible';
 	this.onclick = null;
 
