@@ -1,7 +1,6 @@
 
 function SideMenuWidget(id, content, callback, grantedPermissions) {
 
-	//Widget.call(this);
 	this.id = id;
 	this.source = null;
 	if(typeof(content) != 'undefined') {
@@ -21,6 +20,8 @@ function SideMenuWidget(id, content, callback, grantedPermissions) {
 
     this.grantedPermissions = grantedPermissions;
     this.isPinned = Common.getLocalStorageItemOrDefault('sideMenuPinned', 'false');
+
+	this.selectedElementId = null;
 }
 
 subclass(SideMenuWidget, MenuWidget);
@@ -63,11 +64,6 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 		console.info('will not create empty submenu item ' + item.id);
         return;
     }
-
-/*    if(item.id == 'expert_mode') {
-//        item.toggleProperty_value = this.expertMode ? item.toggleProperty_on : item.toggleProperty_off;
-    }
-*/
 
 	var itemId = container.id + '.' + item.id;
 	var itemLabel = createSideMenuLabel(item);
@@ -112,24 +108,18 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 
 		itemDiv.classList.add('clickable');
 		if(typeof(item.onclick) != 'undefined') {
-			//itemDiv.onclick = new Function('event.stopPropagation();' + item.onclick + ';');
-			itemDiv.onclick = function() {
-				event.stopPropagation();
-				iglu.util.processFunctionInvocationsString(item.onclick);
+			itemDiv.onclick = function(event) {
+				this.handleOnClick(event, item, itemDiv)
 				toggleSubmenu(itemId);
-			};
+			}.bind(this);
 		} else {
 			itemDiv.onclick = function(){toggleSubmenu(itemId)};
 		}
-
-
-//		itemDiv.onmouseout = new Function('hideSubmenu(\'' + itemId + '\');');
 
 		if(typeof(item.submenu_class_name) != 'undefined') {
 			branchDiv.className = item.submenu_class_name;
 		}
 
-//		itemDiv.innerHTML = itemLabel;
         if(item.label !== "" && this.containsVisibleItems(item.submenu)){
             itemDiv.innerHTML +=
                 '<span id="' + itemId + '.chevron" class="menu_chevron">' +
@@ -154,19 +144,23 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 	} else {
 	    itemDiv.setAttribute('id', itemId);
 
-/*	    if(typeof(item.link) != 'undefined' && item.link.length > 0) {
-            itemDiv.onclick = new Function('event.stopPropagation();' + item.link + ';');
-            itemDiv.classList.add('clickable');
-	    } else*/
 	    if(typeof(item.onclick) != 'undefined') {
-		    //itemDiv.onclick = new Function('event.stopPropagation();' + item.onclick + ';');
-		    itemDiv.onclick = function() {
-		        event.stopPropagation();
-		        iglu.util.processFunctionInvocationsString(item.onclick);
-		    };
+		    itemDiv.onclick = function(event) {
+				this.handleOnClick(event, item, itemDiv)
+		    }.bind(this);
 		    itemDiv.classList.add('clickable');
 	    }
 	}
+}
+
+SideMenuWidget.prototype.handleOnClick = function(event, item, itemDiv) {
+	if(this.selectedElementId !== null) {
+		document.getElementById(this.selectedElementId).classList.remove('selected_item');
+	}
+	this.selectedElementId = itemDiv.id;
+	event.stopPropagation();
+	itemDiv.classList.add('selected_item');
+	iglu.util.processFunctionInvocationsString(item.onclick);
 }
 
 SideMenuWidget.prototype.getItemNodeAtIndex = function(container, index) {
