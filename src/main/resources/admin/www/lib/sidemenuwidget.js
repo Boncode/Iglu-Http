@@ -60,7 +60,7 @@ SideMenuWidget.prototype.writeHTML = function() {
 
 SideMenuWidget.prototype.addItem = function(item, container, index) {
     //check if item has any items otherwise don't make the item
-    if(typeof(item.submenu) !== 'undefined' && !this.containsVisibleItems(item.submenu)) {
+    if(item.submenu !== undefined && !this.containsVisibleItems(item.submenu)) {
 		console.info('will not create empty submenu item ' + item.id);
         return;
     }
@@ -72,15 +72,15 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 	let htmlType = item.htmlType || 'div';
 	let itemDiv = document.createElement(htmlType);
 
-    if(typeof item.oninput != 'undefined') {
+    if(item.oninput !== undefined) {
         itemDiv.setAttribute('oninput', item.oninput);
     }
 
-    if(typeof item.placeholder != 'undefined') {
+    if(item.placeholder !== undefined) {
         itemDiv.setAttribute('placeholder', item.placeholder);
     }
 
-	if(typeof(item.item_class_name) != 'undefined') {
+	if(item.item_class_name !== undefined) {
 		itemDiv.className = item.item_class_name;
 	}
 	// if(index && container.childNodes.length > 0 && index < container.childNodes.length) {
@@ -101,22 +101,22 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 
 	let branchDiv = null;
 
-	if(typeof(item.submenu) != 'undefined') {
+	if(item.submenu !== undefined) {
 
 		branchDiv = document.createElement('div');
         branchDiv.setAttribute('id', itemId + '.submenu');
 
 		itemDiv.classList.add('clickable');
-		if(typeof(item.onclick) != 'undefined') {
+		if(item.onclick !== undefined) {
 			itemDiv.onclick = function(event) {
 				this.handleOnClick(event, item, itemDiv)
-				toggleSubmenu(itemId);
+				this.toggleSubmenu(itemId);
 			}.bind(this);
 		} else {
-			itemDiv.onclick = function(){toggleSubmenu(itemId)};
+			itemDiv.onclick = function(){this.toggleSubmenu(itemId)}.bind(this);
 		}
 
-		if(typeof(item.submenu_class_name) != 'undefined') {
+		if(item.submenu_class_name !== undefined) {
 			branchDiv.className = item.submenu_class_name;
 		}
 
@@ -144,7 +144,7 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 	} else {
 	    itemDiv.setAttribute('id', itemId);
 
-	    if(typeof(item.onclick) != 'undefined') {
+	    if(typeof(item.onclick) !== undefined) {
 		    itemDiv.onclick = function(event) {
 				this.handleOnClick(event, item, itemDiv)
 		    }.bind(this);
@@ -161,6 +161,19 @@ SideMenuWidget.prototype.handleOnClick = function(event, item, itemDiv) {
 	event.stopPropagation();
 	itemDiv.classList.add('selected_item');
 	iglu.util.processFunctionInvocationsString(item.onclick);
+}
+
+SideMenuWidget.prototype.selectMenuItem = function(menuItemId, parentMenuItemId) {
+	if (this.selectedElementId !== null) {
+		document.getElementById(this.selectedElementId).classList.remove('selected_item');
+	}
+	this.selectedElementId = menuItemId;
+	document.getElementById(menuItemId).classList.add('selected_item');
+	let parentElement = document.getElementById(parentMenuItemId);
+	if (parentElement && !parentElement.classList.contains('submenu_open')) {
+		this.toggleSubmenu(parentMenuItemId);
+	}
+	//parentElement.classList.add('selected_item');
 }
 
 SideMenuWidget.prototype.getItemNodeAtIndex = function(container, index) {
@@ -199,7 +212,7 @@ function getSubMenuChevronHTML() {
     return '<i class="bi bi-chevron-up"></i>';
 }
 
-function toggleSubmenu(itemId) {
+SideMenuWidget.prototype.toggleSubmenu = function (itemId) {
     var element = document.getElementById(itemId);
     element.classList.toggle('submenu_open');
 
@@ -212,7 +225,7 @@ SideMenuWidget.prototype.closeAllSubmenus = function() {
         let sideMenuItems = document.getElementsByClassName('side_menu_item');
         for(sideMenuItem of sideMenuItems) {
             if(sideMenuItem.classList.contains('submenu_open')){
-                toggleSubmenu(sideMenuItem.id);
+                this.toggleSubmenu(sideMenuItem.id);
             }
         }
 //    }
