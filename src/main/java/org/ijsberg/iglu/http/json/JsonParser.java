@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.util.io.FileSupport;
+import org.ijsberg.iglu.util.misc.StringSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,12 +25,12 @@ public class JsonParser {
             JsonNode jsonNode = objectMapper.readTree(data);
             parsedJSON = parse(jsonNode);
         } catch (Exception e) {
-            System.out.println(new LogEntry(Level.CRITICAL, "cannot load JSON '" + data + "'", e));
+            System.out.println(new LogEntry(Level.CRITICAL, "cannot load JSON '" + StringSupport.trim(data, 50, "...") + "' with message " + e.getMessage()));
         }
         if(parsedJSON instanceof JsonData) {
             return (JsonData)parsedJSON;
         } else {
-            System.out.println(new LogEntry(Level.CRITICAL, "cannot load JSON as object, data: '" + data + "'"));
+            System.out.println(new LogEntry(Level.CRITICAL, "cannot load JSON as object, data: '" + StringSupport.trim(data, 50, "...") + "'"));
         }
         return null;
     }
@@ -41,12 +42,12 @@ public class JsonParser {
             JsonNode jsonNode = objectMapper.readTree(data);
             parsedJSON = parse(jsonNode);
         } catch (Exception e) {
-            System.out.println(new LogEntry(Level.CRITICAL, "cannot load JSON '" + data + "'", e));
+            System.out.println(new LogEntry(Level.CRITICAL, "cannot load JSON '" + StringSupport.trim(data, 50, "...") + "' with message: " + e.getMessage()));
         }
         if(parsedJSON instanceof JsonArray) {
             return (JsonArray)parsedJSON;
         } else {
-            System.out.println(new LogEntry(Level.CRITICAL, "cannot load JSON as array, data: '" + data + "'"));
+            System.out.println(new LogEntry(Level.CRITICAL, "cannot load JSON as array, data: '" + StringSupport.trim(data, 50, "...") + "'"));
         }
         return null;
     }
