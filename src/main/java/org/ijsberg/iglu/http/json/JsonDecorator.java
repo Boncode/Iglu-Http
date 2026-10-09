@@ -27,4 +27,5 @@ public interface JsonDecorator extends Printer {
 
     String toString();
 
+
 }

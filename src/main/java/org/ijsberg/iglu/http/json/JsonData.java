@@ -9,10 +9,11 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.jar.Attributes;
 
 /**
  */
-public class JsonData implements JsonDecorator {
+public class JsonData implements JsonStructure {
 
 	private LinkedHashMap<String, Object> attributes = new LinkedHashMap<String, Object>();
 
@@ -198,6 +199,20 @@ public class JsonData implements JsonDecorator {
 			return retval.toString();
 		}
 		return null;
+	}
+
+
+	public List<JsonData> findJsonSubstructuresByAttributeName(String name) {
+		List<JsonData> foundData = new ArrayList<>();
+		if(attributes.containsKey(name)) {
+			foundData.add(this);
+		}
+		for(Object attribute : attributes.values()) {
+			if(attribute instanceof JsonStructure) {
+				foundData.addAll(((JsonStructure)attribute).findJsonSubstructuresByAttributeName(name));
+			}
+		}
+		return foundData;
 	}
 
 	public boolean containsAttribute(String name) {

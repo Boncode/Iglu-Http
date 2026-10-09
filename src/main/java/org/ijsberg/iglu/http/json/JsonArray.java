@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class JsonArray implements JsonDecorator {
+public class JsonArray implements JsonStructure {
 
 
 	private List contents = new ArrayList();
@@ -174,4 +174,14 @@ public class JsonArray implements JsonDecorator {
 	public void removeLastValue() {
 		contents.remove(contents.size() - 1);
 	}
+
+    public List<JsonData> findJsonSubstructuresByAttributeName(String name) {
+		List<JsonData> foundData = new ArrayList<>();
+		for(Object data : contents) {
+			if(data instanceof JsonStructure) {
+				foundData.addAll(((JsonStructure)data).findJsonSubstructuresByAttributeName(name));
+			}
+        }
+        return foundData;
+    }
 }
