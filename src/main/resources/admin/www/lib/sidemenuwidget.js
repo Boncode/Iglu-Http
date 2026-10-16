@@ -22,6 +22,8 @@ function SideMenuWidget(id, content, callback, grantedPermissions) {
     this.isPinned = Common.getLocalStorageItemOrDefault('sideMenuPinned', 'false');
 
 	this.selectedElementId = null;
+
+	this.itemElementIdsByItemId = {};
 }
 
 subclass(SideMenuWidget, MenuWidget);
@@ -66,6 +68,13 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
     }
 
 	var itemId = container.id + '.' + item.id;
+
+	console.log('================> addItem ' + item.id + ' : ' + itemId);
+	this.itemElementIdsByItemId[item.id] = {
+		containerId : container.id,
+		itemId : itemId
+	};
+
 	var itemLabel = createSideMenuLabel(item);
 
 	//TODO if item can be toggled
@@ -154,7 +163,7 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 }
 
 SideMenuWidget.prototype.handleOnClick = function(event, item, itemDiv) {
-	if(this.selectedElementId !== null) {
+	if(this.selectedElementId && document.getElementById(this.selectedElementId)) {
 		document.getElementById(this.selectedElementId).classList.remove('selected_item');
 	}
 	this.selectedElementId = itemDiv.id;
@@ -167,14 +176,25 @@ SideMenuWidget.prototype.selectMenuItem = function(menuItemId, parentMenuItemId)
 	if (this.selectedElementId !== null) {
 		document.getElementById(this.selectedElementId).classList.remove('selected_item');
 	}
-	this.selectedElementId = menuItemId;
-	document.getElementById(menuItemId).classList.add('selected_item');
-	let parentElement = document.getElementById(parentMenuItemId);
-	if (parentElement && !parentElement.classList.contains('submenu_open')) {
-		this.toggleSubmenu(parentMenuItemId);
+	//console.log('================> selectMenuItem ' + menuItemId + ' -> ' + document.getElementById(menuItemId));
+	if(document.getElementById(menuItemId)) {
+		this.selectedElementId = menuItemId;
+		document.getElementById(menuItemId).classList.add('selected_item');
+		let parentElement = document.getElementById(parentMenuItemId);
+		if (parentElement && !parentElement.classList.contains('submenu_open')) {
+			this.toggleSubmenu(parentMenuItemId);
+		}
 	}
 	//parentElement.classList.add('selected_item');
 }
+
+SideMenuWidget.prototype.selectMenuItemById = function(menuItemId) {
+	let itemElementIds = this.itemElementIdsByItemId[menuItemId];
+	if (itemElementIds) {
+		this.selectMenuItem(itemElementIds.itemId, itemElementIds.containerId);
+	}
+}
+
 
 SideMenuWidget.prototype.getItemNodeAtIndex = function(container, index) {
 	let count = 0;
