@@ -69,7 +69,7 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
 
 	var itemId = container.id + '.' + item.id;
 
-	console.log('================> addItem ' + item.id + ' : ' + itemId);
+	//console.log('================> addItem ' + item.id + ' : ' + itemId);
 	this.itemElementIdsByItemId[item.id] = {
 		containerId : container.id,
 		itemId : itemId
