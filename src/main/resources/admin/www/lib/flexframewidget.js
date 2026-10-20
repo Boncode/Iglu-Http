@@ -114,7 +114,7 @@ FlexFrameWidget.prototype.onDeploy = function() {
         this.element.onclick = new Function(onclick);
     }
     this.element.style.overflow = null;
-    if(this.content && typeof this.content.type !== 'undefined' && this.content.type !== 'web_content') {
+    if(this.content && this.content.optionsDropdownMenuItems) {
         this.createChartContextMenu();
     }
 	this.display();
