@@ -24,6 +24,7 @@ function SideMenuWidget(id, content, callback, grantedPermissions) {
 	this.selectedElementId = null;
 
 	this.itemElementIdsByItemId = {};
+	this.currentlySelectedMenuItemId = null;
 }
 
 subclass(SideMenuWidget, MenuWidget);
@@ -67,9 +68,7 @@ SideMenuWidget.prototype.addItem = function(item, container, index) {
         return;
     }
 
-	var itemId = container.id + '.' + item.id;
-
-	//console.log('================> addItem ' + item.id + ' : ' + itemId);
+	let itemId = container.id + '.' + item.id;
 	this.itemElementIdsByItemId[item.id] = {
 		containerId : container.id,
 		itemId : itemId
@@ -176,7 +175,6 @@ SideMenuWidget.prototype.selectMenuItem = function(menuItemId, parentMenuItemId)
 	if (this.selectedElementId !== null) {
 		document.getElementById(this.selectedElementId).classList.remove('selected_item');
 	}
-	//console.log('================> selectMenuItem ' + menuItemId + ' -> ' + document.getElementById(menuItemId));
 	if(document.getElementById(menuItemId)) {
 		this.selectedElementId = menuItemId;
 		document.getElementById(menuItemId).classList.add('selected_item');
@@ -185,11 +183,13 @@ SideMenuWidget.prototype.selectMenuItem = function(menuItemId, parentMenuItemId)
 			this.toggleSubmenu(parentMenuItemId);
 		}
 	}
-	//parentElement.classList.add('selected_item');
 }
 
 SideMenuWidget.prototype.selectMenuItemById = function(menuItemId) {
+	this.currentlySelectedMenuItemId = menuItemId;
 	let itemElementIds = this.itemElementIdsByItemId[menuItemId];
+	//console.log('================> itemElementIdsByItemId ' + Object.keys(this.itemElementIdsByItemId));
+	//console.log('================> selectMenuItemById ' + menuItemId + ' -> ' + itemElementIds);
 	if (itemElementIds) {
 		this.selectMenuItem(itemElementIds.itemId, itemElementIds.containerId);
 	}
@@ -233,11 +233,15 @@ function getSubMenuChevronHTML() {
 }
 
 SideMenuWidget.prototype.toggleSubmenu = function (itemId) {
-    var element = document.getElementById(itemId);
-    element.classList.toggle('submenu_open');
+    let element = document.getElementById(itemId);
+	if(element) {
+		element.classList.toggle('submenu_open');
+	}
 
-    var submenuElement = document.getElementById(itemId + '.submenu');
-    submenuElement.classList.toggle('submenu_open');
+    let submenuElement = document.getElementById(itemId + '.submenu');
+	if(submenuElement) {
+		submenuElement.classList.toggle('submenu_open');
+	}
 }
 
 SideMenuWidget.prototype.closeAllSubmenus = function() {
