@@ -427,7 +427,7 @@ public class IgluRestServlet extends HttpServlet {
             System.out.println("processing " + servletRequest.getHeader("BONCODE_ORIGINAL_REQUEST"));
         }
 */
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
 
 
         RestMethodData restMethodData = null;
@@ -476,6 +476,7 @@ public class IgluRestServlet extends HttpServlet {
                         errorResult = createErrorResponse((RestException) e.getCause());
                     } else {
                         handleException(restMethodData, servletResponse, e.getCause());
+                        return;
                         //throw new FatalException("error while invoking " + restMethodData.method.getName(), e);
                     }
                 } catch (NoSuchMethodException e) {
@@ -496,8 +497,8 @@ public class IgluRestServlet extends HttpServlet {
         } catch(Exception e) {
             handleException(restMethodData, servletResponse, e);
         }
-        System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
-                " finished in " + (System.currentTimeMillis() - start) + " ms"));
+//        System.out.println(new LogEntry(TRACE, this.getClass().getSimpleName() + " processing " + servletRequest.getPathInfo() +
+//                " finished in " + (System.currentTimeMillis() - start) + " ms"));
     }
 
     private static Object createResult(HttpServletResponse servletResponse, JsonData errorResult, Object result, RestMethodData restMethodData) throws JsonProcessingException {
@@ -551,7 +552,7 @@ public class IgluRestServlet extends HttpServlet {
                 respondWithError(response, restMethodData, 403, e.getMessage());
             } else {
                 System.out.println(new LogEntry(Level.CRITICAL, "processing request failed with server error", e));
-                respondWithError(response, restMethodData, 500, "unexpected error");
+                respondWithError(response, restMethodData, 500, "unexpected error with message: " + e.getMessage());
             }
         } catch (Exception excHandlingException) {
             System.out.println(new LogEntry(Level.CRITICAL, "exception handling failed", excHandlingException));
