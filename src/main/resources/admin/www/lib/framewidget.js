@@ -94,6 +94,7 @@ FrameWidget.prototype.addResizeListener = function(widget, actionsByDirection) {
 	this.sizeAndPositionListeners[widget.id] = listenerData;
 };
 
+/*
 FrameWidget.prototype.removeResizeListener = function(widget, direction) {
 	var listenerData = this.sizeAndPositionListeners[widget.id];
 	if(typeof listenerData != 'undefined' && listenerData != null) {
@@ -103,7 +104,7 @@ FrameWidget.prototype.removeResizeListener = function(widget, direction) {
 	//listenerData.actionsByDirection[direction] = null;
 	//this.sizeAndPositionListeners[widget.id] = listenerData;
 };
-
+*/
 FrameWidget.prototype.notifyWidgetDestroyed = function(destroyedWidget) {
    delete this.sizeAndPositionListeners[destroyedWidget.id];
 };
@@ -118,14 +119,11 @@ FrameWidget.prototype.notifySizeAndPositionListeners = function(direction, offSe
 
     var offsetOverFlow = 0;
 
-	console.log('======================== ' + Object.keys(this.sizeAndPositionListeners));
-
 	for(var widgetId in this.sizeAndPositionListeners) {
 		var listenerData = this.sizeAndPositionListeners[widgetId];
 
 		var actionData = listenerData.actionsByDirection[direction];
 		if(typeof actionData != 'undefined') {
-			console.log('========================---> ' + actionData.action);
 			var newOffsetOverFlow = actionData.action.call(listenerData.widget, actionData.factor * offSet);
 			if(Math.abs(newOffsetOverFlow) > Math.abs(offsetOverFlow)) {
 			    offsetOverFlow = newOffsetOverFlow;

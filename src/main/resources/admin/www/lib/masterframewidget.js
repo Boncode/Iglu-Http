@@ -8,9 +8,6 @@ function MasterFrameWidget(settings, content) {
 
 subclass(MasterFrameWidget, FrameWidget);
 
-MasterFrameWidget.prototype.constructMasterFrameWidget = function(settings, content) {
-	this.constructFrameWidget(settings, content);
-}
 
 MasterFrameWidget.prototype.resetDimensions = function() {
 	var offsetX = this.element.clientWidth - this.width;
