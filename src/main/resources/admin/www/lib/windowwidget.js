@@ -109,7 +109,7 @@ WindowWidget.prototype.writeHTML = function() {
 
 	this.subWidgets[this.id + '_title_frame'] = titleFrame;
 
-	titleFrame.stretchToOuterWidget(this, {'e':{'offset':20}});
+	//titleFrame.stretchToOuterWidget(this, {'e':{'offset':20}});
 
     var contentFrame = new FlexFrameWidget({
         id : this.id + '_frame',

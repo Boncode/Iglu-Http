@@ -20,9 +20,9 @@ DraggableImageWidget.prototype.constructDraggableImageWidget = function(settings
 
 	this.set('content', content);
 
-	if(typeof settings.stickToWindowHeightMinus != 'undefined') {
+	/*if(typeof settings.stickToWindowHeightMinus != 'undefined') {
 		this.stickToWindowHeightMinus = settings.stickToWindowHeightMinus;
-	}
+	}*/
 
 	if(typeof settings.hasHeader != 'undefined') {
 		this.hasHeader = settings.hasHeader;

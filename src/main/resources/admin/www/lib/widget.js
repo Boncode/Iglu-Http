@@ -221,9 +221,9 @@ WidgetContent.prototype.constructWidgetContent = function(settings, content) {
 
 	this.set('content', content);
 
-	if(typeof settings.stickToWindowHeightMinus != 'undefined') {
+	/*if(typeof settings.stickToWindowHeightMinus != 'undefined') {
 		this.stickToWindowHeightMinus = settings.stickToWindowHeightMinus;
-	}
+	}*/
 
 	if(typeof settings.hasHeader != 'undefined') {
 		this.hasHeader = settings.hasHeader;

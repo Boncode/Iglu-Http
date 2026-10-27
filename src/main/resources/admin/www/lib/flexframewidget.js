@@ -80,6 +80,7 @@ FlexFrameWidget.prototype.setDOMElement = function(element) {
 	}
 };
 
+/*
 FlexFrameWidget.prototype.addSubWidget = function(containerId, subWidget) {
 	var subWidgetArray = this.subWidgets[containerId];
 	if(subWidgetArray == null || typeof subWidgetArray == 'undefined') {
@@ -88,7 +89,7 @@ FlexFrameWidget.prototype.addSubWidget = function(containerId, subWidget) {
 	}
 	subWidgetArray.push(subWidget);
 }
-
+*/
 FlexFrameWidget.prototype.onDeploy = function() {
 
 	this.draw();
