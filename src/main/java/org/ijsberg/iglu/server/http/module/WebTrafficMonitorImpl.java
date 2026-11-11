@@ -8,24 +8,25 @@ import org.ijsberg.iglu.configuration.model.WebTrafficSettingsDto;
 import org.ijsberg.iglu.event.EventBus;
 import org.ijsberg.iglu.event.EventListener;
 import org.ijsberg.iglu.event.model.Event;
-//import org.ijsberg.iglu.event.monitoring.MonitorEvent;
 import org.ijsberg.iglu.event.monitoring.MonitorEvent;
 import org.ijsberg.iglu.logging.Level;
 import org.ijsberg.iglu.logging.LogEntry;
 import org.ijsberg.iglu.scheduling.Pageable;
 import org.ijsberg.iglu.server.http.WebTrafficEvent;
 import org.ijsberg.iglu.server.http.WebTrafficMonitor;
-import org.ijsberg.iglu.util.collection.CollectionSupport;
 import org.ijsberg.iglu.util.dataanalysis.OccurrenceRecord;
 import org.ijsberg.iglu.util.time.TimePeriod;
 import org.ijsberg.iglu.util.time.TimeUnit;
 
-import javax.management.monitor.Monitor;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.ijsberg.iglu.configuration.model.IpAccessPolicy.DISABLED;
 import static org.ijsberg.iglu.server.http.WebTrafficEvent.WebTrafficEventType.SUSPECTED_HACKING_ATTEMPT;
 import static org.ijsberg.iglu.util.http.HttpSupport.getClientIpAddress;
+
+//import org.ijsberg.iglu.event.monitoring.MonitorEvent;
 
 public class WebTrafficMonitorImpl implements WebTrafficMonitor, Startable, Pageable, EventListener {
 

@@ -9,7 +9,6 @@ import org.ijsberg.iglu.util.properties.IgluProperties;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.jar.Attributes;
 
 /**
  */
